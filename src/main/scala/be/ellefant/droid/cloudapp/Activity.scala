@@ -1,8 +1,9 @@
 package be.ellefant.droid.cloudapp
 
-import _root_.android.app.Activity
-import _root_.android.os.Bundle
-import _root_.android.widget.TextView
+import android._
+import app.Activity
+import os.Bundle
+import widget.TextView
 
 class MainActivity extends Activity {
   override def onCreate(savedInstanceState: Bundle) {
