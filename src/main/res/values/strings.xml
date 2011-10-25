@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">android-cloudapp</string>
+    <string name="cloudapp_name">Cloud</string>
+    <string name="share_link">Link</string>
 </resources>

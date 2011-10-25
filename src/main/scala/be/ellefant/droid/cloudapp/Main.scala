@@ -5,11 +5,11 @@ import app.Activity
 import os.Bundle
 import widget.TextView
 
-class MainActivity extends Activity {
+class Main extends Activity {
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     setContentView(new TextView(this) {
-      setText("hello, world")
+      setText("Hello!")
     })
   }
 }
