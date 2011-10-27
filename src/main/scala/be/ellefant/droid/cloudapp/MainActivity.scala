@@ -2,11 +2,10 @@ package be.ellefant.droid.cloudapp
 
 import android.os.Bundle
 import android.widget.TextView
-import Main._
+import android.app.Activity
+import MainActivity._
 
-class Main extends BaseActivity {
-  val tag = Tag
-
+class MainActivity extends Activity {
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     setContentView(new TextView(this) {
@@ -15,6 +14,6 @@ class Main extends BaseActivity {
   }
 }
 
-object Main {
-  val Tag = classOf[Main].getSimpleName
+object MainActivity extends Logging {
+  protected lazy val tag = classOf[MainActivity].getName
 }

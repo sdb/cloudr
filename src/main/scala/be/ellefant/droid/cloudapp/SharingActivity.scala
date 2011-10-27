@@ -2,17 +2,16 @@ package be.ellefant.droid.cloudapp
 
 import android.os.Bundle
 import android.widget.Toast
-import SharingActivity._
 import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 
+import SharingActivity._
+
 /**
  * Activity for sharing/posting a link (bookmark) to CloudApp.
  */
-class SharingActivity extends BaseActivity {
-  val tag =  Tag
-
+class SharingActivity extends Activity {
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
 		val intent = getIntent
@@ -53,6 +52,6 @@ class SharingActivity extends BaseActivity {
   }
 }
 
-object SharingActivity {
-  val Tag = classOf[SharingActivity].getSimpleName
+object SharingActivity extends Logging {
+  protected lazy val tag = classOf[SharingActivity].getName
 }

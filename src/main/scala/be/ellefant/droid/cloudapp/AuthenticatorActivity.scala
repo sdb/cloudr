@@ -22,16 +22,15 @@ import AuthenticatorActivity._
 /**
  * Activity which displays login screen to the user.
  */
-object AuthenticatorActivity {
-  val Tag = classOf[AuthenticatorActivity].getName
+object AuthenticatorActivity extends Logging {
+  protected lazy val tag = classOf[AuthenticatorActivity].getName
   val ParamAuthTokenType = "authtokenType"
   val ParamUsername = "username"
   val ParamPassword = "password"
   val ParamConfirmCredentials = "confirmCredentials"
 }
 
-class AuthenticatorActivity extends AccountAuthenticatorActivity with BaseActivity {
-  val tag = Tag
+class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
   override def onCreate(icicle: Bundle): Unit = {
     logi("onCreate(" + icicle + ")")

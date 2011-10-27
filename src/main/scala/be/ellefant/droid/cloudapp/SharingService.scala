@@ -2,27 +2,28 @@ package be.ellefant.droid.cloudapp
 
 import android.app.IntentService
 import android.content.Intent
-import com.cloudapp.impl.CloudAppImpl
 import android.accounts.AccountManager
+import com.cloudapp.impl.CloudAppImpl
 import SharingService._
 
-class SharingService extends IntentService("SharingService") with Logging {
-  val tag = Tag
 
-  // TODO: check username and password and show login window if not found
-  // catch exception from cloud api
-  // show a menu notification? and make it a configuration option
+class SharingService extends IntentService(Name) {
+
   def onHandleIntent(intent: Intent) = {
     val am = AccountManager.get(this)
     val accounts = am.getAccountsByType(AccountType)
-    // TODO how to handle when there are multiple accounts ?
     accounts.headOption match {
       case Some(acc) =>
         val url = intent.getStringExtra(Intent.EXTRA_TEXT)
         val pwd = am.getPassword(acc)
-        val api = new CloudAppImpl(acc.name, pwd)
-        val bm = api.createBookmark("Test", url)
-        logd("new CloudAppItem created %s" format bm.getHref)
+        try {
+          val api = new CloudAppImpl(acc.name, pwd)
+          val bm = api.createBookmark("Test", url)
+          logd("New CloudAppItem created %s" format bm.getHref)
+        } catch {
+          case e =>
+            logw("Failed to create new CloudAppItem for %s!" format url)
+        }
       case _ =>
         logw("No CloudApp account found!")
     }
@@ -30,6 +31,7 @@ class SharingService extends IntentService("SharingService") with Logging {
 
 }
 
-object SharingService {
-  val Tag = classOf[SharingService].getSimpleName
+object SharingService extends Logging {
+  protected lazy val tag = classOf[SharingService].getName
+  private lazy val Name = classOf[SharingService].getSimpleName
 }

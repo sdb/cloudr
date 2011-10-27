@@ -10,12 +10,11 @@ import AuthenticationService._
  * Service to handle Account authentication. It instantiates the authenticator
  * and returns its IBinder.
  */
-object AuthenticationService {
-  private final val Tag = "AuthenticationService"
+object AuthenticationService extends Logging {
+  protected lazy val tag = classOf[AuthenticationService].getName
 }
 
-class AuthenticationService extends Service with Logging {
-  val tag = Tag
+class AuthenticationService extends Service {
   override def onCreate: Unit = {
     logd("SampleSyncAdapter Authentication Service started.")
     mAuthenticator = new CloudAppAuthenticator(this)
