@@ -1,5 +1,4 @@
 import sbt._
-
 import Keys._
 import AndroidKeys._
 
@@ -22,12 +21,13 @@ object General {
     AndroidProject.androidSettings ++
     TypedResources.settings ++
     AndroidMarketPublish.settings ++ Seq (
-      keyalias in Android := "change-me"
+      keyalias in Android := "change-me" // TODO
     )
 }
 
 object Dependencies {
   lazy val Slf4jVer = "1.6.3"
+
   lazy val Slf4jApi = "org.slf4j" % "slf4j-api" % Slf4jVer
   lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
   lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.1-SNAPSHOT"
@@ -45,16 +45,20 @@ object AndroidBuild extends Build {
       ScalaTest % "test"
     )
   )
-  lazy val main = Project (
-    "android-cloudapp",
+  lazy val main = Project(
+    "cloudapp",
     file("."),
-    settings = General.fullAndroidSettings ++ mainDeps
+    settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
+      name := "android-cloudapp"
+    )
   )
 
-  lazy val tests = Project (
+  lazy val tests = Project(
     "tests",
     file("tests"),
-    settings = General.settings ++ AndroidTest.androidSettings
+    settings = General.settings ++ AndroidTest.androidSettings ++ Seq(
+      name := "android-cloudapp-tests"
+    )
   ) dependsOn main
 }
 

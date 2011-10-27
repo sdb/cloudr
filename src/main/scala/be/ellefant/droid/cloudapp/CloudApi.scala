@@ -2,9 +2,8 @@ package be.ellefant.droid.cloudapp
 
 import android.os.Handler
 import android.content.Context
-
-import CloudApi._
 import com.cloudapp.impl.CloudAppImpl
+import ThreadUtils._
 
 object CloudApi {
   def authenticate(username: String, password: String, handler: Handler, context: Context) = {
@@ -19,37 +18,20 @@ object CloudApi {
     }
   }
 
-  private def sendResult(result: Boolean, handler: Handler, context: Context): Unit = {
+  private def sendResult(result: Boolean, handler: Handler, context: Context) {
     if (handler == null || context == null) {
       return
     }
     handler.post(new Runnable {
-      def run: Unit = {
+      def run {
         (context.asInstanceOf[AuthenticatorActivity]).onAuthenticationResult(result)
       }
     })
   }
 
-  def attemptAuth(username: String, password: String, handler: Handler, context: Context): Thread = {
-    val runnable: Runnable = new Runnable {
-      def run: Unit = {
-        authenticate(username, password, handler, context)
-      }
+  def attemptAuth(username: String, password: String, handler: Handler, context: Context) = {
+    performOnBackgroundThread { () =>
+      authenticate(username, password, handler, context)
     }
-    performOnBackgroundThread(runnable)
-  }
-
-  def performOnBackgroundThread(runnable: Runnable): Thread = {
-    val t: Thread = new Thread {
-      override def run: Unit = {
-        try {
-          runnable.run
-        }
-        finally {
-        }
-      }
-    }
-    t.start
-    return t
   }
 }

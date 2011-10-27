@@ -1,17 +1,18 @@
 package be.ellefant.droid.cloudapp
 
-import android.os.Bundle
 import android.widget.Toast
-import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
-
+import android.accounts.AccountManager
+import android.os.Bundle
 import SharingActivity._
+import ThreadUtils._
 
 /**
  * Activity for sharing/posting a link (bookmark) to CloudApp.
  */
 class SharingActivity extends Activity {
+
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
 		val intent = getIntent
@@ -20,14 +21,33 @@ class SharingActivity extends Activity {
         val am = AccountManager.get(this)
         val accounts = am.getAccountsByType(AccountType)
         if (accounts.size == 0) {
-          startActivityForResult(new Intent(this, classOf[AuthenticatorActivity]), 0)
+          val amf = am.addAccount(AccountType, AuthTokenType, null, null, this, null, null)
+          performOnBackgroundThread { () =>
+            try {
+              amf.getResult // wait for result from account creation
+              SharingActivity.this.runOnUiThread(new Runnable {
+                def run {
+                  share()
+                }
+              })
+            } catch {
+              case e =>
+                logw("error adding account", e)
+                SharingActivity.this.runOnUiThread(new Runnable {
+                  def run {
+                    val toast = Toast.makeText(getApplicationContext, "URL couldn't be saved to CloudApp", Toast.LENGTH_SHORT)
+                    toast.show()
+                  }
+                })
+            }
+          }
         } else {
           share()
-          finish()
         }
       case (a, t) =>
         logw("action %s and type %s not supported" format (a, t))
     }
+    finish()
   }
 
   protected def share() = {
@@ -39,16 +59,6 @@ class SharingActivity extends Activity {
     val int = new Intent(intent)
     int.setClass(this, classOf[SharingService])
     startService(int)
-  }
-
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent) = {
-    if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
-      share()
-    } else {
-      val toast = Toast.makeText(getApplicationContext, "URL couldn't be saved to CloudApp", Toast.LENGTH_SHORT)
-      toast.show()
-    }
-    finish()
   }
 }
 

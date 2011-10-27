@@ -33,7 +33,7 @@ class CloudAppAuthenticator(context: Context) extends AbstractAccountAuthenticat
     bundle
   }
 
-  def editProperties(response: AccountAuthenticatorResponse, accountType: String)= throw new UnsupportedOperationException
+  def editProperties(response: AccountAuthenticatorResponse, accountType: String) = throw new UnsupportedOperationException
 
   def getAuthToken(response: AccountAuthenticatorResponse, account: Account, authTokenType: String, loginOptions: Bundle): Bundle = {
     if (!(authTokenType == AuthTokenType)) {

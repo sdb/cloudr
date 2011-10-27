@@ -2,7 +2,6 @@ package be.ellefant.droid.cloudapp
 
 import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 
 import AuthenticationService._
 
@@ -15,20 +14,20 @@ object AuthenticationService extends Logging {
 }
 
 class AuthenticationService extends Service {
-  override def onCreate: Unit = {
+  private var authenticator: CloudAppAuthenticator = null
+
+  override def onCreate {
     logd("SampleSyncAdapter Authentication Service started.")
-    mAuthenticator = new CloudAppAuthenticator(this)
+    authenticator = new CloudAppAuthenticator(this)
   }
 
-  override def onDestroy: Unit = {
+  override def onDestroy {
     logd("SampleSyncAdapter Authentication Service stopped.")
   }
 
-  def onBind(intent: Intent): IBinder = {
+  def onBind(intent: Intent) = {
     logd("getBinder()...  returning the AccountAuthenticator binder for intent " + intent)
-    mAuthenticator.getIBinder
+    authenticator.getIBinder
   }
-
-  private var mAuthenticator: CloudAppAuthenticator = null
 }
 
