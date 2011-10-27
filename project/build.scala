@@ -10,10 +10,11 @@ object General {
 
   val settings = Defaults.defaultSettings ++ Seq (
     organization := buildOrganization,
-    version := buildVersion,
+    version      := buildVersion,
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt(buildVersion),
-    platformName in Android := "android-13"
+    platformName in Android := "android-13",
+    resolvers += "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository"
   )
 
   lazy val fullAndroidSettings =
@@ -21,18 +22,33 @@ object General {
     AndroidProject.androidSettings ++
     TypedResources.settings ++
     AndroidMarketPublish.settings ++ Seq (
-      keyalias in Android := "change-me",
-      libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
+      keyalias in Android := "change-me"
     )
 }
 
+object Dependencies {
+  lazy val Slf4jVer = "1.6.3"
+  lazy val Slf4jApi = "org.slf4j" % "slf4j-api" % Slf4jVer
+  lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
+  lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.1-SNAPSHOT"
+  lazy val ScalaTest = "org.scalatest" %% "scalatest" % "1.6.1"
+}
+
 object AndroidBuild extends Build {
+  import Dependencies._
+
+  lazy val mainDeps = Seq(
+    libraryDependencies ++= Seq(
+      CloudApp intransitive(),
+      Slf4jApi,
+      Slf4jSimple,
+      ScalaTest % "test"
+    )
+  )
   lazy val main = Project (
     "android-cloudapp",
     file("."),
-    settings = General.fullAndroidSettings ++ inConfig(Android)(Seq(
-      startEmulator <<= startEmulator dependsOn (packageDebug)
-    ))
+    settings = General.fullAndroidSettings ++ mainDeps
   )
 
   lazy val tests = Project (

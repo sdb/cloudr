@@ -5,6 +5,8 @@ import android.util.Log
 trait Logging {
   def tag: String
 
-  def logd(s: => String) = Log.d(tag, s)
-  def logw(s: => String) = Log.w(tag, s)
+  def logd(s: String) = Log.d(tag, s)
+  def logw(s: String) = Log.w(tag, s)
+  def logi(s: String) = Log.i(tag, s)
+  def loge(s: String) = Log.e(tag, s)
 }

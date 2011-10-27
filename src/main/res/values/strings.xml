@@ -1,5 +1,56 @@
 <resources>
-    <string name="app_name">android-cloudapp</string>
-    <string name="cloudapp_name">Cloud</string>
+    <string name="app_name">CloudApp</string>
+    <string name="cloudapp_name">CloudApp</string>
+    <string name="cloudapp_label">CloudApp</string>
     <string name="share_link">Link</string>
+
+
+    <string
+        name="notification_login_error">Touch to sign into your CloudApp account.</string>
+
+    <!-- Title string for Login activity-->
+    <string
+        name="ui_activity_title">Sign-in</string>
+    <!-- Message shown in progress dialog while app connects to the server -->
+    <string
+        name="ui_activity_authenticating">Authenticating\u2026</string>
+    <!-- Label above username EditText -->
+    <string
+        name="login_activity_username_label">E-mail</string>
+    <!-- Label above password EditText -->
+    <string
+        name="login_activity_password_label">Password</string>
+    <!-- Button to sign in after entering username and password -->
+    <string
+        name="login_activity_ok_button">Sign in</string>
+
+    <!-- Message shown in dialog if the username or password is invalid. -->
+    <string
+        name="login_activity_loginfail_text_both">The e-mail or password isn\'t valid. A CloudApp account is required. Please try again.</string>
+    <!-- Message shown in dialog if the password is invalid -->
+    <string
+        name="login_activity_loginfail_text_pwonly">You entered the wrong password or your account has changed. Please re-enter your password.</string>
+    <!-- Message shown in dialog to prompt the user for their password -->
+    <string
+        name="login_activity_loginfail_text_pwmissing">Type the password for this account.</string>
+    <!--
+        Message shown if the provided account doesn't support the current
+        activity.
+    -->
+    <string
+        name="login_activity_newaccount_text">Sign in to your CloudApp account. </string>
+
+    <!-- Button that takes the user to the "sign in" screen -->
+    <string
+        name="sign_in_button_label">Sign in</string>
+    <!-- Button for going to the previous screen or step -->
+    <string
+        name="back_button_label">Back</string>
+    <!-- Button to cancel the current operation -->
+    <string
+        name="cancel_button_label">Cancel</string>
+    <string
+        name="profile_action">CloudApp profile</string>
+    <string
+        name="view_profile">View Profile</string>
 </resources>

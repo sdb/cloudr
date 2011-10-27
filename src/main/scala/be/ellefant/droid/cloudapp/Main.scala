@@ -1,15 +1,20 @@
 package be.ellefant.droid.cloudapp
 
-import android._
-import app.Activity
-import os.Bundle
-import widget.TextView
+import android.os.Bundle
+import android.widget.TextView
+import Main._
 
-class Main extends Activity {
+class Main extends BaseActivity {
+  val tag = Tag
+
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     setContentView(new TextView(this) {
       setText("Hello!")
     })
   }
+}
+
+object Main {
+  val Tag = classOf[Main].getSimpleName
 }
