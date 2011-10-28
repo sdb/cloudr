@@ -49,7 +49,11 @@ object AndroidBuild extends Build {
     "cloudr",
     file("."),
     settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
-      name := "cloudr"
+      name := "cloudr",
+      proguardOption in Android := List(
+        "-keep public class scala.reflect.ScalaSignature",
+        "-keep public class scala.Function0"
+      ).mkString("\n")
     )
   )
 
@@ -57,7 +61,11 @@ object AndroidBuild extends Build {
     "tests",
     file("tests"),
     settings = General.settings ++ AndroidTest.androidSettings ++ Seq(
-      name := "cloudr-tests"
+      name := "cloudr-tests",
+      proguardInJars in Android <<= (fullClasspath in Android, proguardExclude in Android) map {
+        (runClasspath, proguardExclude) =>
+          runClasspath.map(_.data) --- proguardExclude get
+      }
     )
   ) dependsOn main
 }
