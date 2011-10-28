@@ -3,17 +3,11 @@ package be.ellefant.droid.cloudapp
 import android.app.Service
 import android.content.Intent
 
-import AuthenticationService._
-
 /**
  * Service to handle Account authentication. It instantiates the authenticator
  * and returns its IBinder.
  */
-object AuthenticationService extends Logging {
-  protected lazy val tag = classOf[AuthenticationService].getName
-}
-
-class AuthenticationService extends Service {
+class AuthenticationService extends Service with Logging {
   private var authenticator: CloudAppAuthenticator = null
 
   override def onCreate {

@@ -7,7 +7,7 @@ import com.cloudapp.impl.CloudAppImpl
 import SharingService._
 
 
-class SharingService extends IntentService(Name) {
+class SharingService extends IntentService(Name) with Logging {
 
   def onHandleIntent(intent: Intent) = {
     val am = AccountManager.get(this)
@@ -32,7 +32,6 @@ class SharingService extends IntentService(Name) {
 
 }
 
-object SharingService extends Logging {
-  protected lazy val tag = classOf[SharingService].getName
+object SharingService {
   private lazy val Name = classOf[SharingService].getSimpleName
 }

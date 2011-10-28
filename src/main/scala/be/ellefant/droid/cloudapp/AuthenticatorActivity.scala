@@ -9,8 +9,7 @@ import android.app.{ Activity, Dialog, ProgressDialog }
 import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
 
-object AuthenticatorActivity extends Logging {
-  protected lazy val tag = classOf[AuthenticatorActivity].getName
+object AuthenticatorActivity {
   val ParamAuthTokenType = "authtokenType"
   val ParamUsername = "username"
   val ParamPassword = "password"
@@ -19,7 +18,7 @@ object AuthenticatorActivity extends Logging {
 /**
  * Activity which displays login screen to the user.
  */
-class AuthenticatorActivity extends AccountAuthenticatorActivity {
+class AuthenticatorActivity extends AccountAuthenticatorActivity with Logging {
   private var accountManager: AccountManager = null
   private var authThread: Thread = null
   private var authtoken: String = null

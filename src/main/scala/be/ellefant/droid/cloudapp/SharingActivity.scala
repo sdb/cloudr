@@ -4,14 +4,8 @@ import android.widget.Toast
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import SharingActivity._
 
-/**
- * Activity for sharing/posting a link (bookmark) to CloudApp.
- */
 class SharingActivity extends Activity with Logging with AccountRequired {
-  protected lazy val tag = Tag
-
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
 		val intent = getIntent
@@ -39,8 +33,4 @@ class SharingActivity extends Activity with Logging with AccountRequired {
     val toast = Toast.makeText(getApplicationContext, "URL couldn't be saved to CloudApp", Toast.LENGTH_SHORT)
     toast.show()
   }
-}
-
-object SharingActivity {
-  private lazy val Tag = classOf[SharingActivity].getName
 }

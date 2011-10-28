@@ -15,19 +15,15 @@ trait AccountRequired {
       performOnBackgroundThread { () =>
         try {
           val b = amf.getResult // wait for result from account creation
-          self.runOnUiThread(new Runnable {
-            def run {
-              success(b.getString(AccountManager.KEY_ACCOUNT_NAME))
-            }
-          })
+          self.runOnUiThread {
+            success(b.getString(AccountManager.KEY_ACCOUNT_NAME))
+          }
         } catch {
           case e => // TODO handle other cases then wrong login/password: server unavailable, ...
             logd("failed to add account", e)
-            self.runOnUiThread(new Runnable {
-              def run {
-                failure()
-              }
-            })
+            self.runOnUiThread {
+              failure()
+            }
         }
       }
     } else {
