@@ -21,7 +21,7 @@ object General {
     AndroidProject.androidSettings ++
     TypedResources.settings ++
     AndroidMarketPublish.settings ++ Seq (
-      keyalias in Android := "change-me" // TODO
+      keyalias in Android := "cloudr" // TODO
     )
 }
 
@@ -46,10 +46,10 @@ object AndroidBuild extends Build {
     )
   )
   lazy val main = Project(
-    "cloudapp",
+    "cloudr",
     file("."),
     settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
-      name := "android-cloudapp"
+      name := "cloudr"
     )
   )
 
@@ -57,7 +57,7 @@ object AndroidBuild extends Build {
     "tests",
     file("tests"),
     settings = General.settings ++ AndroidTest.androidSettings ++ Seq(
-      name := "android-cloudapp-tests"
+      name := "cloudr-tests"
     )
   ) dependsOn main
 }
