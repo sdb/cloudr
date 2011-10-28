@@ -15,10 +15,11 @@ class SharingService extends IntentService(Name) {
     accounts.headOption match {
       case Some(acc) =>
         val url = intent.getStringExtra(Intent.EXTRA_TEXT)
+        val title = intent.getStringExtra(Intent.EXTRA_SUBJECT)
         val pwd = am.getPassword(acc)
         try {
           val api = new CloudAppImpl(acc.name, pwd)
-          val bm = api.createBookmark("Test", url)
+          val bm = api.createBookmark(title, url)
           logd("New CloudAppItem created %s" format bm.getHref)
         } catch {
           case e =>

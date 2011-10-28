@@ -5,9 +5,9 @@ import android.content.{ DialogInterface, Intent }
 import android.os.{ Bundle, Handler }
 import android.text.TextUtils
 import android.view.{ View, Window }
-import android.widget.{ EditText, TextView }
 import android.app.{ Activity, Dialog, ProgressDialog }
 import AuthenticatorActivity._
+import android.widget.{Toast, EditText, TextView}
 
 object AuthenticatorActivity extends Logging {
   protected lazy val tag = classOf[AuthenticatorActivity].getName
@@ -37,21 +37,28 @@ class AuthenticatorActivity extends AccountAuthenticatorActivity {
     super.onCreate(icicle)
     logi("onCreate(" + icicle + ")")
     accountManager = AccountManager.get(this)
-    logi("loading data from Intent")
-    val intent = getIntent
-    username = intent.getStringExtra(ParamUsername)
-    authtokenType = intent.getStringExtra(ParamAuthTokenType)
-    requestNewAccount = username == null
-    confirmCredentials = intent.getBooleanExtra(ParamConfirmCredentials, false)
-    logi("request new: " + requestNewAccount)
-    requestWindowFeature(Window.FEATURE_LEFT_ICON)
-    setContentView(R.layout.login_activity)
-    getWindow.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_alert)
-    message = findViewById(R.id.message).asInstanceOf[TextView]
-    usernameEdit = findViewById(R.id.username_edit).asInstanceOf[EditText]
-    passwordEdit = findViewById(R.id.password_edit).asInstanceOf[EditText]
-    usernameEdit.setText(username)
-    message.setText(getMessage)
+    val accounts = accountManager.getAccountsByType(AccountType)
+    if (accounts.size == 0) {
+      logi("loading data from Intent")
+      val intent = getIntent
+      username = intent.getStringExtra(ParamUsername)
+      authtokenType = intent.getStringExtra(ParamAuthTokenType)
+      requestNewAccount = username == null
+      confirmCredentials = intent.getBooleanExtra(ParamConfirmCredentials, false)
+      logi("request new: " + requestNewAccount)
+      requestWindowFeature(Window.FEATURE_LEFT_ICON)
+      setContentView(R.layout.login_activity)
+      getWindow.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_alert)
+      message = findViewById(R.id.message).asInstanceOf[TextView]
+      usernameEdit = findViewById(R.id.username_edit).asInstanceOf[EditText]
+      passwordEdit = findViewById(R.id.password_edit).asInstanceOf[EditText]
+      usernameEdit.setText(username)
+      message.setText(getMessage)
+    } else {
+      val toast = Toast.makeText(getApplicationContext, "Only one CloudApp account is supported.", Toast.LENGTH_SHORT)
+      toast.show()
+      finish()
+    }
   }
 
   protected override def onCreateDialog(id: Int) = {
