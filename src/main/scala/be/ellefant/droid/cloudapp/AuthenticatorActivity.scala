@@ -141,7 +141,7 @@ class AuthenticatorActivity extends AccountAuthenticatorActivity {
       }
     }
     else {
-      loge("onAuthenticationResult: failed to authenticate")
+      logi("onAuthenticationResult: failed to authenticate")
       if (requestNewAccount) {
         message.setText(getText(R.string.login_activity_loginfail_text_both))
       }
