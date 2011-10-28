@@ -9,7 +9,7 @@ object CloudApi {
   def authenticate(username: String, password: String, handler: Handler, context: Context) = {
     def sendResult(result: Boolean, handler: Handler, context: Context) = {
       if (handler != null && context != null) {
-        handler.post {
+        handler.post { () =>
           (context.asInstanceOf[AuthenticatorActivity]).onAuthenticationResult(result)
         }
       }
@@ -25,7 +25,7 @@ object CloudApi {
   }
 
   def attemptAuth(username: String, password: String, handler: Handler, context: Context) = {
-    performOnBackgroundThread {
+    performOnBackgroundThread { () =>
       authenticate(username, password, handler, context)
     }
   }
