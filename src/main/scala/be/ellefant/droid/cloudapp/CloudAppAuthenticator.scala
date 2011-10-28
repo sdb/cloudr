@@ -16,22 +16,23 @@ class CloudAppAuthenticator(context: Context) extends AbstractAccountAuthenticat
     bundle
   }
 
-  def confirmCredentials(response: AccountAuthenticatorResponse, account: Account, options: Bundle): Bundle = {
-    if (options != null && options.containsKey(AccountManager.KEY_PASSWORD)) {
-      val password = options.getString(AccountManager.KEY_PASSWORD)
-      val verified = CloudApi.authenticate(account.name, password, null, null)
-      val result = new Bundle
-      result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, verified)
-      return result
+  def confirmCredentials(response: AccountAuthenticatorResponse, account: Account, options: Bundle) =
+    Option(options) match {
+      case Some(opts) if opts.containsKey(AccountManager.KEY_PASSWORD) =>
+        val password = options.getString(AccountManager.KEY_PASSWORD)
+        val verified = CloudApi.authenticate(account.name, password, null, null)
+        val result = new Bundle
+        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, verified)
+        result
+      case _ =>
+        val intent = new Intent(context, classOf[AuthenticatorActivity])
+        intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
+        intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, true)
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+        val bundle = new Bundle
+        bundle.putParcelable(AccountManager.KEY_INTENT, intent)
+        bundle
     }
-    val intent = new Intent(context, classOf[AuthenticatorActivity])
-    intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
-    intent.putExtra(AuthenticatorActivity.ParamPassword, true)
-    intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
-    val bundle = new Bundle
-    bundle.putParcelable(AccountManager.KEY_INTENT, intent)
-    bundle
-  }
 
   def editProperties(response: AccountAuthenticatorResponse, accountType: String) = throw new UnsupportedOperationException
 

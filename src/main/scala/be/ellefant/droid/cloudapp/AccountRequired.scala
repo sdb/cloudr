@@ -2,8 +2,8 @@ package be.ellefant.droid.cloudapp
 
 import android.app.Activity
 import android.accounts.AccountManager
-import ThreadUtils._
 import android.os.Bundle
+import ThreadUtils._
 
 trait AccountRequired extends Activity {
   self: Activity with Logging =>
@@ -16,23 +16,26 @@ trait AccountRequired extends Activity {
     val am = AccountManager.get(this)
     val accounts = am.getAccountsByType(AccountType)
     if (accounts.size == 0) {
+      logd("Adding account before continuing.")
       val amf = am.addAccount(AccountType, AuthTokenType, null, null, this, null, null)
       performOnBackgroundThread { () =>
         try {
-          val b = amf.getResult // wait for result from account creation
+          val b = amf.getResult // TODO: use timeout
+          val name = b.getString(AccountManager.KEY_ACCOUNT_NAME)
           self.runOnUiThread { () =>
-            onAccountSuccess(b.getString(AccountManager.KEY_ACCOUNT_NAME))
+            onAccountSuccess(name)
           }
         } catch {
           case e => // TODO handle other cases then wrong login/password: server unavailable, ...
-            logd("failed to add account", e)
             self.runOnUiThread { () =>
               onAccountFailure()
             }
         }
       }
     } else {
-      onAccountSuccess(accounts.head.name)
+      val name = accounts.head.name
+      logd("Account found: '%s'." format name)
+      onAccountSuccess(name)
     }
   }
 

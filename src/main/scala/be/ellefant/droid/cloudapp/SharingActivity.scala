@@ -15,7 +15,7 @@ class SharingActivity extends Activity with Logging with AccountRequired {
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
     val url = intent.getStringExtra(Intent.EXTRA_TEXT)
-    logd("sharing link %s" format url)
+    logd("Sharing link '%s' for '%s'." format (url, name))
     val toast = Toast.makeText(getApplicationContext, "URL will be saved to CloudApp", Toast.LENGTH_SHORT)
     toast.show()
     val int = new Intent(intent)
@@ -24,7 +24,8 @@ class SharingActivity extends Activity with Logging with AccountRequired {
   }
 
   protected def onAccountFailure() = {
-    val toast = Toast.makeText(getApplicationContext, "URL couldn't be saved to CloudApp", Toast.LENGTH_SHORT)
+    logd("No account to share link.")
+    val toast = Toast.makeText(getApplicationContext, "This action requires a CloudApp account", Toast.LENGTH_SHORT)
     toast.show()
   }
 }

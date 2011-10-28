@@ -6,6 +6,7 @@ import com.cloudapp.impl.CloudAppImpl
 import ThreadUtils._
 
 object CloudApi {
+
   def authenticate(username: String, password: String, handler: Handler, context: Context) = {
     def sendResult(result: Boolean, handler: Handler, context: Context) = {
       if (handler != null && context != null) {

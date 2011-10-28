@@ -12,7 +12,7 @@ object General {
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt(buildVersion),
-    platformName in Android := "android-13",
+    platformName in Android := "android-10",
     resolvers += "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository"
   )
 
