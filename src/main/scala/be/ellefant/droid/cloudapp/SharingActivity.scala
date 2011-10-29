@@ -4,8 +4,9 @@ import android.widget.Toast
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import roboguice.activity.RoboActivity
 
-class SharingActivity extends Activity with Logging with AccountRequired {
+class SharingActivity extends RoboActivity with Logging with AccountRequired {
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)

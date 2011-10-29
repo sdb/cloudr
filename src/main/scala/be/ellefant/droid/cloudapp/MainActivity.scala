@@ -2,8 +2,11 @@ package be.ellefant.droid.cloudapp
 
 import android.widget.TextView
 import android.app.Activity
+import roboguice.activity.RoboActivity
+import roboguice.inject.ContextScoped
 
-class MainActivity extends Activity with Logging with AccountRequired {
+@ContextScoped
+class MainActivity extends RoboActivity with Logging with AccountRequired {
 
   protected def onAccountSuccess(name: String) = {
     setContentView(new TextView(this) {

@@ -4,16 +4,21 @@ import android.app.Activity
 import android.accounts.AccountManager
 import android.os.Bundle
 import ThreadUtils._
+import com.google.inject.{Inject, Provider}
+import roboguice.activity.RoboActivity
 
-trait AccountRequired extends Activity {
-  self: Activity with Logging =>
+trait AccountRequired extends RoboActivity {
+  self: RoboActivity with Logging =>
 
   protected def onAccountSuccess(name: String): Any
   protected def onAccountFailure(): Any
 
+  @Inject
+  protected var accountManagerProvider: AccountManagerProvider = _
+
   abstract override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
-    val am = AccountManager.get(this)
+    val am = accountManagerProvider.get
     val accounts = am.getAccountsByType(AccountType)
     if (accounts.size == 0) {
       logd("Adding account before continuing.")
