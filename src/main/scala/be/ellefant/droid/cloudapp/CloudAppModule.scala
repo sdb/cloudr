@@ -2,7 +2,6 @@ package be.ellefant.droid.cloudapp
 
 import com.google.inject.AbstractModule
 import android.os.Build.VERSION
-import android.accounts.AccountManager
 
 class CloudAppModule extends AbstractModule {
 

@@ -1,6 +1,6 @@
 package be.ellefant.droid.cloudapp
 
-import android.accounts.{ Account, AccountAuthenticatorActivity, AccountManager }
+import android.accounts.{ Account, AccountAuthenticatorActivity, AccountManager => AndroidAccountManager }
 import android.content.{ DialogInterface, Intent }
 import android.os.{ Bundle, Handler }
 import android.text.TextUtils
@@ -8,6 +8,9 @@ import android.view.{ View, Window }
 import android.app.{ Activity, Dialog, ProgressDialog }
 import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
+import com.google.inject.Inject
+import roboguice.inject.ContextScoped
+import roboguice.activity.RoboAccountAuthenticatorActivity
 
 object AuthenticatorActivity {
   val ParamAuthTokenType = "authtokenType"
@@ -18,8 +21,9 @@ object AuthenticatorActivity {
 /**
  * Activity which displays login screen to the user.
  */
-class AuthenticatorActivity extends AccountAuthenticatorActivity with Logging {
-  private var accountManager: AccountManager = null
+class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with Logging {
+  @Inject protected var accountManagerProvider: AccountManagerProvider = _
+  private var accountManager: AccountManager = _
   private var authThread: Thread = null
   private var authtoken: String = null
   private var authtokenType: String = null
@@ -35,7 +39,7 @@ class AuthenticatorActivity extends AccountAuthenticatorActivity with Logging {
   override def onCreate(icicle: Bundle) {
     super.onCreate(icicle)
     logi("onCreate(" + icicle + ")")
-    accountManager = AccountManager.get(this)
+    accountManager = accountManagerProvider.get
     val accounts = accountManager.getAccountsByType(AccountType)
     if (accounts.size == 0) {
       logi("loading data from Intent")
@@ -96,7 +100,7 @@ class AuthenticatorActivity extends AccountAuthenticatorActivity with Logging {
     val account = new Account(username, AccountType)
     accountManager.setPassword(account, password)
     val intent = new Intent
-    intent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, result)
+    intent.putExtra(AndroidAccountManager.KEY_BOOLEAN_RESULT, result)
     setAccountAuthenticatorResult(intent.getExtras)
     setResult(Activity.RESULT_OK, intent)
     finish
@@ -106,7 +110,7 @@ class AuthenticatorActivity extends AccountAuthenticatorActivity with Logging {
     logi("finishLogin()")
     val account = new Account(username, AccountType)
     if (requestNewAccount) {
-      accountManager.addAccountExplicitly(account, password, null)
+      accountManager.addAccountExplicitly(account, password)
       // ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
     }
     else {
@@ -114,10 +118,10 @@ class AuthenticatorActivity extends AccountAuthenticatorActivity with Logging {
     }
     val intent = new Intent
     authtoken = password
-    intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username)
-    intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountType)
+    intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_NAME, username)
+    intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_TYPE, AccountType)
     if (authtokenType != null && (authtokenType == AuthTokenType)) {
-      intent.putExtra(AccountManager.KEY_AUTHTOKEN, authtoken)
+      intent.putExtra(AndroidAccountManager.KEY_AUTHTOKEN, authtoken)
     }
     setAccountAuthenticatorResult(intent.getExtras)
     setResult(Activity.RESULT_OK, intent)

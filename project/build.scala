@@ -35,6 +35,8 @@ object Dependencies {
   lazy val Robotium = "com.jayway.android.robotium" % "robotium-solo" % "2.5"
   lazy val RoboGuice = "org.roboguice" % "roboguice" % "2.0b2"
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
+  lazy val Borachio = "com.borachio" %% "borachio-junit3-support" % "1.4"
+  lazy val EasyMock = "org.easymock" % "easymock" % "3.0"
 }
 
 object AndroidBuild extends Build {
@@ -56,6 +58,7 @@ object AndroidBuild extends Build {
     file("."),
     settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
       name := "cloudr",
+      // useProguard in Android := false,
       proguardOption in Android := Proguard.options,
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize")
     )
@@ -63,7 +66,7 @@ object AndroidBuild extends Build {
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(
-      Robotium
+      Robotium, EasyMock
     )
   )
 
@@ -72,19 +75,24 @@ object AndroidBuild extends Build {
     file("tests"),
     settings = General.settings ++ AndroidTest.androidSettings ++ testsDeps ++ Seq(
       name := "cloudr-tests",
-      proguardInJars in Android <<= (fullClasspath in Android, proguardExclude in Android) map {
-        (runClasspath, proguardExclude) =>
-          runClasspath.map(_.data) --- proguardExclude get
-      }
+      // useProguard in Android := false,
+      proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize"),
+      proguardOption in Android := """-optimizations !code/simplification/arithmetic
+-keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
+"""
     )
   ) dependsOn main
 }
 
+// -keepattributes SourceFile,LineNumberTable,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,Signature
 object Proguard {
   lazy val options = """-optimizations !code/simplification/arithmetic
 -keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
--keep public class scala.reflect.ScalaSignature
+-keep public class scala.reflect.ScalaSignature {
+    public String bytes();
+}
 -keep public class scala.Function0
+-keep public class scala.ScalaObject
 
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
@@ -122,7 +130,9 @@ object Proguard {
     public <init>(android.content.Context, android.util.AttributeSet, int);
     public void set*(...);
 }
+-keepclassmembers class com.google.inject.util.Modules$OverriddenModuleBuilder { <methods>; }
 -keepclassmembers public class com.google.inject.internal.util.$Finalizer { public static <methods>; }
+-keepclassmembers public class com.google.inject.util.Modules { public static <methods>; }
 -keep public class roboguice.**
 -keep class com.google.inject.Binder
 -keep class com.google.inject.Module

@@ -1,7 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import roboguice.inject.ContextScoped
-import android.accounts.AccountManager
 import android.content.Context
 import com.google.inject.{Inject, Provider}
 
@@ -10,5 +9,5 @@ class AccountManagerProvider extends Provider[AccountManager] {
 
   @Inject protected var context: Context = _
 
-  def get() = AccountManager.get(context)
+  def get(): AccountManager = new AccountManagerImpl(android.accounts.AccountManager.get(context))
 }

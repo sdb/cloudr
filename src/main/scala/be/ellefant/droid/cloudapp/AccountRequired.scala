@@ -1,7 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import android.app.Activity
-import android.accounts.AccountManager
 import android.os.Bundle
 import ThreadUtils._
 import com.google.inject.{Inject, Provider}
@@ -13,8 +12,7 @@ trait AccountRequired extends RoboActivity {
   protected def onAccountSuccess(name: String): Any
   protected def onAccountFailure(): Any
 
-  @Inject
-  protected var accountManagerProvider: AccountManagerProvider = _
+  @Inject protected var accountManagerProvider: AccountManagerProvider = _
 
   abstract override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
@@ -22,11 +20,11 @@ trait AccountRequired extends RoboActivity {
     val accounts = am.getAccountsByType(AccountType)
     if (accounts.size == 0) {
       logd("Adding account before continuing.")
-      val amf = am.addAccount(AccountType, AuthTokenType, null, null, this, null, null)
+      val amf = am.addAccount(AccountType, AuthTokenType, this)
       performOnBackgroundThread { () =>
         try {
           val b = amf.getResult // TODO: use timeout
-          val name = b.getString(AccountManager.KEY_ACCOUNT_NAME)
+          val name = b.getString(android.accounts.AccountManager.KEY_ACCOUNT_NAME)
           self.runOnUiThread { () =>
             onAccountSuccess(name)
           }

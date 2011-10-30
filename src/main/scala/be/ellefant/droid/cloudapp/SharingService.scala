@@ -2,14 +2,14 @@ package be.ellefant.droid.cloudapp
 
 import android.app.IntentService
 import android.content.Intent
-import android.accounts.AccountManager
+import android.accounts.{AccountManager => AndroidAccountManager}
 import com.cloudapp.impl.CloudAppImpl
 import SharingService._
 
 class SharingService extends IntentService(Name) with Logging {
 
   def onHandleIntent(intent: Intent) = {
-    val am = AccountManager.get(this)
+    val am = AndroidAccountManager.get(this)
     val accounts = am.getAccountsByType(AccountType)
     accounts.headOption match {
       case Some(acc) =>
