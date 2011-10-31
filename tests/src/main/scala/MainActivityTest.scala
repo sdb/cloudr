@@ -1,44 +1,39 @@
-//package be.ellefant.droid.cloudapp
-//package tests
-//
-//import android.test.ActivityUnitTestCase
-//import android.app.Application
-//import roboguice.RoboGuice
-//import com.google.inject.AbstractModule
-//import com.google.inject.util.Modules
-//import be.ellefant.droid.cloudapp.AccountManager
-//import junit.framework.Assert._
-//import android.content.Context
-//import org.easymock.EasyMock
-//import android.test.suitebuilder.annotation.MediumTest
-//
-//class MainActivityTest extends ActivityUnitTestCase[MainActivity](classOf[MainActivity]) {
-//  private val accountManagerMock = EasyMock.createMock(classOf[AccountManager])
-//
-//  override def setUp() {
-//    super.setUp()
-//    val app = new TestApplication(getInstrumentation().getTargetContext())
-//    setApplication(app)
-//    RoboGuice.setBaseApplicationInjector(app, RoboGuice.DEFAULT_STAGE, Modules.`override`(RoboGuice.newDefaultRoboModule(app)).`with`(new TestModule()))
-//  }
-//
-//  @MediumTest
-//  def testSomething() {
-//    assertTrue(true)
-//  }
-//
-//  override def tearDown() {
-//    getActivity().finish()
-//    super.tearDown()
-//  }
-//
-//  class TestModule extends AbstractModule {
-//    def configure() {
-//      bind(classOf[AccountManager]).toInstance(accountManagerMock)
-//    }
-//  }
-//
-//  class TestApplication(context: Context) extends Application {
-//    attachBaseContext(context)
-//  }
-//}
+package be.ellefant.droid.cloudapp
+package tests
+
+import android.test.ActivityUnitTestCase
+import android.app.Application
+import roboguice.RoboGuice
+import com.google.inject.AbstractModule
+import com.google.inject.util.Modules
+import be.ellefant.droid.cloudapp.AccountManager
+import junit.framework.Assert._
+import android.content.Context
+import org.easymock.EasyMock
+import android.test.suitebuilder.annotation.MediumTest
+
+class MainActivityTest extends ActivityUnitTestCase[MainActivity](classOf[MainActivity]) {
+  private val accountManagerMock = EasyMock.createMock(classOf[AccountManager])
+
+  override def setUp() {
+    super.setUp()
+    val app = new TestApplication(getInstrumentation().getTargetContext())
+    setApplication(app)
+    RoboGuice.setBaseApplicationInjector(app, RoboGuice.DEFAULT_STAGE, Modules.`override`(RoboGuice.newDefaultRoboModule(app)).`with`(new TestModule()))
+  }
+
+  def testSomething() {
+    assertTrue(true)
+  }
+
+  override def tearDown() {
+    getActivity().finish()
+    super.tearDown()
+  }
+
+  class TestModule extends AbstractModule {
+    def configure() {
+      bind(classOf[AccountManager]).toInstance(accountManagerMock)
+    }
+  }
+}

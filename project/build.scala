@@ -13,7 +13,10 @@ object General {
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt(buildVersion),
     platformName in Android := "android-10",
-    resolvers += "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository"
+    resolvers ++= Seq(
+      "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
+      "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+    )
   )
 
   lazy val fullAndroidSettings =
@@ -31,11 +34,11 @@ object Dependencies {
   lazy val Slf4jApi = "org.slf4j" % "slf4j-api" % Slf4jVer
   lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
   lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.1-SNAPSHOT"
-  lazy val ScalaTest = "org.scalatest" %% "scalatest" % "1.6.1"
-  lazy val Robotium = "com.jayway.android.robotium" % "robotium-solo" % "2.5"
   lazy val RoboGuice = "org.roboguice" % "roboguice" % "2.0b2"
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
-  lazy val Borachio = "com.borachio" %% "borachio-junit3-support" % "1.4"
+  // lazy val Robolectric = "com.pivotallabs" % "robolectric" % "1.0-RC4"
+  lazy val Mockito = "org.mockito" % "mockito-core" % "1.9.0-rc1"
+  lazy val Robospecs = "com.github.jbrechtel" %% "robospecs" % "0.2-SNAPSHOT"
   lazy val EasyMock = "org.easymock" % "easymock" % "3.0"
 }
 
@@ -49,7 +52,8 @@ object AndroidBuild extends Build {
       Slf4jSimple,
       RoboGuice intransitive(),
       Guice classifier "no_aop",
-      ScalaTest % "test"
+      Mockito % "test",
+      Robospecs % "test"
     )
   )
 
@@ -58,7 +62,6 @@ object AndroidBuild extends Build {
     file("."),
     settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
       name := "cloudr",
-      // useProguard in Android := false,
       proguardOption in Android := Proguard.options,
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize")
     )
@@ -66,7 +69,7 @@ object AndroidBuild extends Build {
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(
-      Robotium, EasyMock
+      EasyMock
     )
   )
 
@@ -75,21 +78,24 @@ object AndroidBuild extends Build {
     file("tests"),
     settings = General.settings ++ AndroidTest.androidSettings ++ testsDeps ++ Seq(
       name := "cloudr-tests",
-      // useProguard in Android := false,
+      proguardInJars in Android <<= (fullClasspath in Android, proguardExclude in Android) map {
+        (cp, proguardExclude) =>
+          ((cp filter (_.data.getName startsWith "easymock")) map (_.data))  --- proguardExclude get
+      },
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize"),
       proguardOption in Android := """-optimizations !code/simplification/arithmetic
 -keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
+-keep class org.easymock.**
 """
     )
   ) dependsOn main
 }
 
-// -keepattributes SourceFile,LineNumberTable,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,Signature
 object Proguard {
   lazy val options = """-optimizations !code/simplification/arithmetic
 -keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
 -keep public class scala.reflect.ScalaSignature {
-    public String bytes();
+    public java.lang.String bytes();
 }
 -keep public class scala.Function0
 -keep public class scala.ScalaObject

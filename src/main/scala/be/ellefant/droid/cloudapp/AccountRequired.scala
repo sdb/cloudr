@@ -12,15 +12,14 @@ trait AccountRequired extends RoboActivity {
   protected def onAccountSuccess(name: String): Any
   protected def onAccountFailure(): Any
 
-  @Inject protected var accountManagerProvider: AccountManagerProvider = _
+  @Inject protected var accountManager: AccountManager = _
 
   abstract override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
-    val am = accountManagerProvider.get
-    val accounts = am.getAccountsByType(AccountType)
+    val accounts = accountManager.getAccountsByType(AccountType)
     if (accounts.size == 0) {
       logd("Adding account before continuing.")
-      val amf = am.addAccount(AccountType, AuthTokenType, this)
+      val amf = accountManager.addAccount(AccountType, AuthTokenType, this)
       performOnBackgroundThread { () =>
         try {
           val b = amf.getResult // TODO: use timeout
