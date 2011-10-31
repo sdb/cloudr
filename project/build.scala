@@ -39,7 +39,7 @@ object Dependencies {
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
   // lazy val Robolectric = "com.pivotallabs" % "robolectric" % "1.0-RC4"
   lazy val Mockito = "org.mockito" % "mockito-core" % "1.9.0-rc1"
-  lazy val Robospecs = "com.github.jbrechtel" %% "robospecs" % "0.2-SNAPSHOT"
+  lazy val RoboSpecs = "com.github.jbrechtel" %% "robospecs" % "0.2-SNAPSHOT"
   lazy val EasyMock = "org.easymock" % "easymock" % "3.0"
 }
 
@@ -54,7 +54,7 @@ object AndroidBuild extends Build {
       RoboGuice intransitive(),
       Guice classifier "no_aop",
       Mockito % "test",
-      Robospecs % "test"
+      RoboSpecs % "test"
     )
   )
 

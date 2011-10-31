@@ -1,18 +1,25 @@
-[CloudApp](http://getcloudapp.com/) application for [Android](http://www.android.com/).
+[Android](http://www.android.com/) application for [CloudApp](http://getcloudapp.com/).
 
 ## Features
 
 * add CloudApp account to the account settings
-* share bookmark to CloudApp from a browser via the 'Share With' menu
+* share bookmark to CloudApp from a browser via the 'Share Page' menu
 
 ## Development
+
+### Requirements
+
+* [Android SDK](http://developer.android.com/sdk/index.html)
+* [sbt](https://github.com/harrah/xsbt)
+* [Android plugin for sbt](https://github.com/sdb/android-plugin)
+* [RoboSpecs](https://github.com/sdb/robospecs)
 
 ### Resources
 
 #### Running
 
-* http://developer.android.com/guide/developing/device.html
+* [Using Hardware Devices](http://developer.android.com/guide/developing/device.html)
 
 #### Design
 
-* http://developer.android.com/guide/topics/ui/themes.html
+* [Styles and Themes](http://developer.android.com/guide/topics/ui/themes.html)
