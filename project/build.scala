@@ -1,3 +1,4 @@
+
 import sbt._
 import Keys._
 import AndroidKeys._
@@ -62,6 +63,7 @@ object AndroidBuild extends Build {
     file("."),
     settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
       name := "cloudr",
+      commands += Idea.command,
       proguardOption in Android := Proguard.options,
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize")
     )
@@ -170,5 +172,68 @@ object ShellPrompt {
         currProject, currBranch, buildVersion
       )
     }
+  }
+}
+
+object Idea {
+  // quick 'n dirty way to add Android Facet to IDEA projects
+  val command: Command = Command.command("gen-idea-android") { state =>
+    val base = Project.extract (state).currentProject.base
+    replace(base / ".idea_modules" / "cloudr.iml")
+    replace(base / ".idea_modules" / "tests.iml")
+    state
+  }
+
+  import xml._
+  import xml.transform._
+
+  object ReplaceJdk extends RewriteRule {
+    override def transform(n: Node): Seq[Node] = n match {
+      case e @ Elem(prefix, "orderEntry", attribs, scope, children @ _*) if (e \ "@type").text == "inheritedJdk" =>
+        <orderEntry type="jdk" jdkName="Android 3.2 Platform" jdkType="Android SDK" />
+      case other => other
+    }
+  }
+
+  object ReplaceJdkTransformer extends RuleTransformer(ReplaceJdk)
+
+  object AddFacet extends RewriteRule {
+    override def transform(n: Node): Seq[Node] = n match {
+      case e @ Elem(prefix, "component", attribs, scope, children @ _*) if (e \ "@name").text == "FacetManager" =>
+        <component name="FacetManager">
+          { children }
+          <facet type="android" name="Android">
+          <configuration>
+            <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/gen" />
+            <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/gen" />
+            <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../src/main/AndroidManifest.xml" />
+            <option name="RES_FOLDER_RELATIVE_PATH" value="/../src/main/res" />
+            <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../src/main/assets" />
+            <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../src/main/libs" />
+            <option name="REGENERATE_R_JAVA" value="true" />
+            <option name="REGENERATE_JAVA_BY_AIDL" value="true" />
+            <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
+            <option name="CUSTOM_APK_RESOURCE_FOLDER" value="" />
+            <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
+            <option name="CUSTOM_COMPILER_MANIFEST" value="" />
+            <option name="APK_PATH" value="" />
+            <option name="LIBRARY_PROJECT" value="false" />
+            <option name="RUN_PROCESS_RESOURCES_MAVEN_TASK" value="true" />
+            <option name="GENERATE_UNSIGNED_APK" value="false" />
+          </configuration>
+        </facet>
+        </component>
+      case e @ Elem(prefix, "component", attribs, scope, children @ _*) if (e \ "@name").text == "NewModuleRootManager" =>
+        ReplaceJdkTransformer(e)
+      case other => other
+    }
+  }
+
+  object AddFacetTransformer extends RuleTransformer(AddFacet)
+
+  def replace(f: java.io.File) = {
+    val x = XML.loadFile(f)
+    val t = AddFacetTransformer(x)
+    XML.save(f.getAbsolutePath, t)
   }
 }
