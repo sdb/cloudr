@@ -13,6 +13,7 @@ trait AccountRequired extends RoboActivity {
   protected def onAccountFailure(): Any
 
   @Inject protected var accountManager: AccountManager = _
+  @Inject protected var threadUtil: ThreadUtil = _
 
   abstract override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
@@ -20,7 +21,7 @@ trait AccountRequired extends RoboActivity {
     if (accounts.size == 0) {
       logd("Adding account before continuing.")
       val amf = accountManager.addAccount(AccountType, AuthTokenType, this)
-      performOnBackgroundThread { () =>
+      threadUtil.performOnBackgroundThread { () =>
         try {
           val b = amf.getResult // TODO: use timeout
           val name = b.getString(android.accounts.AccountManager.KEY_ACCOUNT_NAME)

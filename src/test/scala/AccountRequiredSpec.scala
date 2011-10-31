@@ -57,6 +57,9 @@ class AccountRequiredSpec extends RoboSpecs with Mockito {
     class TestModule extends AbstractModule {
       def configure() {
         bind(classOf[AccountManager]).toInstance(accountManagerMock)
+        bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
+          def performOnBackgroundThread(r: Runnable) { r.run() }
+        })
       }
     }
   }

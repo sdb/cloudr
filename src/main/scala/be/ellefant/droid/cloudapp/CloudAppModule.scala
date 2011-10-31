@@ -9,6 +9,7 @@ class CloudAppModule extends AbstractModule {
     if (VERSION.SDK_INT >= 5) {
       bind(classOf[AccountManager]).toProvider(classOf[AccountManagerProvider])
     }
+    bind(classOf[ThreadUtil]).toInstance(new ThreadUtilImpl)
   }
 
 }
