@@ -179,8 +179,8 @@ object Idea {
   // quick 'n dirty way to add Android Facet to IDEA projects
   val command: Command = Command.command("gen-idea-android") { state =>
     val base = Project.extract (state).currentProject.base
-    replace(base / ".idea_modules" / "cloudr.iml")
-    replace(base / ".idea_modules" / "tests.iml")
+    transform(base / ".idea_modules" / "cloudr.iml")
+    transform(base / ".idea_modules" / "tests.iml")
     state
   }
 
@@ -231,7 +231,7 @@ object Idea {
 
   object AddFacetTransformer extends RuleTransformer(AddFacet)
 
-  def replace(f: java.io.File) = {
+  def transform(f: java.io.File) = {
     val x = XML.loadFile(f)
     val t = AddFacetTransformer(x)
     XML.save(f.getAbsolutePath, t)

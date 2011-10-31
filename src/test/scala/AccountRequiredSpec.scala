@@ -2,58 +2,67 @@ package be.ellefant.droid.cloudapp
 package tests
 
 import org.specs2.mutable._
+import org.specs2.specification.Context
 import org.specs2.mock.Mockito
-import org.specs2.matcher.{Expectable, Matcher}
-import org.specs2.specification.BeforeExample
 import com.github.jbrechtel.robospecs.RoboSpecs
 import roboguice.activity.RoboActivity
-import roboguice.RoboGuice
-import com.xtremelabs.robolectric.Robolectric
 import com.google.inject.AbstractModule
-import com.google.inject.util.Modules
 import android.os.Bundle
-import android.accounts.{OperationCanceledException, AccountManagerFuture, Account}
+import android.accounts.{AuthenticatorException, OperationCanceledException, AccountManagerFuture, Account}
+import java.io.IOException
 
 class AccountRequiredSpec extends RoboSpecs with Mockito {
   args(sequential=true)
 
   "onCreate" should {
     "call onSuccess when an account is available" in new context {
-      accountManagerMock.getAccountsByType(AccountType) returns List(mock[Account])
-      test(true)
+      testAccountAvailable
     }
     "call onSuccess when a new account is added" in new context {
+      testAccountAdded
+    }
+    "call onFailure when the authenticator fails" in new context {
+      testException(new AuthenticatorException)
+    }
+    "call onFailure when the new account operation is cancelled" in new context {
+      testException(new OperationCanceledException)
+    }
+    "call onFailure when an IO error occurs" in new context {
+      testException(new IOException)
+    }
+  }
+
+  trait context extends Context with Robo {
+    lazy val accountManagerMock = mock[AccountManager]
+    lazy val activity = spy(new AccountRequiredSpy)
+
+    def testAccountAvailable = {
+      accountManagerMock.getAccountsByType(AccountType) returns List(mock[Account])
+      activity.onCreate(null)
+      there was one(activity).onAccountSuccess(null)
+    }
+
+    def testAccountAdded = {
       accountManagerMock.getAccountsByType(AccountType) returns Nil
       val amf = mock[AccountManagerFuture[Bundle]]
       val b = new Bundle
       b.putString(android.accounts.AccountManager.KEY_ACCOUNT_NAME, "sdb")
       amf.getResult returns b
       accountManagerMock.addAccount(AccountType, AuthTokenType, activity) returns amf
-      test(true)
+      activity.onCreate(null)
+      there was one(activity).onAccountSuccess("sdb")
     }
-    "call onFailure when the new account operation is cancelled" in new context {
+
+    def testException(e: Throwable) = {
       accountManagerMock.getAccountsByType(AccountType) returns Nil
       val amf = mock[AccountManagerFuture[Bundle]]
-      amf.getResult throws new OperationCanceledException
+      amf.getResult throws e
       accountManagerMock.addAccount(AccountType, AuthTokenType, activity) returns amf
-      test(false)
-    }
-  }
-
-  trait context extends After {
-    val accountManagerMock = mock[AccountManager]
-    val activity = new AccountRequiredSpy()
-
-    RoboGuice.setBaseApplicationInjector(Robolectric.application, RoboGuice.DEFAULT_STAGE, Modules.`override`(RoboGuice.newDefaultRoboModule(Robolectric.application)).`with`(new TestModule()))
-
-    def after = RoboGuice.util.reset()
-
-    def test(success: Boolean) = {
       activity.onCreate(null)
-      (activity.success must be_== (success)) && (activity.failure must be_== (!success))
+      there was one(activity).onAccountFailure()
     }
 
-    class TestModule extends AbstractModule {
+    object module extends AbstractModule {
       def configure() {
         bind(classOf[AccountManager]).toInstance(accountManagerMock)
         bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
@@ -64,10 +73,8 @@ class AccountRequiredSpec extends RoboSpecs with Mockito {
   }
 
   class AccountRequiredSpy extends RoboActivity with Logging with AccountRequired {
-    var success = false
-    var failure = false
-    def onAccountSuccess(name: String) = success = true
-    def onAccountFailure() = failure = true
+    def onAccountSuccess(name: String) = {}
+    def onAccountFailure() = {}
   }
 
 }
