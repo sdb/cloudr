@@ -2,16 +2,12 @@ package be.ellefant.droid.cloudapp
 package tests
 
 import android.test.ActivityUnitTestCase
-import android.app.Application
 import roboguice.RoboGuice
 import com.google.inject.AbstractModule
 import com.google.inject.util.Modules
 import be.ellefant.droid.cloudapp.AccountManager
 import junit.framework.Assert._
-import android.content.Context
 import org.easymock.EasyMock
-import android.test.suitebuilder.annotation.MediumTest
-
 class MainActivityTest extends ActivityUnitTestCase[MainActivity](classOf[MainActivity]) {
   private val accountManagerMock = EasyMock.createMock(classOf[AccountManager])
 

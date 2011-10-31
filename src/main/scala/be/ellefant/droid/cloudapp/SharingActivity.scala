@@ -1,7 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import android.widget.Toast
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import roboguice.activity.RoboActivity

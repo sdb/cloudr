@@ -1,6 +1,5 @@
 package be.ellefant.droid.cloudapp
 
-import android.app.Activity
 import android.os.Bundle
 import ThreadUtils._
 import com.google.inject.{Inject, Provider}

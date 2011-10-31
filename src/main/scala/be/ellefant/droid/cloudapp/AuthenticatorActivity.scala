@@ -1,15 +1,14 @@
 package be.ellefant.droid.cloudapp
 
-import android.accounts.{ Account, AccountAuthenticatorActivity, AccountManager => AndroidAccountManager }
+import android.accounts.{ Account, AccountManager => AndroidAccountManager }
 import android.content.{ DialogInterface, Intent }
 import android.os.{ Bundle, Handler }
 import android.text.TextUtils
 import android.view.{ View, Window }
-import android.app.{ Activity, Dialog, ProgressDialog }
+import android.app.{ Activity, ProgressDialog }
 import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
 import com.google.inject.Inject
-import roboguice.inject.ContextScoped
 import roboguice.activity.RoboAccountAuthenticatorActivity
 
 object AuthenticatorActivity {

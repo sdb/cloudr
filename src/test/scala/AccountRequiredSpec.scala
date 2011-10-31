@@ -1,7 +1,6 @@
 package be.ellefant.droid.cloudapp
 package tests
 
-import be.ellefant.droid.cloudapp.{AccountRequired, Logging, MainActivity}
 import org.specs2.mutable._
 import org.specs2.mock.Mockito
 import org.specs2.matcher.{Expectable, Matcher}

@@ -1,15 +1,13 @@
-package be.ellefant.droid.cloudapp.tests
+package be.ellefant.droid.cloudapp
+package tests
 
 import android.test.ActivityUnitTestCase
-import android.app.{Activity, Application}
 import roboguice.RoboGuice
 import roboguice.activity.RoboActivity
 import roboguice.inject.ContextScoped
 import com.google.inject.AbstractModule
 import com.google.inject.util.Modules
 import junit.framework.Assert._
-import be.ellefant.droid.cloudapp.{AccountManager, AccountManagerProvider, Logging, AccountRequired}
-import android.test.suitebuilder.annotation.MediumTest
 import org.easymock.EasyMock
 
 @ContextScoped
