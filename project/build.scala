@@ -15,7 +15,8 @@ object General {
     shellPrompt  := ShellPrompt.buildShellPrompt(buildVersion),
     platformName in Android := "android-10",
     resolvers ++= Seq(
-      "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
+      DefaultMavenRepository,
+      "Local Maven" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
     )
   )
