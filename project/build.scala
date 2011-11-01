@@ -54,7 +54,8 @@ object AndroidBuild extends Build {
       RoboGuice intransitive(),
       Guice classifier "no_aop",
       Mockito % "test",
-      RoboSpecs % "test"
+      RoboSpecs % "test",
+      "junit" % "junit" % "4.8.2" % "test"
     )
   )
 
@@ -64,7 +65,7 @@ object AndroidBuild extends Build {
     settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
       name := "cloudr",
       parallelExecution in Test := false,
-      // testOptions in Test += Tests.Argument("junitxml", "console"),
+      testOptions in Test += Tests.Argument("junitxml", "console"),
       commands += Idea.command,
       proguardOption in Android := Proguard.options,
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize")

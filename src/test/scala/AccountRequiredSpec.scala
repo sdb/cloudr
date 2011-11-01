@@ -9,7 +9,7 @@ import java.io.IOException
 
 class AccountRequiredSpec extends CloudrSpec {
 
-  "onCreate" should {
+  "AccountRequired" should {
     "call onSuccess when an account is available" in new context {
       testAccountAvailable
     }
