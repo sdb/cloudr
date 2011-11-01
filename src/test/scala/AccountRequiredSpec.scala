@@ -1,18 +1,13 @@
 package be.ellefant.droid.cloudapp
-package tests
 
-import org.specs2.mutable._
-import org.specs2.specification.Context
-import org.specs2.mock.Mockito
-import com.github.jbrechtel.robospecs.RoboSpecs
-import roboguice.activity.RoboActivity
-import com.google.inject.AbstractModule
 import android.os.Bundle
 import android.accounts.{AuthenticatorException, OperationCanceledException, AccountManagerFuture, Account}
+import com.google.inject.AbstractModule
+import org.specs2.specification.Context
+import roboguice.activity.RoboActivity
 import java.io.IOException
 
-class AccountRequiredSpec extends RoboSpecs with Mockito {
-  args(sequential=true)
+class AccountRequiredSpec extends CloudrSpec {
 
   "onCreate" should {
     "call onSuccess when an account is available" in new context {

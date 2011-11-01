@@ -10,6 +10,7 @@ class CloudAppModule extends AbstractModule {
       bind(classOf[AccountManager]).toProvider(classOf[AccountManagerProvider])
     }
     bind(classOf[ThreadUtil]).toInstance(new ThreadUtilImpl)
+    bind(classOf[ApiFactory]).toInstance(new ApiFactoryImpl)
   }
 
 }

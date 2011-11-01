@@ -12,7 +12,7 @@ class SharingActivity extends RoboActivity with Logging with AccountRequired {
     finish()
   }
 
-  protected def onAccountSuccess(name: String) = {
+  protected[cloudapp] def onAccountSuccess(name: String) = {
     val intent = getIntent
     val url = intent.getStringExtra(Intent.EXTRA_TEXT)
     logd("Sharing link '%s' for '%s'." format (url, name))
@@ -23,7 +23,7 @@ class SharingActivity extends RoboActivity with Logging with AccountRequired {
     startService(int)
   }
 
-  protected def onAccountFailure() = {
+  protected[cloudapp] def onAccountFailure() = {
     logd("No account to share link.")
     val toast = Toast.makeText(getApplicationContext, "This action requires a CloudApp account", Toast.LENGTH_SHORT)
     toast.show()
