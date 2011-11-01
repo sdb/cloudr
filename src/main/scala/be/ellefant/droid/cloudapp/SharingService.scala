@@ -3,6 +3,7 @@ package be.ellefant.droid.cloudapp
 import android.content.Intent
 import roboguice.service.RoboIntentService
 import com.google.inject.{AbstractModule, Inject}
+import com.weiglewilczek.slf4s.Logging
 import SharingService._
 
 class SharingService extends RoboIntentService(Name) with Logging {
@@ -20,13 +21,13 @@ class SharingService extends RoboIntentService(Name) with Logging {
         try {
           val api = apiFactory.create(acc.name, pwd)
           val bm = api.createBookmark(title, url)
-          logd("New CloudAppItem created '%s'." format bm.getHref)
+          logger.debug("New CloudAppItem created '%s'." format bm.getHref)
         } catch {
           case e =>
-            logw("Failed to create new CloudAppItem for '%s'." format url)
+            logger.warn("Failed to create new CloudAppItem for '%s'." format url)
         }
       case _ =>
-        logw("No CloudApp account found.")
+        logger.warn("No CloudApp account found.")
     }
   }
 

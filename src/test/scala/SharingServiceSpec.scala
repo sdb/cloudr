@@ -6,7 +6,7 @@ import com.cloudapp.api.CloudApp
 import android.content.Intent
 import android.accounts.Account
 
-class SharingServiceSpec extends CloudrSpec {
+class SharingServiceSpec extends CloudrSpecs {
 
   "SharingService" should {
 

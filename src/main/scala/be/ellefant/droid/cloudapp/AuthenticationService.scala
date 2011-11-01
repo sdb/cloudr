@@ -2,6 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import android.app.Service
 import android.content.Intent
+import com.weiglewilczek.slf4s.Logging
 
 class AuthenticationService extends Service with Logging {
   private var authenticator: CloudAppAuthenticator = null
@@ -11,7 +12,7 @@ class AuthenticationService extends Service with Logging {
   }
 
   def onBind(intent: Intent) = {
-    logd("Returning the AccountAuthenticator binder for intent '%s'." format intent)
+    logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
     authenticator.getIBinder
   }
 }

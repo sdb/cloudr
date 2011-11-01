@@ -4,6 +4,7 @@ import android.widget.Toast
 import android.content.Intent
 import android.os.Bundle
 import roboguice.activity.RoboActivity
+import com.weiglewilczek.slf4s.Logging
 
 class SharingActivity extends RoboActivity with Logging with AccountRequired {
 
@@ -15,7 +16,7 @@ class SharingActivity extends RoboActivity with Logging with AccountRequired {
   protected[cloudapp] def onAccountSuccess(name: String) = {
     val intent = getIntent
     val url = intent.getStringExtra(Intent.EXTRA_TEXT)
-    logd("Sharing link '%s' for '%s'." format (url, name))
+    logger.debug("Sharing link '%s' for '%s'." format (url, name))
     val toast = Toast.makeText(getApplicationContext, "URL will be saved to CloudApp", Toast.LENGTH_SHORT)
     toast.show()
     val int = new Intent(intent)
@@ -24,7 +25,7 @@ class SharingActivity extends RoboActivity with Logging with AccountRequired {
   }
 
   protected[cloudapp] def onAccountFailure() = {
-    logd("No account to share link.")
+    logger.debug("No account to share link.")
     val toast = Toast.makeText(getApplicationContext, "This action requires a CloudApp account", Toast.LENGTH_SHORT)
     toast.show()
   }

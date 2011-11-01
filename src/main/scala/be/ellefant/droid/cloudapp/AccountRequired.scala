@@ -4,6 +4,7 @@ import android.os.Bundle
 import ThreadUtils._
 import com.google.inject.{Inject, Provider}
 import roboguice.activity.RoboActivity
+import com.weiglewilczek.slf4s.Logging
 
 trait AccountRequired extends RoboActivity {
   self: RoboActivity with Logging =>
@@ -18,7 +19,7 @@ trait AccountRequired extends RoboActivity {
     super.onCreate(savedInstanceState)
     val accounts = accountManager.getAccountsByType(AccountType)
     if (accounts.size == 0) {
-      logd("Adding account before continuing.")
+      logger.debug("Adding account before continuing.")
       val amf = accountManager.addAccount(AccountType, AuthTokenType, this)
       threadUtil.performOnBackgroundThread { () =>
         try {
@@ -36,7 +37,7 @@ trait AccountRequired extends RoboActivity {
       }
     } else {
       val name = accounts.head.name
-      logd("Account found: '%s'." format name)
+      logger.debug("Account found: '%s'." format name)
       onAccountSuccess(name)
     }
   }

@@ -7,7 +7,7 @@ import com.cloudapp.api.CloudApp
 import org.specs2.specification.Context
 import com.xtremelabs.robolectric.shadows.ShadowToast
 
-class SharingActivitySpec extends CloudrSpec {
+class SharingActivitySpec extends CloudrSpecs {
 
   "SharingActivity" should {
     "show toast when onAccountFailure is called" in {

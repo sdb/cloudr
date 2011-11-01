@@ -16,6 +16,7 @@ object General {
     platformName in Android := "android-10",
     resolvers ++= Seq(
       DefaultMavenRepository,
+      ScalaToolsReleases,
       "Local Maven" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
     )
@@ -34,7 +35,7 @@ object Dependencies {
   lazy val Slf4jVer = "1.6.3"
 
   lazy val Slf4jApi = "org.slf4j" % "slf4j-api" % Slf4jVer
-  lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
+  // lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
   lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.1-SNAPSHOT"
   lazy val RoboGuice = "org.roboguice" % "roboguice" % "2.0b2"
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
@@ -43,16 +44,34 @@ object Dependencies {
   lazy val RoboSpecs = "com.github.jbrechtel" %% "robospecs" % "0.2-SNAPSHOT"
   lazy val EasyMock = "org.easymock" % "easymock" % "3.0"
   lazy val JUnit = "junit" % "junit" % "4.8.2"
+  lazy val Slf4jAndroid = "org.slf4j" % "slf4j-android" % Slf4jVer
+  lazy val Slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % "1.0.7"
+  lazy val Logback = "ch.qos.logback" % "logback-classic" % "0.9.30"
 }
 
 object AndroidBuild extends Build {
   import Dependencies._
 
+  lazy val slf4jAndroid = Project(
+    "slf4j",
+    file("slf4j"),
+    settings = Defaults.defaultSettings ++ AndroidPath.settings ++ Seq(
+      name := "slf4j-android",
+      organization := "org.slf4j",
+      version      := "1.6.3",
+      libraryDependencies += Slf4jApi,
+      unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
+        Seq(sp / "platforms" / "android-10" / "android.jar").classpath
+      }
+    )
+  )
+
   lazy val mainDeps = Seq(
     libraryDependencies ++= Seq(
       CloudApp intransitive(),
       Slf4jApi,
-      Slf4jSimple,
+      Logback % "test",
+      Slf4s,
       RoboGuice intransitive(),
       Guice classifier "no_aop",
       Mockito % "test",
@@ -70,9 +89,12 @@ object AndroidBuild extends Build {
       testOptions in Test += Tests.Argument("junitxml", "console"),
       commands += Idea.command,
       proguardOption in Android := Proguard.options,
-      proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize")
+      proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize"),
+      internalDependencyClasspath in Test <<= (internalDependencyClasspath in Test) map { (cp) =>
+        (cp filterNot (_.data.absolutePath.contains("slf4j"))) // exclude slf4j-android in test
+      }
     )
-  )
+  ) dependsOn (slf4jAndroid)
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(

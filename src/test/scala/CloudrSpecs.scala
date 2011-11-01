@@ -8,7 +8,7 @@ import com.xtremelabs.robolectric.Robolectric
 import com.google.inject.AbstractModule
 import com.google.inject.util.Modules
 
-trait CloudrSpec extends RoboSpecs with Mockito {
+trait CloudrSpecs extends RoboSpecs with Mockito {
   args(sequential=true)
 
   trait Robo extends After {
