@@ -3,6 +3,9 @@ package be.ellefant.droid.cloudapp
 import android.app.Activity
 import android.os.Bundle
 import android.accounts.{AccountManagerFuture, Account}
+import android.content.Context
+import com.google.inject.{Inject, Provider}
+import roboguice.inject.ContextScoped
 
 trait AccountManager {
   def getAccountsByType(t: String): Seq[Account]
@@ -19,4 +22,10 @@ class AccountManagerImpl(am: android.accounts.AccountManager) extends AccountMan
   def setPassword(account: Account, password: String) = am.setPassword(account, password)
   def getPassword(account: Account) = am.getPassword(account)
   def addAccountExplicitly(account: Account, password: String) = am.addAccountExplicitly (account , password, null)
+}
+
+@ContextScoped
+class AccountManagerProvider extends Provider[AccountManager] {
+  @Inject protected var context: Context = _
+  def get(): AccountManager = new AccountManagerImpl(android.accounts.AccountManager.get(context))
 }

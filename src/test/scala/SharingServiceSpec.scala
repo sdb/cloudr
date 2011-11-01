@@ -24,7 +24,7 @@ class SharingServiceSpec extends CloudrSpec {
       there was no(apiMock).createBookmark(title, url)
     }
 
-    "do nothing when the title or url of the bookmark are blank" in new context {
+    "do nothing when the title or url of the bookmark are blank" in {
       pending
     }
   }

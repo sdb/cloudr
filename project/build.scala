@@ -42,6 +42,7 @@ object Dependencies {
   lazy val Mockito = "org.mockito" % "mockito-core" % "1.9.0-rc1"
   lazy val RoboSpecs = "com.github.jbrechtel" %% "robospecs" % "0.2-SNAPSHOT"
   lazy val EasyMock = "org.easymock" % "easymock" % "3.0"
+  lazy val JUnit = "junit" % "junit" % "4.8.2"
 }
 
 object AndroidBuild extends Build {
@@ -56,7 +57,7 @@ object AndroidBuild extends Build {
       Guice classifier "no_aop",
       Mockito % "test",
       RoboSpecs % "test",
-      "junit" % "junit" % "4.8.2" % "test"
+      JUnit % "test"
     )
   )
 
@@ -207,25 +208,25 @@ object Idea {
         <component name="FacetManager">
           { children }
           <facet type="android" name="Android">
-          <configuration>
-            <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/gen" />
-            <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/gen" />
-            <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../src/main/AndroidManifest.xml" />
-            <option name="RES_FOLDER_RELATIVE_PATH" value="/../src/main/res" />
-            <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../src/main/assets" />
-            <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../src/main/libs" />
-            <option name="REGENERATE_R_JAVA" value="true" />
-            <option name="REGENERATE_JAVA_BY_AIDL" value="true" />
-            <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
-            <option name="CUSTOM_APK_RESOURCE_FOLDER" value="" />
-            <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
-            <option name="CUSTOM_COMPILER_MANIFEST" value="" />
-            <option name="APK_PATH" value="" />
-            <option name="LIBRARY_PROJECT" value="false" />
-            <option name="RUN_PROCESS_RESOURCES_MAVEN_TASK" value="true" />
-            <option name="GENERATE_UNSIGNED_APK" value="false" />
-          </configuration>
-        </facet>
+            <configuration>
+              <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/gen" />
+              <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/gen" />
+              <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../src/main/AndroidManifest.xml" />
+              <option name="RES_FOLDER_RELATIVE_PATH" value="/../src/main/res" />
+              <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../src/main/assets" />
+              <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../src/main/libs" />
+              <option name="REGENERATE_R_JAVA" value="true" />
+              <option name="REGENERATE_JAVA_BY_AIDL" value="true" />
+              <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
+              <option name="CUSTOM_APK_RESOURCE_FOLDER" value="" />
+              <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
+              <option name="CUSTOM_COMPILER_MANIFEST" value="" />
+              <option name="APK_PATH" value="" />
+              <option name="LIBRARY_PROJECT" value="false" />
+              <option name="RUN_PROCESS_RESOURCES_MAVEN_TASK" value="true" />
+              <option name="GENERATE_UNSIGNED_APK" value="false" />
+            </configuration>
+          </facet>
         </component>
       case e @ Elem(prefix, "component", attribs, scope, children @ _*) if (e \ "@name").text == "NewModuleRootManager" =>
         ReplaceJdkTransformer(e)
