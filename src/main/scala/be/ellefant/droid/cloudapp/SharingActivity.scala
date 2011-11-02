@@ -4,7 +4,7 @@ import android.widget.Toast
 import android.content.Intent
 import android.os.Bundle
 
-class SharingActivity extends AccountRequiredBaseActivity {
+class SharingActivity extends Base.AccountRequired {
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)

@@ -2,7 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import android.content.Intent
 
-class AuthenticationService extends BaseService {
+class AuthenticationService extends Base.Service {
   private var authenticator: Authenticator = null
 
   override def onCreate {

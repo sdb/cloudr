@@ -10,16 +10,10 @@ import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
 import roboguice.activity.RoboAccountAuthenticatorActivity
 
-object AuthenticatorActivity {
-  val ParamAuthTokenType = "authtokenType"
-  val ParamUsername = "username"
-  val ParamPassword = "password"
-  val ParamConfirmCredentials = "confirmCredentials"
-}
 /**
  * Activity which displays login screen to the user.
  */
-class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with BaseActivity
+class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with Base.Activity
   with Injection.AccountManager {
 
   private var authThread: Thread = null
@@ -166,4 +160,11 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with BaseAc
   private def showProgress {
     showDialog(0)
   }
+}
+
+object AuthenticatorActivity {
+  val ParamAuthTokenType = "authtokenType"
+  val ParamUsername = "username"
+  val ParamPassword = "password"
+  val ParamConfirmCredentials = "confirmCredentials"
 }

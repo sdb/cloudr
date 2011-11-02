@@ -1,13 +1,15 @@
 package be.ellefant.droid.cloudapp
 
-import android.app.{Service, Activity}
+import android.app.{Service => AService, Activity => AActivity}
 
-trait BaseActivity extends Activity with Logging
+object Base {
+  trait Activity extends AActivity with Logging
 
-trait AccountRequiredBaseActivity extends BaseActivity with AccountRequired {
-  protected[cloudapp] def onAccountFailure() = {
-    finish()
+  trait AccountRequired extends Activity with be.ellefant.droid.cloudapp.AccountRequired {
+    protected[cloudapp] def onAccountFailure() = {
+      finish()
+    }
   }
-}
 
-trait BaseService extends Service with Logging
+  trait Service extends AService with Logging
+}

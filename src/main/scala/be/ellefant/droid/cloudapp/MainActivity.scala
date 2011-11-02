@@ -5,7 +5,7 @@ import android.content.Intent
 import android.view.View
 import roboguice.activity.RoboListActivity
 
-class MainActivity extends RoboListActivity with AccountRequiredBaseActivity
+class MainActivity extends RoboListActivity with Base.AccountRequired
   with Injection.CloudAppManager {
 
   protected[cloudapp] def onAccountSuccess(name: String) = {
