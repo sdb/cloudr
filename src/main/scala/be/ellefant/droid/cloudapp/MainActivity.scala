@@ -3,12 +3,10 @@ package be.ellefant.droid.cloudapp
 import android.widget.{AdapterView, ArrayAdapter}
 import android.content.Intent
 import android.view.View
-import com.google.inject.Inject
 import roboguice.activity.RoboListActivity
 
-class MainActivity extends RoboListActivity with AccountRequiredBaseActivity {
-
-  @Inject protected var cloudAppManager: CloudAppManager  = _
+class MainActivity extends RoboListActivity with AccountRequiredBaseActivity
+  with Injection.CloudAppManager {
 
   protected[cloudapp] def onAccountSuccess(name: String) = {
     setContentView(R.layout.main) // using custom view, mainly to be able to test with Robolectric

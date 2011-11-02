@@ -8,7 +8,6 @@ import android.view.{ View, Window }
 import android.app.{ Activity, ProgressDialog }
 import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
-import com.google.inject.Inject
 import roboguice.activity.RoboAccountAuthenticatorActivity
 
 object AuthenticatorActivity {
@@ -20,9 +19,9 @@ object AuthenticatorActivity {
 /**
  * Activity which displays login screen to the user.
  */
-class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with BaseActivity {
-  @Inject protected var accountManagerProvider: AccountManagerProvider = _
-  private var accountManager: AccountManager = _
+class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with BaseActivity
+  with Injection.AccountManager {
+
   private var authThread: Thread = null
   private var authtoken: String = null
   private var authtokenType: String = null
@@ -38,7 +37,6 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with BaseAc
   override def onCreate(icicle: Bundle) {
     super.onCreate(icicle)
     logger.info("onCreate(" + icicle + ")")
-    accountManager = accountManagerProvider.get
     val accounts = accountManager.getAccountsByType(AccountType)
     if (accounts.size == 0) {
       logger.info("loading data from Intent")

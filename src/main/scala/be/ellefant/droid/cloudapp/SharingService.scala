@@ -2,13 +2,11 @@ package be.ellefant.droid.cloudapp
 
 import android.content.Intent
 import roboguice.service.RoboIntentService
-import com.google.inject.{AbstractModule, Inject}
 import SharingService._
 
-class SharingService extends RoboIntentService(Name) with Logging {
-
-  @Inject protected var apiFactory: ApiFactory = _
-  @Inject protected var accountManager: AccountManager = _
+class SharingService extends RoboIntentService(Name) with Logging
+  with Injection.AccountManager
+  with Injection.ApiFactory {
 
   def onHandleIntent(intent: Intent) = {
     accountManager.getAccountsByType(AccountType).headOption match {
