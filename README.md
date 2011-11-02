@@ -26,4 +26,4 @@
 
 #### Resources
 
-[Accessing Resources](http://developer.android.com/guide/topics/resources/accessing-resources.html)
+* [Accessing Resources](http://developer.android.com/guide/topics/resources/accessing-resources.html)
