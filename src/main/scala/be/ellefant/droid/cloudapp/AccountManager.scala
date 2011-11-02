@@ -7,6 +7,7 @@ import android.content.Context
 import com.google.inject.{Inject, Provider}
 import roboguice.inject.ContextScoped
 
+// TODO: remove? and use platform AccountManager, only keeping the provider, since we can mock AccountManager in unit tests
 trait AccountManager {
   def getAccountsByType(t: String): Seq[Account]
   def addAccount(accountType: String, authTokenType: String, activity: Activity): AccountManagerFuture[Bundle]

@@ -2,8 +2,8 @@
 
 ## Features
 
-* add CloudApp account to the account settings
-* share bookmark to CloudApp from a browser via the 'Share Page' menu
+* CloudApp account synchronization
+* share bookmark to CloudApp from a browser and other apps
 
 ## Development
 
@@ -23,3 +23,7 @@
 #### Design
 
 * [Styles and Themes](http://developer.android.com/guide/topics/ui/themes.html)
+
+#### Resources
+
+[Accessing Resources](http://developer.android.com/guide/topics/resources/accessing-resources.html)

@@ -24,7 +24,7 @@ class MainActivitySpec extends CloudrSpecs {
       expectedIntent.putExtra(KeyItemType, "All")
       val actualIntent = shadowOf(activity.asInstanceOf[ContextWrapper]).getNextStartedActivity
       // shadowOf(actualIntent) must be_=== (expectedIntent)
-      shadowOf(actualIntent).equals(expectedIntent) must beTrue
+      shadowOf(actualIntent).equals(expectedIntent) must beTrue // TODO use specs2 and hamcrest? with hamcrest matchers from robolectric (e.g. StartedMatcher)
     }
     "finish when no account is available" in new failure {
       shadowOf(activity.asInstanceOf[ListActivity]).isFinishing must beTrue
