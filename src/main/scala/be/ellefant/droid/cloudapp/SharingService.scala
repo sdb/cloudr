@@ -4,7 +4,7 @@ import android.content.Intent
 import roboguice.service.RoboIntentService
 import SharingService._
 
-class SharingService extends RoboIntentService(Name) with Logging
+class SharingService extends RoboIntentService(Name) with BaseService
   with Injection.AccountManager
   with Injection.ApiFactory {
 
