@@ -11,8 +11,7 @@ class SharingService extends RoboIntentService(Name) with Logging {
   @Inject protected var accountManager: AccountManager = _
 
   def onHandleIntent(intent: Intent) = {
-    val accounts = accountManager.getAccountsByType(AccountType)
-    accounts.headOption match {
+    accountManager.getAccountsByType(AccountType).headOption match {
       case Some(acc) =>
         val url = intent.getStringExtra(Intent.EXTRA_TEXT) // TODO handle extras
         val title = intent.getStringExtra(Intent.EXTRA_SUBJECT)

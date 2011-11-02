@@ -4,10 +4,10 @@ import android.app.Service
 import android.content.Intent
 
 class AuthenticationService extends Service with Logging {
-  private var authenticator: CloudAppAuthenticator = null
+  private var authenticator: Authenticator = null
 
   override def onCreate {
-    authenticator = new CloudAppAuthenticator(this)
+    authenticator = new Authenticator(this)
   }
 
   def onBind(intent: Intent) = {

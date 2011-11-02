@@ -4,7 +4,7 @@ import android.content.{Intent, Context}
 import android.os.Bundle
 import android.accounts.{Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager => AndroidAccountManager}
 
-class CloudAppAuthenticator(context: Context) extends AbstractAccountAuthenticator(context) {
+class Authenticator(context: Context) extends AbstractAccountAuthenticator(context) {
 
   def addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,
                  requiredFeatures: Array[String], options: Bundle): Bundle = {

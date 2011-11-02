@@ -50,7 +50,7 @@ class SharingServiceSpec extends CloudrSpecs {
       def configure() {
         bind(classOf[AccountManager]).toInstance(accountManagerMock)
         bind(classOf[ApiFactory]).toInstance(new ApiFactory {
-          def create(name: String, password: String) = apiMock
+          override def create(name: String, password: String) = apiMock
         })
       }
     }

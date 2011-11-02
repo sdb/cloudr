@@ -61,7 +61,7 @@ class AccountRequiredSpec extends CloudrSpecs {
       def configure() {
         bind(classOf[AccountManager]).toInstance(accountManagerMock)
         bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
-          def performOnBackgroundThread(r: Runnable) { r.run() }
+          override def performOnBackgroundThread(r: Runnable) = { r.run(); null }
         })
       }
     }
