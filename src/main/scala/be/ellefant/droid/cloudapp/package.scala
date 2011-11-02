@@ -1,6 +1,6 @@
 package be.ellefant.droid
 
-package object cloudapp extends be.ellefant.droid.dsl.Implicits with Imports with Constants {
+package object cloudapp extends sdroid.Implicits with Imports with Constants {
   implicit def string2cloudrString(s: String) = new CloudrString(s)
 }
 

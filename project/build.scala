@@ -61,6 +61,7 @@ object AndroidBuild extends Build {
       name := "slf4j-android",
       organization := "org.slf4j",
       version      := "1.6.3",
+      javaSource in Compile <<= baseDirectory(_ / "src"),
       libraryDependencies += Slf4jApi,
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
@@ -68,11 +69,11 @@ object AndroidBuild extends Build {
     )
   )
 
-  lazy val androidDsl = Project(
-    "dsl",
-    file("dsl"),
+  lazy val sdroid = Project(
+    "sdroid",
+    file("sdroid"),
     settings = General.settings ++ AndroidPath.settings ++ Seq(
-      name := "android-dsl",
+      name := "sdroid",
       scalaSource in Compile <<= baseDirectory(_ / "src"),
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
@@ -113,7 +114,7 @@ object AndroidBuild extends Build {
         (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
       }
     )
-  ) dependsOn (slf4jAndroid, androidDsl)
+  ) dependsOn (slf4jAndroid, sdroid)
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(

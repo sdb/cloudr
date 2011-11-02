@@ -1,4 +1,4 @@
-package be.ellefant.droid.dsl
+package sdroid
 
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.AdapterView
