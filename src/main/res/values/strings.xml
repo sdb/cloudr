@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Cloudr</string>
     <string name="cloudapp_name">Cloudr</string>
-    <string name="cloudapp_label">CloudApp</string>
+    <string name="cloudapp_label">Cloudr</string>
     <string name="share_link">Link</string>
 
+    <string name="drops_label">Drops</string>
 
     <string name="notification_login_error">Touch to sign into your CloudApp account.</string>
 

@@ -3,11 +3,11 @@ package be.ellefant.droid.cloudapp
 import android.os.Bundle
 import ThreadUtils._
 import com.google.inject.{Inject, Provider}
-import roboguice.activity.RoboActivity
 import com.weiglewilczek.slf4s.Logging
+import android.app.Activity
 
-trait AccountRequired extends RoboActivity {
-  self: RoboActivity with Logging =>
+trait AccountRequired extends Activity {
+  self: Activity with Logging =>
 
   protected def onAccountSuccess(name: String): Any
   protected def onAccountFailure(): Any

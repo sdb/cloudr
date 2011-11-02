@@ -40,6 +40,10 @@ android:versionName="0.1" android:versionCode="1" package="be.ellefant.droid.clo
             </intent-filter>
         </activity>
         <activity
+                android:name=".DropsActivity"
+                android:label="@string/drops_label">
+        </activity>
+        <activity
             android:name=".AuthenticatorActivity"
             android:label="@string/ui_activity_title"
             android:excludeFromRecents="true">
