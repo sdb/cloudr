@@ -79,7 +79,7 @@ class Authenticator(context: Context) extends AbstractAccountAuthenticator(conte
     intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
     intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
     intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, false)
-    val bundle: Bundle = new Bundle
+    val bundle = new Bundle
     bundle.putParcelable(AndroidAccountManager.KEY_INTENT, intent)
     bundle
   }

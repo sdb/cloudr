@@ -13,8 +13,9 @@ import roboguice.activity.RoboAccountAuthenticatorActivity
 /**
  * Activity which displays login screen to the user.
  */
-class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with Base.Activity
-  with Injection.AccountManager {
+class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
+    with Base.Activity
+    with Injection.AccountManager {
 
   private var authThread: Thread = null
   private var authtoken: String = null
