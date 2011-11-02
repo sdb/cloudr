@@ -6,6 +6,6 @@
 * show success/failures notifications (toasts), make it a preference
   always show failures ?
 
-## Small
+## Refactor
 
-* rename package to droid.cloudr
+* rename package to `cloudr`
