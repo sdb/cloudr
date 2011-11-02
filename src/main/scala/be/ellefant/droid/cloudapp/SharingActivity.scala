@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import roboguice.activity.RoboActivity
 
-class SharingActivity extends RoboActivity with Logging with AccountRequired {
+class SharingActivity extends AccountRequiredBaseActivity {
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
@@ -23,7 +23,7 @@ class SharingActivity extends RoboActivity with Logging with AccountRequired {
     startService(int)
   }
 
-  protected[cloudapp] def onAccountFailure() = {
+  override protected[cloudapp] def onAccountFailure() = {
     logger.debug("No account to share link.")
     val toast = Toast.makeText(getApplicationContext, "This action requires a CloudApp account", Toast.LENGTH_SHORT)
     toast.show()

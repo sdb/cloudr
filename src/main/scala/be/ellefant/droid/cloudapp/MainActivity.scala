@@ -7,7 +7,7 @@ import android.view.View
 import com.google.inject.Inject
 import roboguice.activity.RoboListActivity
 
-class MainActivity extends RoboListActivity with Logging with AccountRequired {
+class MainActivity extends RoboListActivity with AccountRequiredBaseActivity {
 
   @Inject protected var cloudAppManager: CloudAppManager  = _
 
@@ -26,9 +26,5 @@ class MainActivity extends RoboListActivity with Logging with AccountRequired {
         startActivity(intent)
       }
     })
-  }
-
-  protected[cloudapp] def onAccountFailure() = {
-    finish()
   }
 }

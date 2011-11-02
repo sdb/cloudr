@@ -3,7 +3,7 @@ package be.ellefant.droid.cloudapp
 import roboguice.activity.RoboActivity
 import android.widget.TextView
 
-class DropsActivity extends RoboActivity with Logging with AccountRequired {
+class DropsActivity extends RoboActivity with AccountRequiredBaseActivity {
 
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
@@ -12,9 +12,5 @@ class DropsActivity extends RoboActivity with Logging with AccountRequired {
     setContentView(new TextView(this) {
       setText("TODO")
     })
-  }
-
-  protected def onAccountFailure() = {
-    finish()
   }
 }

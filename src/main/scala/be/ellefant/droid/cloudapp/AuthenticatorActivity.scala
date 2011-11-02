@@ -20,7 +20,7 @@ object AuthenticatorActivity {
 /**
  * Activity which displays login screen to the user.
  */
-class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with Logging {
+class AuthenticatorActivity extends RoboAccountAuthenticatorActivity with BaseActivity {
   @Inject protected var accountManagerProvider: AccountManagerProvider = _
   private var accountManager: AccountManager = _
   private var authThread: Thread = null
