@@ -98,7 +98,7 @@ object AndroidBuild extends Build {
       proguardOption in Android := Proguard.options,
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize"),
       internalDependencyClasspath in Test <<= (internalDependencyClasspath in Test) map { (cp) =>
-        (cp filterNot (_.data.absolutePath.contains("slf4j"))) // exclude slf4j-android in test
+        (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
       }
     )
   ) dependsOn (slf4jAndroid)

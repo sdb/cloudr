@@ -20,9 +20,13 @@
     <string name="login_activity_ok_button">Sign in</string>
 
     <!-- Message shown in dialog if the username or password is invalid. -->
-    <string name="login_activity_loginfail_text_both">The e-mail or password isn\'t valid. A CloudApp account is required. Please try again.</string>
+    <string name="login_activity_loginfail_text_both">The e-mail or password isn\'t valid. A CloudApp account is
+        required. Please try again.
+    </string>
     <!-- Message shown in dialog if the password is invalid -->
-    <string name="login_activity_loginfail_text_pwonly">You entered the wrong password or your account has changed. Please re-enter your password.</string>
+    <string name="login_activity_loginfail_text_pwonly">You entered the wrong password or your account has changed.
+        Please re-enter your password.
+    </string>
     <!-- Message shown in dialog to prompt the user for their password -->
     <string name="login_activity_loginfail_text_pwmissing">Type the password for this account.</string>
     <!--
@@ -39,4 +43,18 @@
     <string name="cancel_button_label">Cancel</string>
     <string name="profile_action">CloudApp profile</string>
     <string name="view_profile">View Profile</string>
+
+    <string-array name="item_types">
+        <item>All</item>
+        <item>Popular</item>
+        <item>Bookmarks</item>
+        <item>Images</item>
+        <item>Text</item>
+        <item>Archives</item>
+        <item>Audio</item>
+        <item>Video</item>
+        <item>Other</item>
+        <item>Trash</item>
+    </string-array>
+
 </resources>

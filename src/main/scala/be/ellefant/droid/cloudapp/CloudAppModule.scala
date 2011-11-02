@@ -11,6 +11,7 @@ class CloudAppModule extends AbstractModule {
     }
     bind(classOf[ThreadUtil]).toInstance(new ThreadUtilImpl)
     bind(classOf[ApiFactory]).toInstance(new ApiFactoryImpl)
+    bind(classOf[CloudAppManager]).toInstance(new CloudAppManager)
   }
 
 }

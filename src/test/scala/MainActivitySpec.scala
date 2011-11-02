@@ -14,7 +14,7 @@ class MainActivitySpec extends CloudrSpecs {
 
   "MainActivity" should {
     "show list of item types" in new success {
-      activity.getListAdapter.getCount must be_== (10)
+      activity.getListAdapter.getCount must be_== (1)
     }
     "trigger DropActivity when an item is clicked" in new success {
       val lv = activity.findViewById(android.R.id.list).asInstanceOf[ListView]
@@ -27,7 +27,7 @@ class MainActivitySpec extends CloudrSpecs {
       shadowOf(actualIntent).equals(expectedIntent) must beTrue // TODO use specs2 and hamcrest? with hamcrest matchers from robolectric (e.g. StartedMatcher)
     }
     "finish when no account is available" in new failure {
-      shadowOf(activity.asInstanceOf[ListActivity]).isFinishing must beTrue
+      shadowOf(activity.asInstanceOf[ListActivity]).isFinishing must beTrue // TODO: write matcher: activity must beFinishing -> RoboSpecs matchers
     }
   }
 
@@ -44,7 +44,10 @@ class MainActivitySpec extends CloudrSpecs {
   trait Base extends Context with Robo {
     lazy val accountManagerMock = mock[AccountManager]
     lazy val apiMock = mock[CloudApp]
+    lazy val cloudAppManagerMock = mock[CloudAppManager]
     lazy val activity = new MainActivity
+
+    cloudAppManagerMock.itemTypes returns (Array("All"))
 
     object module extends AbstractModule {
       def configure() {
@@ -52,6 +55,7 @@ class MainActivitySpec extends CloudrSpecs {
         bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
           def performOnBackgroundThread(r: Runnable) { r.run() }
         })
+        bind(classOf[CloudAppManager]).toInstance(cloudAppManagerMock)
       }
     }
   }

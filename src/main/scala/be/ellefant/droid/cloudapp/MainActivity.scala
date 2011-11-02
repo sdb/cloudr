@@ -1,16 +1,19 @@
 package be.ellefant.droid.cloudapp
 
-import roboguice.activity.RoboListActivity
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.{AdapterView, ArrayAdapter}
 import android.content.Intent
 import android.view.View
+import com.google.inject.Inject
+import roboguice.activity.RoboListActivity
 
 class MainActivity extends RoboListActivity with Logging with AccountRequired {
 
+  @Inject protected var cloudAppManager: CloudAppManager  = _
+
   protected[cloudapp] def onAccountSuccess(name: String) = {
     setContentView(R.layout.main) // using custom view, mainly to be able to test with Robolectric
-    val adapter = new ArrayAdapter[String](this, android.R.layout.simple_list_item_1, ItemTypes.data.toArray)
+    val adapter = new ArrayAdapter[String](this, android.R.layout.simple_list_item_1, cloudAppManager.itemTypes)
     setListAdapter(adapter)
     val lv = getListView
     lv.setTextFilterEnabled(true)
