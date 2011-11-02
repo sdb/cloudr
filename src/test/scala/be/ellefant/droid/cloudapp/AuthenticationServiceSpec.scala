@@ -1,5 +1,5 @@
 package be.ellefant.droid.cloudapp
 
-class AuthenticationServiceSpec {
+class AuthenticationServiceSpec extends CloudrSpecs {
 
 }
