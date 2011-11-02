@@ -3,7 +3,6 @@ package be.ellefant.droid.cloudapp
 import android.os.Bundle
 import ThreadUtils._
 import com.google.inject.{Inject, Provider}
-import com.weiglewilczek.slf4s.Logging
 import android.app.Activity
 
 trait AccountRequired extends Activity {

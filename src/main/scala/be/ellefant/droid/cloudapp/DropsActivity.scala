@@ -1,7 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import roboguice.activity.RoboActivity
-import com.weiglewilczek.slf4s.Logging
 import android.widget.TextView
 
 class DropsActivity extends RoboActivity with Logging with AccountRequired {

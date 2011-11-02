@@ -4,7 +4,6 @@ import android.widget.Toast
 import android.content.Intent
 import android.os.Bundle
 import roboguice.activity.RoboActivity
-import com.weiglewilczek.slf4s.Logging
 
 class SharingActivity extends RoboActivity with Logging with AccountRequired {
 

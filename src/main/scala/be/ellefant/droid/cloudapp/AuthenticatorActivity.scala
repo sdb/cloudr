@@ -10,7 +10,6 @@ import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
 import com.google.inject.Inject
 import roboguice.activity.RoboAccountAuthenticatorActivity
-import com.weiglewilczek.slf4s.Logging
 
 object AuthenticatorActivity {
   val ParamAuthTokenType = "authtokenType"

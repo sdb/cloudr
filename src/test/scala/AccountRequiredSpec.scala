@@ -5,7 +5,6 @@ import android.accounts.{AuthenticatorException, OperationCanceledException, Acc
 import com.google.inject.AbstractModule
 import org.specs2.specification.Context
 import roboguice.activity.RoboActivity
-import com.weiglewilczek.slf4s.Logging
 import java.io.IOException
 
 class AccountRequiredSpec extends CloudrSpecs {

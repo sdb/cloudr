@@ -1,6 +1,5 @@
 package be.ellefant.droid.cloudapp
 
-import com.weiglewilczek.slf4s.Logging
 import roboguice.activity.RoboListActivity
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.{AdapterView, ArrayAdapter}
