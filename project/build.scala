@@ -68,6 +68,18 @@ object AndroidBuild extends Build {
     )
   )
 
+  lazy val androidDsl = Project(
+    "dsl",
+    file("dsl"),
+    settings = General.settings ++ AndroidPath.settings ++ Seq(
+      name := "android-dsl",
+      scalaSource in Compile <<= baseDirectory(_ / "src"),
+      unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
+        Seq(sp / "platforms" / "android-10" / "android.jar").classpath
+      }
+    )
+  )
+
   lazy val mainDeps = Seq(
     libraryDependencies ++= Seq(
       CloudApp intransitive(),
@@ -101,7 +113,7 @@ object AndroidBuild extends Build {
         (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
       }
     )
-  ) dependsOn (slf4jAndroid)
+  ) dependsOn (slf4jAndroid, androidDsl)
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(

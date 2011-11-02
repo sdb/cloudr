@@ -1,4 +1,4 @@
-[Android](http://www.android.com/) application for [CloudApp](http://getcloudapp.com/).
+[CloudApp](http://getcloudapp.com/) client application for the [Android](http://www.android.com/) platform.
 
 ## Features
 

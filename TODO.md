@@ -4,3 +4,7 @@
 * account auth should also be checked when an activity is resumed (this means the acount has been synced before
     -> (user should see a toats indicating that) + the menu shuold provide a login button
 * show success/failures notifications (toasts), make it a preference
+
+## Small
+
+* rename package to droid.cloudr
