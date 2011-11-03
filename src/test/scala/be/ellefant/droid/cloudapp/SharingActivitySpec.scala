@@ -7,14 +7,14 @@ import com.xtremelabs.robolectric.shadows.ShadowToast
 class SharingActivitySpec extends CloudrSpecs {
 
   "SharingActivity" should {
+
     "show toast when onAccountFailure is called" in new context {
       accountManagerMock.getAccountsByType(AccountType) returns Nil
-      val activity = new SharingActivity
       activity.onCreate(null)
       ShadowToast.getTextOfLatestToast must be_== ("This action requires a CloudApp account")
     }
+
     "show toast when onAccountSuccess is called" in new context {
-      val activity = new SharingActivity
       val intent = new Intent
       intent.putExtra(Intent.EXTRA_TEXT, "http://google.com")
       activity.setIntent(intent)
@@ -29,6 +29,9 @@ class SharingActivitySpec extends CloudrSpecs {
   trait context extends RoboContext
       with Bindings.ThreadUtilBinding
       with Mocks.AccountManagerMock
-      with Mocks.CloudAppMock
+      with Mocks.CloudAppMock {
+
+    val activity = new SharingActivity
+  }
 
 }

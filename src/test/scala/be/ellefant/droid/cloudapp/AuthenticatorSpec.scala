@@ -4,19 +4,35 @@ class AuthenticatorSpec extends CloudrSpecs {
 
   "Authenticator" should  {
 
-    "add an account" in  {
+    "trigger AuthenticatorActivity when addAccount is called" in  {
       pending
     }
 
-    "confirm credentials" in  {
+    "trigger AuthenticatorActivity when confirmCredentials is called without password" in  {
       pending
     }
 
-    "get authentication token" in  {
+    "return false when confirmCredentials is called and the credentials are invalid" in  {
       pending
     }
 
-    "update credentials" in  {
+    "return true when confirmCredentials is called and the credentials are valid" in  {
+      pending
+    }
+
+    "trigger AuthenticatorActivity when getAuthToken is called and no password is available" in  {
+      pending
+    }
+
+    "return false when getAuthToken is called and the password from the AccountManager is invalid" in  {
+      pending
+    }
+
+    "return true when getAuthToken is called and the password from the AccountManager is valid" in  {
+      pending
+    }
+
+    "trigger AuthenticatorActivity when updateCredentials is called" in  {
       pending
     }
   }

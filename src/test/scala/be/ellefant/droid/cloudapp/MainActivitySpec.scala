@@ -9,9 +9,11 @@ import com.xtremelabs.robolectric.Robolectric._
 class MainActivitySpec extends CloudrSpecs {
 
   "MainActivity" should {
+
     "show list of item types" in new success {
       activity.getListAdapter.getCount must be_== (1)
     }
+
     "trigger DropActivity when an item is clicked" in new success {
       val lv = activity.findViewById(android.R.id.list).asInstanceOf[ListView]
       lv.performItemClick(lv, 0, 0)
@@ -19,9 +21,9 @@ class MainActivitySpec extends CloudrSpecs {
       expectedIntent.setClass(activity, classOf[DropsActivity])
       expectedIntent.putExtra(KeyItemType, "All")
       val actualIntent = shadowOf(activity.asInstanceOf[ContextWrapper]).getNextStartedActivity
-      // shadowOf(actualIntent) must be_=== (expectedIntent)
       shadowOf(actualIntent).equals(expectedIntent) must beTrue // TODO use specs2 and hamcrest? with hamcrest matchers from robolectric (e.g. StartedMatcher)
     }
+
     "finish when no account is available" in new failure {
       shadowOf(activity.asInstanceOf[ListActivity]).isFinishing must beTrue // TODO: write matcher: activity must beFinishing -> RoboSpecs matchers
     }

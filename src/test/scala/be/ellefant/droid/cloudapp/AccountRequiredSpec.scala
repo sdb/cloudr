@@ -8,6 +8,7 @@ import java.io.IOException
 class AccountRequiredSpec extends CloudrSpecs {
 
   "AccountRequired" should {
+
     "call onSuccess when an account is available" in new context {
       testAccountAvailable
     }
