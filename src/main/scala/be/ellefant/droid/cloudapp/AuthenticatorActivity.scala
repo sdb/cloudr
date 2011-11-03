@@ -9,7 +9,6 @@ import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
 import roboguice.activity.RoboAccountAuthenticatorActivity
 import android.content.{Context, DialogInterface, Intent}
-import com.cloudapp.impl.CloudAppImpl
 import be.ellefant.droid.cloudapp.ThreadUtils._
 
 /**

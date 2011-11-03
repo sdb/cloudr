@@ -39,5 +39,6 @@ class AuthenticatorSpec extends CloudrSpecs {
 
   trait context extends RoboContext
       with Mocks.AccountManagerMock {
+    // lazy val authenticator
   }
 }
