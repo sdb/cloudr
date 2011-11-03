@@ -7,23 +7,8 @@ import com.xtremelabs.robolectric.shadows.ShadowToast
 class SharingActivitySpec extends CloudrSpecs {
 
   "SharingActivity" should {
-
-    "show toast when onAccountFailure is called" in new context {
-      accountManagerMock.getAccountsByType(AccountType) returns Nil
-      activity.onCreate(null)
-      ShadowToast.getTextOfLatestToast must be_== ("This action requires a CloudApp account")
-    }
-
-    "show toast when onAccountSuccess is called" in new context {
-      val intent = new Intent
-      intent.putExtra(Intent.EXTRA_TEXT, "http://google.com")
-      activity.setIntent(intent)
-      val acc = new Account("sdb", AccountType)
-      accountManagerMock.getAccountsByType(AccountType) returns List(acc)
-      accountManagerMock.getPassword(acc) returns "blabla"
-      activity.onCreate(null)
-      ShadowToast.getTextOfLatestToast must be_== ("URL will be saved to CloudApp")
-    }
+    "when an account is available show a toast with a success message and trigger SharingService" in new context { successToast }
+    "when no account is available show a toast with a failure message and not trigger SharingService" in new context { failureToast }
   }
 
   trait context extends RoboContext
@@ -32,6 +17,34 @@ class SharingActivitySpec extends CloudrSpecs {
       with Mocks.CloudAppMock {
 
     val activity = new SharingActivity
+
+    def accountAvailable() {
+      val acc = new Account("sdb", AccountType)
+      accountManagerMock.getAccountsByType(AccountType) returns List(acc)
+      accountManagerMock.getPassword(acc) returns "blabla"
+    }
+
+    def noAccountAvailable() {
+      accountManagerMock.getAccountsByType(AccountType) returns Nil
+    }
+
+    def failureToast = {
+      noAccountAvailable()
+      testToast("This action requires a CloudApp account")
+    }
+
+    def successToast = {
+      accountAvailable()
+      val intent = new Intent
+      intent.putExtra(Intent.EXTRA_TEXT, "http://google.com")
+      activity.setIntent(intent)
+      testToast("URL will be saved to CloudApp")
+    }
+
+    def testToast(msg: String) = {
+      activity.onCreate(null)
+      ShadowToast.getTextOfLatestToast must be_== (msg)
+    }
   }
 
 }
