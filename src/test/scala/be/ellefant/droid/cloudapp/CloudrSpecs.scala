@@ -22,7 +22,7 @@ trait CloudrSpecs extends RoboSpecs with Mockito {
 
     object module extends AbstractModule {
       def configure() {
-        configure()
+        RoboContext.this.configure()
       }
       override def bind[T](c: Class[T]) = super.bind(c)
     }
