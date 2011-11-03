@@ -1,6 +1,7 @@
 package be.ellefant.droid.cloudapp
 
 import com.google.inject.Inject
+import android.accounts.AbstractAccountAuthenticator
 
 object Injection {
 
@@ -22,5 +23,9 @@ object Injection {
 
   trait CloudAppManager {
     @Inject protected var cloudAppManager: be.ellefant.droid.cloudapp.CloudAppManager  = _
+  }
+
+  trait AccountAuthenticator {
+    @Inject protected var authenticator: AbstractAccountAuthenticator = _
   }
 }

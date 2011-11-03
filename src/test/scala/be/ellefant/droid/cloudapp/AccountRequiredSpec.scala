@@ -2,14 +2,13 @@ package be.ellefant.droid.cloudapp
 
 import android.os.Bundle
 import android.accounts.{AuthenticatorException, OperationCanceledException, AccountManagerFuture, Account}
-import com.google.inject.AbstractModule
-import org.specs2.specification.Context
 import roboguice.activity.RoboActivity
 import java.io.IOException
 
 class AccountRequiredSpec extends CloudrSpecs {
 
   "AccountRequired" should {
+
     "call onSuccess when an account is available" in new context {
       testAccountAvailable
     }
@@ -27,8 +26,10 @@ class AccountRequiredSpec extends CloudrSpecs {
     }
   }
 
-  trait context extends Context with Robo {
-    lazy val accountManagerMock = mock[AccountManager]
+  trait context extends RoboContext
+      with Bindings.ThreadUtilBinding
+      with Mocks.AccountManagerMock {
+
     lazy val activity = spy(new AccountRequiredSpy)
 
     def testAccountAvailable = {
@@ -55,15 +56,6 @@ class AccountRequiredSpec extends CloudrSpecs {
       accountManagerMock.addAccount(AccountType, AuthTokenType, activity) returns amf
       activity.onCreate(null)
       there was one(activity).onAccountFailure()
-    }
-
-    object module extends AbstractModule {
-      def configure() {
-        bind(classOf[AccountManager]).toInstance(accountManagerMock)
-        bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
-          override def performOnBackgroundThread(r: Runnable) = { r.run(); null }
-        })
-      }
     }
   }
 

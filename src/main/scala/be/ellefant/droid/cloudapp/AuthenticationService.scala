@@ -1,17 +1,17 @@
 package be.ellefant.droid.cloudapp
 
-import android.content.Intent
+import roboguice.service.RoboService
+import android.accounts.{AccountManager => AndroidAccountManager}
 
-class AuthenticationService extends Base.Service {
-  private var authenticator: Authenticator = null
+class AuthenticationService extends RoboService
+    with Base.Service
+    with sdroid.Service
+    with Injection.AccountAuthenticator {
 
-  override def onCreate {
-    authenticator = new Authenticator(this)
-  }
-
-  def onBind(intent: Intent) = {
-    logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
-    authenticator.getIBinder
+  def onBind = {
+    case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT =>
+      logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
+      authenticator.getIBinder
   }
 }
 
