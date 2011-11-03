@@ -3,6 +3,7 @@ package be.ellefant.droid.cloudapp
 import com.google.inject.AbstractModule
 import android.os.Build.VERSION
 import android.accounts.AbstractAccountAuthenticator
+import android.content.AbstractThreadedSyncAdapter
 
 class CloudrModule extends AbstractModule {
 
@@ -14,6 +15,7 @@ class CloudrModule extends AbstractModule {
     bind(classOf[ApiFactory]).toInstance(new ApiFactory)
     bind(classOf[CloudAppManager]).toInstance(new CloudAppManager)
     bind(classOf[AbstractAccountAuthenticator]).to(classOf[Authenticator])
+    bind(classOf[AbstractThreadedSyncAdapter]).to(classOf[CloudAppSyncAdapter])
   }
 
 }

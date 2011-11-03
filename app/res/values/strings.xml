@@ -44,6 +44,8 @@
     <string name="profile_action">CloudApp profile</string>
     <string name="view_profile">View Profile</string>
 
+    <string name="svc_sync">CloudApp Synchronization</string>
+
     <string-array name="item_types">
         <item>All</item>
         <item>Popular</item>

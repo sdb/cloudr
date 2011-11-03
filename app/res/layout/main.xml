@@ -3,8 +3,8 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:paddingLeft="8dp"
-              android:paddingRight="8dp">
+              android:paddingLeft="3dp"
+              android:paddingRight="3dp">
 
     <ListView android:id="@android:id/list"
               android:layout_width="match_parent"

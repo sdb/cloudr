@@ -2,6 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import com.google.inject.Inject
 import android.accounts.AbstractAccountAuthenticator
+import android.content.AbstractThreadedSyncAdapter
 
 object Injection {
 
@@ -27,5 +28,9 @@ object Injection {
 
   trait AccountAuthenticator {
     @Inject protected var authenticator: AbstractAccountAuthenticator = _
+  }
+
+  trait SyncAdapter {
+    @Inject protected var syncAdapter: AbstractThreadedSyncAdapter = _
   }
 }

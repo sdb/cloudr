@@ -8,8 +8,9 @@ import android.app.{ Activity, ProgressDialog }
 import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
 import roboguice.activity.RoboAccountAuthenticatorActivity
-import android.content.{Context, DialogInterface, Intent}
 import be.ellefant.droid.cloudapp.ThreadUtils._
+import android.provider.ContactsContract
+import android.content.{ContentResolver, Context, DialogInterface, Intent}
 
 /**
  * Activity which displays login screen to the user.
@@ -105,7 +106,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     val account = new Account(username, AccountType)
     if (requestNewAccount) {
       accountManager.addAccountExplicitly(account, password)
-      // ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+      ContentResolver.setSyncAutomatically(account, "be.ellefant.droid.cloudappprovider", true)
     }
     else {
       accountManager.setPassword(account, password)
