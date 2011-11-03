@@ -1,10 +1,13 @@
 package be.ellefant.droid.cloudapp
 
 import android.content.{Intent, Context}
-import android.os.Bundle
 import android.accounts.{Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager => AndroidAccountManager}
+import com.google.inject.Inject
+import android.os.Bundle
 
-class Authenticator(context: Context) extends AbstractAccountAuthenticator(context) {
+class Authenticator @Inject protected (context: Context) extends AbstractAccountAuthenticator(context)
+    with Injection.AccountManager
+    with Injection.ApiFactory {
 
   def addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,
                  requiredFeatures: Array[String], options: Bundle): Bundle = {
@@ -20,7 +23,7 @@ class Authenticator(context: Context) extends AbstractAccountAuthenticator(conte
     Option(options) match {
       case Some(opts) if opts.containsKey(AndroidAccountManager.KEY_PASSWORD) =>
         val password = options.getString(AndroidAccountManager.KEY_PASSWORD)
-        val verified = CloudApi.authenticate(account.name, password, null, null)
+        val verified = authenticate(account.name, password)
         val result = new Bundle
         result.putBoolean(AndroidAccountManager.KEY_BOOLEAN_RESULT, verified)
         result
@@ -42,10 +45,9 @@ class Authenticator(context: Context) extends AbstractAccountAuthenticator(conte
       result.putString(AndroidAccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType")
       return result
     }
-    val am = AndroidAccountManager.get(context)
-    val password: String = am.getPassword(account)
+    val password = accountManager.getPassword(account)
     if (password != null) {
-      val verified = CloudApi.authenticate(account.name, password, null, null)
+      val verified = authenticate(account.name, password)
       if (verified) {
         val result = new Bundle
         result.putString(AndroidAccountManager.KEY_ACCOUNT_NAME, account.name)
@@ -82,6 +84,15 @@ class Authenticator(context: Context) extends AbstractAccountAuthenticator(conte
     val bundle = new Bundle
     bundle.putParcelable(AndroidAccountManager.KEY_INTENT, intent)
     bundle
+  }
+
+  protected def authenticate(username: String, password: String) = {
+    try {
+      (apiFactory create (username, password)).getAccountDetails
+      true
+    } catch {
+      case e => false
+    }
   }
 
 }

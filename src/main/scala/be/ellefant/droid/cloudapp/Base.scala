@@ -1,8 +1,7 @@
 package be.ellefant.droid.cloudapp
 
-import android.app.{Service => AService, Activity => AActivity}
+object Base extends sdroid.Types {
 
-object Base {
   trait Activity extends AActivity with Logging
 
   trait AccountRequired extends Activity with be.ellefant.droid.cloudapp.AccountRequired {

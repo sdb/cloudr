@@ -1,7 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import android.accounts.{ Account, AccountManager => AndroidAccountManager }
-import android.content.{ DialogInterface, Intent }
 import android.os.{ Bundle, Handler }
 import android.text.TextUtils
 import android.view.{ View, Window }
@@ -9,13 +8,17 @@ import android.app.{ Activity, ProgressDialog }
 import AuthenticatorActivity._
 import android.widget.{Toast, EditText, TextView}
 import roboguice.activity.RoboAccountAuthenticatorActivity
+import android.content.{Context, DialogInterface, Intent}
+import com.cloudapp.impl.CloudAppImpl
+import be.ellefant.droid.cloudapp.ThreadUtils._
 
 /**
  * Activity which displays login screen to the user.
  */
 class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     with Base.Activity
-    with Injection.AccountManager {
+    with Injection.AccountManager
+    with Injection.ApiFactory {
 
   private var authThread: Thread = null
   private var authtoken: String = null
@@ -83,7 +86,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     }
     else {
       showProgress
-      authThread = CloudApi.attemptAuth(username, password, handler, AuthenticatorActivity.this)
+      authThread = attemptAuth(username, password, handler, AuthenticatorActivity.this)
     }
   }
 
@@ -160,6 +163,30 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
 
   private def showProgress {
     showDialog(0)
+  }
+
+  protected def authenticate(username: String, password: String, handler: Handler, context: Context) = {
+    def sendResult(result: Boolean, handler: Handler, context: Context) = {
+      if (handler != null && context != null) {
+        handler.post { () =>
+          (context.asInstanceOf[AuthenticatorActivity]).onAuthenticationResult(result)
+        }
+      }
+      result
+    }
+    try {
+      (apiFactory create (username, password)).getAccountDetails
+      sendResult(true, handler, context)
+    } catch {
+      case e =>
+        sendResult(false, handler, context)
+    }
+  }
+
+  protected def attemptAuth(username: String, password: String, handler: Handler, context: Context) = {
+    performOnBackgroundThread { () =>
+      authenticate(username, password, handler, context)
+    }
   }
 }
 

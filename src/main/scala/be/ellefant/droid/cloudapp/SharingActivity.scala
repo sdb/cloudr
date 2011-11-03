@@ -3,8 +3,11 @@ package be.ellefant.droid.cloudapp
 import android.widget.Toast
 import android.content.Intent
 import android.os.Bundle
+import roboguice.activity.RoboActivity
 
-class SharingActivity extends Base.AccountRequired {
+class SharingActivity extends RoboActivity
+    with Base.AccountRequired
+    with Injection.CloudAppManager {
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)

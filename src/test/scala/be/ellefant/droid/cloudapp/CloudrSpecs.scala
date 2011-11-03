@@ -7,14 +7,63 @@ import roboguice.RoboGuice
 import com.xtremelabs.robolectric.Robolectric
 import com.google.inject.AbstractModule
 import com.google.inject.util.Modules
+import com.cloudapp.api.CloudApp
 
 trait CloudrSpecs extends RoboSpecs with Mockito {
   args(sequential=true)
 
-  trait Robo extends After {
+  trait RoboContext extends After {
     RoboGuice.setBaseApplicationInjector(Robolectric.application, RoboGuice.DEFAULT_STAGE,
       Modules.`override`(RoboGuice.newDefaultRoboModule(Robolectric.application)).`with`(module))
+
     def after = RoboGuice.util.reset()
-    def module: AbstractModule
+
+    def configure() = {}
+
+    object module extends AbstractModule {
+      def configure() {
+        configure()
+      }
+      override def bind[T](c: Class[T]) = super.bind(c)
+    }
+  }
+
+  object Mocks {
+    trait AccountManagerMock extends RoboContext {
+      lazy val accountManagerMock = mock[AccountManager]
+      abstract override def configure() {
+        super.configure()
+        module.bind(classOf[AccountManager]).toInstance(accountManagerMock)
+      }
+    }
+
+    trait CloudAppMock extends RoboContext {
+      lazy val cloudAppMock = mock[CloudApp]
+      abstract override def configure() {
+        super.configure()
+        module.bind(classOf[ApiFactory]).toInstance(new ApiFactory {
+          override def create(name: String, password: String) = cloudAppMock
+        })
+      }
+    }
+
+    trait CloudAppManagerMock extends RoboContext {
+      lazy val cloudAppManagerMock = mock[CloudAppManager]
+      abstract override def configure() {
+        super.configure()
+        module.bind(classOf[CloudAppManager]).toInstance(cloudAppManagerMock)
+      }
+    }
+  }
+
+  object Bindings {
+    trait ThreadUtilBinding extends RoboContext {
+      abstract override def configure() {
+        super.configure()
+        module.bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
+          override def performOnBackgroundThread(r: Runnable) = { r.run(); null }
+        })
+      }
+    }
   }
 }

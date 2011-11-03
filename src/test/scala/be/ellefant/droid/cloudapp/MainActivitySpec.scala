@@ -1,14 +1,10 @@
 package be.ellefant.droid.cloudapp
 
-import com.google.inject.AbstractModule
-import com.cloudapp.api.CloudApp
-import org.specs2.specification.Context
 import android.accounts.Account
-import com.xtremelabs.robolectric.Robolectric._
-import android.widget.{TextView, ListView}
-import com.xtremelabs.robolectric.shadows.ShadowActivity
+import android.widget.ListView
 import android.content.{Intent, ContextWrapper}
 import android.app.ListActivity
+import com.xtremelabs.robolectric.Robolectric._
 
 class MainActivitySpec extends CloudrSpecs {
 
@@ -41,23 +37,13 @@ class MainActivitySpec extends CloudrSpecs {
     activity.onCreate(null)
   }
 
-  trait Base extends Context with Robo {
-    lazy val accountManagerMock = mock[AccountManager]
-    lazy val apiMock = mock[CloudApp]
-    lazy val cloudAppManagerMock = mock[CloudAppManager]
+  trait Base extends RoboContext
+      with Bindings.ThreadUtilBinding
+      with Mocks.AccountManagerMock
+      with Mocks.CloudAppManagerMock {
+
     lazy val activity = new MainActivity
-
     cloudAppManagerMock.itemTypes returns (Array("All"))
-
-    object module extends AbstractModule {
-      def configure() {
-        bind(classOf[AccountManager]).toInstance(accountManagerMock)
-        bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
-          override def performOnBackgroundThread(r: Runnable) = { r.run(); null }
-        })
-        bind(classOf[CloudAppManager]).toInstance(cloudAppManagerMock)
-      }
-    }
   }
 
 }

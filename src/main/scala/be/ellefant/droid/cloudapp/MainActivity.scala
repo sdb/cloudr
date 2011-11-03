@@ -5,8 +5,9 @@ import android.content.Intent
 import android.view.View
 import roboguice.activity.RoboListActivity
 
-class MainActivity extends RoboListActivity with Base.AccountRequired
-  with Injection.CloudAppManager {
+class MainActivity extends RoboListActivity
+    with Base.AccountRequired
+    with Injection.CloudAppManager {
 
   protected[cloudapp] def onAccountSuccess(name: String) = {
     setContentView(R.layout.main) // using custom view, mainly to be able to test with Robolectric
