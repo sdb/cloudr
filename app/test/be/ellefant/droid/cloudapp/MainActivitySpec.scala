@@ -30,12 +30,12 @@ class MainActivitySpec extends CloudrSpecs {
   }
 
   trait failure extends Base {
-    accountManagerMock.getAccountsByType(AccountType) returns Nil
+    accountManagerMock.getAccountsByType(AccountType) returns Array.empty
     activity.onCreate(null)
   }
 
   trait success extends Base {
-    accountManagerMock.getAccountsByType(AccountType) returns List(new Account("sdb", AccountType))
+    accountManagerMock.getAccountsByType(AccountType) returns Array(new Account("sdb", AccountType))
     activity.onCreate(null)
   }
 

@@ -20,12 +20,12 @@ class SharingActivitySpec extends CloudrSpecs {
 
     def accountAvailable() {
       val acc = new Account("sdb", AccountType)
-      accountManagerMock.getAccountsByType(AccountType) returns List(acc)
+      accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
       accountManagerMock.getPassword(acc) returns "blabla"
     }
 
     def noAccountAvailable() {
-      accountManagerMock.getAccountsByType(AccountType) returns Nil
+      accountManagerMock.getAccountsByType(AccountType) returns Array.empty
     }
 
     def failureToast = {
