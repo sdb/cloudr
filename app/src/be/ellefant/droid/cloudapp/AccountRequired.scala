@@ -16,7 +16,7 @@ trait AccountRequired extends Activity
     val accounts = accountManager.getAccountsByType(AccountType)
     if (accounts.size == 0) {
       logger.debug("Adding account before continuing.")
-      val amf = accountManager.addAccount(AccountType, AuthTokenType, this)
+      val amf = accountManager.addAccount(AccountType, AuthTokenType, null, null, this, null, null)
       threadUtil.performOnBackgroundThread { () =>
         try {
           val b = amf.getResult // TODO: use timeout

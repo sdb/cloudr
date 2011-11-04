@@ -7,7 +7,7 @@ import android.content.AbstractThreadedSyncAdapter
 object Injection {
 
   trait AccountManager {
-    @Inject protected var accountManager: be.ellefant.droid.cloudapp.AccountManager = _
+    @Inject protected var accountManager: android.accounts.AccountManager = _
   }
 
   trait ApiFactory {

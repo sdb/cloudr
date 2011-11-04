@@ -1,9 +1,11 @@
 package be.ellefant.droid.cloudapp
 
-import com.google.inject.AbstractModule
 import android.os.Build.VERSION
-import android.accounts.AbstractAccountAuthenticator
-import android.content.AbstractThreadedSyncAdapter
+import android.content.{Context, AbstractThreadedSyncAdapter}
+import android.accounts.{AccountManager, AbstractAccountAuthenticator}
+import roboguice.inject.ContextScoped
+import com.google.inject.{Inject, Provider, AbstractModule}
+import CloudrModule._
 
 class CloudrModule extends AbstractModule {
 
@@ -16,6 +18,16 @@ class CloudrModule extends AbstractModule {
     bind(classOf[CloudAppManager]).toInstance(new CloudAppManager)
     bind(classOf[AbstractAccountAuthenticator]).to(classOf[Authenticator])
     bind(classOf[AbstractThreadedSyncAdapter]).to(classOf[CloudAppSyncAdapter])
+  }
+
+}
+
+object CloudrModule {
+
+  @ContextScoped
+  class AccountManagerProvider extends Provider[AccountManager] {
+    @Inject protected var context: Context = _
+    def get(): AccountManager = android.accounts.AccountManager.get(context)
   }
 
 }
