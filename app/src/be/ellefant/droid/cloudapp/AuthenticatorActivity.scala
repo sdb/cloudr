@@ -106,7 +106,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     val account = new Account(username, AccountType)
     if (requestNewAccount) {
       accountManager.addAccountExplicitly(account, password, null)
-      ContentResolver.setSyncAutomatically(account, "be.ellefant.droid.cloudappprovider", true)
+      ContentResolver.setSyncAutomatically(account, "cloudapp", true)
     }
     else {
       accountManager.setPassword(account, password)

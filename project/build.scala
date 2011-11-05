@@ -176,6 +176,11 @@ object Proguard {
 -keep public class scala.Function0
 -keep public class scala.ScalaObject
 
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
