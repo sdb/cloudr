@@ -119,7 +119,7 @@ object AndroidBuild extends Build {
       internalDependencyClasspath in Test <<= (internalDependencyClasspath in Test) map { (cp) =>
         (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
       },
-      scalaSource in Compile <<= baseDirectory { (base) => val b = base / "src"; println(b); b },
+      scalaSource in Compile <<= baseDirectory (_ / "src"),
       resourceDirectory in Compile <<= baseDirectory (_ /"resources"),
       scalaSource in Test <<= baseDirectory (_ /"test"),
       resourceDirectory in Test <<= baseDirectory (_ /"test-resources"),
