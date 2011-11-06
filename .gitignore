@@ -1,6 +1,13 @@
 target
 tmp
+project/boot
 
 .idea
 *.iml
 gen
+
+.classpath
+.project
+.cache
+.target
+bin

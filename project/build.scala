@@ -2,6 +2,7 @@
 import sbt._
 import Keys._
 import AndroidKeys._
+import com.typesafe.sbteclipse.SbtEclipsePlugin._
 
 object General {
   val buildOrganization = "be.ellefant"
@@ -57,7 +58,7 @@ object AndroidBuild extends Build {
   lazy val slf4jAndroid = Project(
     "slf4j",
     file("slf4j"),
-    settings = Defaults.defaultSettings ++ AndroidPath.settings ++ Seq(
+    settings = Defaults.defaultSettings ++ AndroidPath.settings ++ Seq( // TODO remove path
       name := "slf4j-android",
       organization := "org.slf4j",
       version      := "1.6.3",
@@ -72,7 +73,7 @@ object AndroidBuild extends Build {
   lazy val sdroid = Project(
     "sdroid",
     file("sdroid"),
-    settings = General.settings ++ AndroidPath.settings ++ Seq(
+    settings = General.settings ++ AndroidPath.settings ++ Seq( // TODO
       name := "sdroid",
       scalaSource in Compile <<= baseDirectory(_ / "src"),
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
@@ -99,8 +100,13 @@ object AndroidBuild extends Build {
 
   lazy val main = Project(
     "cloudr",
-    file("."),
-    settings = General.fullAndroidSettings ++ mainDeps ++ Seq(
+    file("app"),
+    settings = General.fullAndroidSettings ++ mainDeps ++ inConfig(Android)(Seq(
+      manifestPath <<= (baseDirectory, manifestName in Android) (_ / _),
+      manifestTemplatePath <<= (manifestPath in Android) (mp => mp),
+      mainAssetsPath <<= baseDirectory (_ / "assets"),
+      mainResPath <<= baseDirectory (_ / "res")
+    )) ++ Seq(
       name := "cloudr",
       parallelExecution in Test := false,
       testOptions in Test += Tests.Argument("junitxml", "console"),
@@ -112,7 +118,28 @@ object AndroidBuild extends Build {
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize"),
       internalDependencyClasspath in Test <<= (internalDependencyClasspath in Test) map { (cp) =>
         (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
-      }
+      },
+      scalaSource in Compile <<= baseDirectory { (base) => val b = base / "src"; println(b); b },
+      resourceDirectory in Compile <<= baseDirectory (_ /"resources"),
+      scalaSource in Test <<= baseDirectory (_ /"test"),
+      resourceDirectory in Test <<= baseDirectory (_ /"test-resources"),
+      EclipseKeys.buildCommands := Seq(
+        "com.android.ide.eclipse.adt.ResourceManagerBuilder",
+        "com.android.ide.eclipse.adt.PreCompilerBuilder",
+        "org.scala-ide.sdt.core.scalabuilder",
+        "com.android.ide.eclipse.adt.ApkBuilder"),
+      EclipseKeys.natures := Seq(
+        "com.android.ide.eclipse.adt.AndroidNature",
+        "org.scala-ide.sdt.core.scalanature",
+        "org.eclipse.jdt.core.javanature"),
+      EclipseKeys.extraSourceDirs := Nil,
+      EclipseKeys.extraSourceDirs <+= baseDirectory(_ / "gen"),
+      EclipseKeys.containers := Seq(
+        "org.scala-ide.sdt.launching.SCALA_CONTAINER",
+        "com.android.ide.eclipse.adt.ANDROID_FRAMEWORK",
+        "com.android.ide.eclipse.adt.LIBRARIES"
+      ),
+      EclipseKeys.excludes := "*android.jar"
     )
   ) dependsOn (slf4jAndroid, sdroid)
 
