@@ -37,7 +37,7 @@ object Dependencies {
 
   lazy val Slf4jApi = "org.slf4j" % "slf4j-api" % Slf4jVer
   // lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
-  lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.1-SNAPSHOT"
+  lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.2-SNAPSHOT"
   lazy val RoboGuice = "org.roboguice" % "roboguice" % "2.0b2"
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
   lazy val Robolectric = "com.pivotallabs" % "robolectric" % "1.1-SNAPSHOT"
@@ -119,7 +119,7 @@ object AndroidBuild extends Build {
       internalDependencyClasspath in Test <<= (internalDependencyClasspath in Test) map { (cp) =>
         (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
       },
-      scalaSource in Compile <<= baseDirectory { (base) => val b = base / "src"; println(b); b },
+      scalaSource in Compile <<= baseDirectory (_ / "src"),
       resourceDirectory in Compile <<= baseDirectory (_ /"resources"),
       scalaSource in Test <<= baseDirectory (_ /"test"),
       resourceDirectory in Test <<= baseDirectory (_ /"test-resources"),
@@ -175,6 +175,11 @@ object Proguard {
 }
 -keep public class scala.Function0
 -keep public class scala.ScalaObject
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
 
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
@@ -253,8 +258,8 @@ object Idea {
   // quick 'n dirty way to add Android Facet to IDEA projects
   val command: Command = Command.command("gen-idea-android") { state =>
     val base = Project.extract (state).currentProject.base
-    transform(base / ".idea_modules" / "cloudr.iml")
-    transform(base / ".idea_modules" / "tests.iml")
+    transform(base / ".." / ".idea_modules" / "cloudr.iml", "app")
+    transform(base / ".." / ".idea_modules" / "tests.iml", "tests")
     state
   }
 
@@ -271,19 +276,20 @@ object Idea {
 
   object ReplaceJdkTransformer extends RuleTransformer(ReplaceJdk)
 
-  object AddFacet extends RewriteRule {
+  case class AddFacet(module: String) extends RewriteRule {
+    def path(p: String) = "/../" + module + "/" + p
     override def transform(n: Node): Seq[Node] = n match {
       case e @ Elem(prefix, "component", attribs, scope, children @ _*) if (e \ "@name").text == "FacetManager" =>
         <component name="FacetManager">
           { children }
           <facet type="android" name="Android">
             <configuration>
-              <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/gen" />
-              <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/gen" />
-              <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../src/main/AndroidManifest.xml" />
-              <option name="RES_FOLDER_RELATIVE_PATH" value="/../src/main/res" />
-              <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../src/main/assets" />
-              <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../src/main/libs" />
+              <option name="GEN_FOLDER_RELATIVE_PATH_APT" value={path("gen")} />
+              <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value={path("gen")} />
+              <option name="MANIFEST_FILE_RELATIVE_PATH" value={path("AndroidManifest.xml")} />
+              <option name="RES_FOLDER_RELATIVE_PATH" value={path("res")} />
+              <option name="ASSETS_FOLDER_RELATIVE_PATH" value={path("assets")} />
+              <option name="LIBS_FOLDER_RELATIVE_PATH" value={path("libs")} />
               <option name="REGENERATE_R_JAVA" value="true" />
               <option name="REGENERATE_JAVA_BY_AIDL" value="true" />
               <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
@@ -303,11 +309,11 @@ object Idea {
     }
   }
 
-  object AddFacetTransformer extends RuleTransformer(AddFacet)
+  case class AddFacetTransformer(module: String) extends RuleTransformer(AddFacet(module))
 
-  def transform(f: java.io.File) = {
+  def transform(f: java.io.File, module: String) = {
     val x = XML.loadFile(f)
-    val t = AddFacetTransformer(x)
+    val t = AddFacetTransformer(module)(x)
     XML.save(f.getAbsolutePath, t)
   }
 }

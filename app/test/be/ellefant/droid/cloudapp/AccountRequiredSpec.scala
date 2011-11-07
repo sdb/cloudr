@@ -33,27 +33,27 @@ class AccountRequiredSpec extends CloudrSpecs {
     lazy val activity = spy(new AccountRequiredSpy)
 
     def testAccountAvailable = {
-      accountManagerMock.getAccountsByType(AccountType) returns List(mock[Account])
+      accountManagerMock.getAccountsByType(AccountType) returns Array(mock[Account])
       activity.onCreate(null)
       there was one(activity).onAccountSuccess(null)
     }
 
     def testAccountAdded = {
-      accountManagerMock.getAccountsByType(AccountType) returns Nil
+      accountManagerMock.getAccountsByType(AccountType) returns Array.empty
       val amf = mock[AccountManagerFuture[Bundle]]
       val b = new Bundle
       b.putString(android.accounts.AccountManager.KEY_ACCOUNT_NAME, "sdb")
       amf.getResult returns b
-      accountManagerMock.addAccount(AccountType, AuthTokenType, activity) returns amf
+      accountManagerMock.addAccount(AccountType, AuthTokenType, null, null, activity, null, null) returns amf
       activity.onCreate(null)
       there was one(activity).onAccountSuccess("sdb")
     }
 
     def testException(e: Throwable) = {
-      accountManagerMock.getAccountsByType(AccountType) returns Nil
+      accountManagerMock.getAccountsByType(AccountType) returns Array.empty
       val amf = mock[AccountManagerFuture[Bundle]]
       amf.getResult throws e
-      accountManagerMock.addAccount(AccountType, AuthTokenType, activity) returns amf
+      accountManagerMock.addAccount(AccountType, AuthTokenType, null, null, activity, null, null) returns amf
       activity.onCreate(null)
       there was one(activity).onAccountFailure()
     }

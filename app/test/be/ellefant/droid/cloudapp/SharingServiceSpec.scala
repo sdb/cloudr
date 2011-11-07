@@ -9,14 +9,14 @@ class SharingServiceSpec extends CloudrSpecs {
 
     "create a new bookmark when there is an account available" in new context {
       val acc = new Account("sdb", AccountType)
-      accountManagerMock.getAccountsByType(AccountType) returns List(acc)
+      accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
       accountManagerMock.getPassword(acc) returns "blabla"
       sendIntent()
       there was one(cloudAppMock).createBookmark(title, url)
     }
 
     "do nothing when there is no account available" in new context {
-      accountManagerMock.getAccountsByType(AccountType) returns Nil
+      accountManagerMock.getAccountsByType(AccountType) returns Array.empty
       sendIntent()
       there was no(cloudAppMock).createBookmark(title, url)
     }

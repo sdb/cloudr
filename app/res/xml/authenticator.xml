@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="be.ellefant.droid.cloudapp"
-    android:icon="@drawable/cloud_icon"
-    android:smallIcon="@drawable/cloud_icon"
-    android:label="@string/cloudapp_label"
-/>
+                       android:accountType="be.ellefant.droid.cloudapp"
+                       android:icon="@drawable/cloud_icon"
+                       android:smallIcon="@drawable/cloud_icon"
+                       android:label="@string/cloudapp_label" />
