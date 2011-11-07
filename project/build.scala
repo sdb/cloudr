@@ -169,7 +169,7 @@ object AndroidBuild extends Build {
 }
 
 object Proguard {
-  lazy val options = """-optimizations !code/simplification/arithmetic
+  lazy val options = """-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 -keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
 -keep public class scala.reflect.ScalaSignature {
     public java.lang.String bytes();
@@ -182,11 +182,9 @@ object Proguard {
     public static ** valueOf(java.lang.String);
 }
 
--keep public class * extends android.app.Activity
--keep public class * extends android.app.Application
--keep public class * extends android.app.Service
--keep public class * extends android.content.BroadcastReceiver
--keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class com.android.vending.licensing.ILicensingService
 
 -keep class com.google.inject.Binder
 -keepclassmembers class * {
