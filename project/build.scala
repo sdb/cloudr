@@ -134,6 +134,7 @@ object AndroidBuild extends Build {
         "org.eclipse.jdt.core.javanature"),
       EclipseKeys.extraSourceDirs := Nil,
       EclipseKeys.extraSourceDirs <+= baseDirectory(_ / "gen"),
+      EclipseKeys.extraSourceDirs <+= (target) ( _ / "src_managed" / "main" / "scala"),
       EclipseKeys.containers := Seq(
         "org.scala-ide.sdt.launching.SCALA_CONTAINER",
         "com.android.ide.eclipse.adt.ANDROID_FRAMEWORK",
