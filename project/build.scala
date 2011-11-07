@@ -258,8 +258,8 @@ object Idea {
   // quick 'n dirty way to add Android Facet to IDEA projects
   val command: Command = Command.command("gen-idea-android") { state =>
     val base = Project.extract (state).currentProject.base
-    transform(base / ".idea_modules" / "cloudr.iml")
-    transform(base / ".idea_modules" / "tests.iml")
+    transform(base / ".." / ".idea_modules" / "cloudr.iml", "app")
+    transform(base / ".." / ".idea_modules" / "tests.iml", "tests")
     state
   }
 
@@ -276,19 +276,20 @@ object Idea {
 
   object ReplaceJdkTransformer extends RuleTransformer(ReplaceJdk)
 
-  object AddFacet extends RewriteRule {
+  case class AddFacet(module: String) extends RewriteRule {
+    def path(p: String) = "/../" + module + "/" + p
     override def transform(n: Node): Seq[Node] = n match {
       case e @ Elem(prefix, "component", attribs, scope, children @ _*) if (e \ "@name").text == "FacetManager" =>
         <component name="FacetManager">
           { children }
           <facet type="android" name="Android">
             <configuration>
-              <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/gen" />
-              <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/gen" />
-              <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../src/main/AndroidManifest.xml" />
-              <option name="RES_FOLDER_RELATIVE_PATH" value="/../src/main/res" />
-              <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../src/main/assets" />
-              <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../src/main/libs" />
+              <option name="GEN_FOLDER_RELATIVE_PATH_APT" value={path("gen")} />
+              <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value={path("gen")} />
+              <option name="MANIFEST_FILE_RELATIVE_PATH" value={path("AndroidManifest.xml")} />
+              <option name="RES_FOLDER_RELATIVE_PATH" value={path("res")} />
+              <option name="ASSETS_FOLDER_RELATIVE_PATH" value={path("assets")} />
+              <option name="LIBS_FOLDER_RELATIVE_PATH" value={path("libs")} />
               <option name="REGENERATE_R_JAVA" value="true" />
               <option name="REGENERATE_JAVA_BY_AIDL" value="true" />
               <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
@@ -308,11 +309,11 @@ object Idea {
     }
   }
 
-  object AddFacetTransformer extends RuleTransformer(AddFacet)
+  case class AddFacetTransformer(module: String) extends RuleTransformer(AddFacet(module))
 
-  def transform(f: java.io.File) = {
+  def transform(f: java.io.File, module: String) = {
     val x = XML.loadFile(f)
-    val t = AddFacetTransformer(x)
+    val t = AddFacetTransformer(module)(x)
     XML.save(f.getAbsolutePath, t)
   }
 }

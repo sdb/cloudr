@@ -16,8 +16,7 @@ class DropsActivity extends RoboListActivity
     val order = "%s DESC" format ColId
     val cursor = itemType match {
       case "All" => managedQuery(CloudAppProvider.ContentUri, projection, null, null, order)
-      case "Trash" => managedQuery(CloudAppProvider.ContentUri, projection, null, null, order) // TODO
-      case "Popular" => managedQuery(CloudAppProvider.ContentUri, projection, null, null, order) // TODO
+      case "Popular" => managedQuery(CloudAppProvider.ContentUri, projection, null, null, "%s DESC" format ColViewCounter)
       case "Bookmarks" => managedQuery(CloudAppProvider.ContentUri, projection, "item_type = 'BOOKMARK'", null, order)
       case "Images" => managedQuery(CloudAppProvider.ContentUri, projection, "item_type = 'IMAGE'", null, order)
       case "Archives" => managedQuery(CloudAppProvider.ContentUri, projection, "item_type = 'ARCHIVE'", null, order)

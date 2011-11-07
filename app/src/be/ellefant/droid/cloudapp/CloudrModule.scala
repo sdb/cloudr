@@ -16,8 +16,8 @@ class CloudrModule extends AbstractModule {
     bind(classOf[ThreadUtil]).toInstance(new ThreadUtil)
     bind(classOf[ApiFactory]).toInstance(new ApiFactory)
     bind(classOf[CloudAppManager]).toInstance(new CloudAppManager)
-    bind(classOf[AbstractAccountAuthenticator]).to(classOf[Authenticator])
-    bind(classOf[AbstractThreadedSyncAdapter]).to(classOf[CloudAppSyncAdapter])
+    bind(classOf[AbstractAccountAuthenticator]).to(classOf[AuthenticationService.Authenticator])
+    bind(classOf[AbstractThreadedSyncAdapter]).to(classOf[SyncService.CloudAppSyncAdapter])
   }
 
 }
