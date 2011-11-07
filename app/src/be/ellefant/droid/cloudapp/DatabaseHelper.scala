@@ -84,7 +84,7 @@ object DatabaseHelper {
       values.put(ColSubscribed, item.isSubscribed)
       values.put(ColUrl, item.getUrl)
       values.put(ColContentUrl, item.getContentUrl)
-      values.put(ColItemType, item.getItemType.toString)
+      values.put(ColItemType, item.getItemType.toString.toLowerCase)
       values.put(ColViewCounter, new Integer(item.getViewCounter.toInt))
       values.put(ColIcon, item.getIconUrl)
       if (item.getRemoteUrl == null)

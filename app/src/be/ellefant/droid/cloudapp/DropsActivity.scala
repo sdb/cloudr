@@ -3,6 +3,7 @@ package be.ellefant.droid.cloudapp
 import roboguice.activity.RoboListActivity
 import android.widget.{SimpleCursorAdapter, ArrayAdapter, TextView}
 import DatabaseHelper._
+import CloudAppManager._
 
 class DropsActivity extends RoboListActivity
     with Base.AccountRequired {
@@ -14,13 +15,13 @@ class DropsActivity extends RoboListActivity
     setContentView(R.layout.drops)
     val projection = Array(ColId, ColName, ColUrl)
     val order = "%s DESC" format ColId
-    val cursor = itemType match {
-      case "All" => managedQuery(CloudAppProvider.ContentUri, projection, null, null, order)
-      case "Popular" => managedQuery(CloudAppProvider.ContentUri, projection, null, null, "%s DESC" format ColViewCounter)
-      case "Bookmarks" => managedQuery(CloudAppProvider.ContentUri, projection, "item_type = 'BOOKMARK'", null, order)
-      case "Images" => managedQuery(CloudAppProvider.ContentUri, projection, "item_type = 'IMAGE'", null, order)
-      case "Archives" => managedQuery(CloudAppProvider.ContentUri, projection, "item_type = 'ARCHIVE'", null, order)
-      case _ => managedQuery(CloudAppProvider.ContentUri, projection, "item_type = ?", Array(itemType.toUpperCase), order)
+    val cursor = ItemType.withName(itemType) match {
+      case ItemType.All =>
+        managedQuery(CloudAppProvider.ContentUri, projection, null, null, order)
+      case ItemType.Popular =>
+        managedQuery(CloudAppProvider.ContentUri, projection, null, null, "%s DESC, %s" format (ColViewCounter, order))
+      case it =>
+        managedQuery(CloudAppProvider.ContentUri, projection, "item_type = ?", Array(it.toString.toLowerCase), order)
     }
     val displayFields = Array(ColName, ColUrl)
     val displayViews = Array(android.R.id.text1, android.R.id.text2)

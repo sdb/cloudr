@@ -34,7 +34,7 @@ object SyncService {
 
     def onPerformSync(account: Account, extras: Bundle, authority: String,
       provider: ContentProviderClient, syncResult: SyncResult) {
-      logger.info("onPerformSync for '%s'" % account.name)
+      logger.debug("onPerformSync for '%s'" % account.name)
       extras match {
         case b =>
           logger.info("Processing sync with extras " + extras)
@@ -43,7 +43,7 @@ object SyncService {
             case Some(pwd) =>
               processRequest(p, account, pwd, syncResult)
             case _ =>
-              logger.info("No password available")
+              logger.warn("No password available")
             // TODO
           }
         //      case _ =>
