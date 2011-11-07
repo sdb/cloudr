@@ -110,7 +110,7 @@ object AndroidBuild extends Build {
       name := "cloudr",
       parallelExecution in Test := false,
       testOptions in Test += Tests.Argument("junitxml", "console"),
-      commands += Idea.command,
+      commands ++= Seq(Idea.command, Eclipse.command),
       libraryDependencies <+= (sdkPath in Android) apply { (sp) =>
         AndroidSupport13 from (sp / "extras" / "android" / "support" / "v13" / "android-support-v13.jar").toURI.toString
       },
@@ -251,6 +251,17 @@ object ShellPrompt {
         currProject, currBranch, buildVersion
       )
     }
+  }
+}
+
+object Eclipse {
+  val command: Command = Command.command("eclipse-android") { state =>
+    val base = Project.extract (state).currentProject.base
+    IO.write(base /"proguard.cfg", Proguard.options)
+    val props = new java.util.Properties
+    props.setProperty("target", "android-10")
+    IO.write(props, null, base /"project.properties")
+    state
   }
 }
 

@@ -11,12 +11,12 @@ class DropsActivity extends RoboListActivity
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
     val itemType = intent.getStringExtra(KeyItemType)
-    setTitle("Cloudr - %s" % itemType)
+    setTitle("Cloudr - %s" % itemType) // FIXME: should show label instead of id
     setContentView(R.layout.drops)
     val projection = Array(ColId, ColName, ColUrl)
     val order = "%s DESC" format ColId
     val cursor = ItemType.withName(itemType) match {
-      case ItemType.All =>
+     	case ItemType.All =>
         managedQuery(CloudAppProvider.ContentUri, projection, null, null, order)
       case ItemType.Popular =>
         managedQuery(CloudAppProvider.ContentUri, projection, null, null, "%s DESC, %s" format (ColViewCounter, order))

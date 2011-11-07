@@ -11,3 +11,5 @@ gen
 .cache
 .target
 bin
+proguard.cfg
+project.properties
