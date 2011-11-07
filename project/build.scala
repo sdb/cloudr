@@ -37,7 +37,7 @@ object Dependencies {
 
   lazy val Slf4jApi = "org.slf4j" % "slf4j-api" % Slf4jVer
   // lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
-  lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.1-SNAPSHOT"
+  lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.2-SNAPSHOT"
   lazy val RoboGuice = "org.roboguice" % "roboguice" % "2.0b2"
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
   lazy val Robolectric = "com.pivotallabs" % "robolectric" % "1.1-SNAPSHOT"
