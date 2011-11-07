@@ -13,6 +13,7 @@
 * [sbt](https://github.com/harrah/xsbt)
 * [Android plugin for sbt](https://github.com/sdb/android-plugin)
 * [RoboSpecs](https://github.com/sdb/robospecs)
+* [CloudAppJava](https://github.com/sdb/CloudAppJava)
 
 ### Resources
 
