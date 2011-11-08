@@ -20,4 +20,5 @@ trait Constants {
   lazy val AccountType = Id
 
   lazy val KeyItemType = "%s.%s" format (Id, "ITEM_TYPE")
+  lazy val KeyId = "%s.%s" format (Id, "ID")
 }

@@ -5,6 +5,7 @@
     <string name="share_link">Link</string>
 
     <string name="drops_label">Drops</string>
+    <string name="drop_label">Drop</string>
 
     <string name="notification_login_error">Touch to sign into your CloudApp account.</string>
 

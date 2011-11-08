@@ -1,7 +1,9 @@
 package be.ellefant.droid.cloudapp
 
 import roboguice.activity.RoboListActivity
-import android.widget.{SimpleCursorAdapter, ArrayAdapter, TextView}
+import android.widget.{AdapterView, SimpleCursorAdapter, ArrayAdapter, TextView}
+import android.content.Intent
+import android.view.View
 import DatabaseHelper._
 import CloudAppManager._
 
@@ -29,5 +31,13 @@ class DropsActivity extends RoboListActivity
     setListAdapter(adapter)
     val lv = getListView
     lv setTextFilterEnabled true
+    lv setOnItemClickListener (onItemClick _)
+  }
+
+  private def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
+    val intent = new Intent
+    intent.putExtra(KeyId, id)
+    intent.setClass(this, classOf[DropActivity])
+    startActivity(intent)
   }
 }

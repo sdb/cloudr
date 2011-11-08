@@ -74,6 +74,11 @@ object DatabaseHelper {
   
   val DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS") // ISO8601
   
+  case class Drop(
+      id: Long,
+      name: String,
+      viewCounter: Int)
+  
   class RichCloudAppItem(item: CloudAppItem) {
     def toContentValues = {
       val values = new ContentValues()

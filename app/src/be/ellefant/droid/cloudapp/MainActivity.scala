@@ -22,7 +22,7 @@ class MainActivity extends RoboListActivity
   private def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
     val intent = new Intent
     intent.putExtra(KeyItemType, CloudAppManager.ItemType.apply(position).toString())
-    intent.setClass(MainActivity.this, classOf[DropsActivity])
+    intent.setClass(this, classOf[DropsActivity])
     startActivity(intent)
   }
 }
