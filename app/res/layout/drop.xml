@@ -82,7 +82,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center"
+                android:layout_gravity="top|left"
                 android:gravity="left|center_vertical"
                 android:padding="3dp"
                 android:text="Created"
@@ -108,7 +108,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center"
+                android:layout_gravity="top|left"
                 android:gravity="left|center_vertical"
                 android:padding="3dp"
                 android:text="Updated"
@@ -133,8 +133,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center"
-                android:gravity="left|center_vertical"
+                android:layout_gravity="top|left"
+                android:gravity="left"
                 android:padding="3dp"
                 android:text="Source"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
