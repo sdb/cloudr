@@ -82,6 +82,16 @@ object AndroidBuild extends Build {
     )
   )
 
+  lazy val sim = Project(
+    "sim",
+    file("sim"),
+    settings = General.settings ++ Seq(
+      name := "cloudr-sim",
+      scalaSource in Compile <<= baseDirectory(_ / "src"),
+      libraryDependencies += CloudApp
+    )
+  )
+
   lazy val mainDeps = Seq(
     libraryDependencies ++= Seq(
       CloudApp intransitive(),
@@ -142,7 +152,7 @@ object AndroidBuild extends Build {
       ),
       EclipseKeys.excludes := "*android.jar"
     )
-  ) dependsOn (slf4jAndroid, sdroid)
+  ) dependsOn (slf4jAndroid, sdroid, sim) // TODO: exclude 'sim' in production, only used for development
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(
