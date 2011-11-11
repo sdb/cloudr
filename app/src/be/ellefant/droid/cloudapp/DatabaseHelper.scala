@@ -46,10 +46,10 @@ object DatabaseHelper {
 
   val SqlCreate = """CREATE TABLE %s (
     %s INTEGER PRIMARY KEY,
-    %s TEXT NOT NULL, -- href
-    %s TEXT NOT NULL, -- name
-    %s INTEGER NOT NULL, -- private
-    %s INTEGER NOT NULL, -- subscribed
+    %s TEXT NOT NULL,
+    %s TEXT NOT NULL,
+    %s INTEGER NOT NULL,
+    %s INTEGER NOT NULL,
     %s TEXT NOT NULL,
     %s TEXT NOT NULL,
     %s TEXT NOT NULL,
