@@ -3,13 +3,14 @@ import sbt._
 import Keys._
 import AndroidKeys._
 import com.typesafe.sbteclipse.SbtEclipsePlugin._
+import com.typesafe.sbtscalariform.ScalariformPlugin._
 
 object General {
-  val buildOrganization = "be.ellefant"
-  val buildVersion      = "0.0.1-SNAPSHOT"
-  val buildScalaVersion = "2.9.1"
+  lazy val buildOrganization = "be.ellefant"
+  lazy val buildVersion      = "0.0.1-SNAPSHOT"
+  lazy val buildScalaVersion = "2.9.1"
 
-  val settings = Defaults.defaultSettings ++ Seq (
+  lazy val settings = Defaults.defaultSettings ++ scalariformSettings ++ formattingSettings ++ Seq (
     organization := buildOrganization,
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
@@ -22,6 +23,19 @@ object General {
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
     )
   )
+
+  lazy val formattingSettings = Seq(
+    ScalariformKeys.formatPreferences in Compile := formattingPreferences,
+    ScalariformKeys.formatPreferences in Test    := formattingPreferences
+  )
+
+  def formattingPreferences = {
+    import scalariform.formatter.preferences._
+    FormattingPreferences()
+      .setPreference(AlignSingleLineCaseStatements, true)
+      .setPreference(DoubleIndentClassDeclaration, true)
+      .setPreference(IndentLocalDefs, true)
+  }
 
   lazy val fullAndroidSettings =
     General.settings ++
