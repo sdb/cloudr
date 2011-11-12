@@ -8,6 +8,8 @@ package object cloudapp extends Imports with Constants
 
 class CloudrString(s: String) {
   def %(args: Any*) = s.format(args: _*)
+  def isBlank = s == null || s.length == 0
+  def toBlankOption = if (isBlank) None else Some(s)
 }
 
 trait Imports {
