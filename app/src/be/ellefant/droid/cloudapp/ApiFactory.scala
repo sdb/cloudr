@@ -13,7 +13,6 @@ object ApiFactory {
     override protected def createClient = {
       val c = super.createClient
       val p = c.getParams
-      //val ua = "Cloudr/0.0.1" + (p.getParameter(CoreProtocolPNames.USER_AGENT).toBlankOption map (" " + _.toString) getOrElse (""))
       val ua = "Cloudr/0.0.1" + (Option(p.getParameter(CoreProtocolPNames.USER_AGENT)) flatMap (_.toString.toBlankOption) map (" " + _.toString) getOrElse (""))
       p.setParameter(CoreProtocolPNames.USER_AGENT, ua)
       c.setParams(p)

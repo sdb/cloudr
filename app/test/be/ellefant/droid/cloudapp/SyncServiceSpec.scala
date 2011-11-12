@@ -52,7 +52,7 @@ class SyncServiceSpec extends CloudrSpecs {
       with Mocks.AccountManagerMock
       with Mocks.CloudAppMock {
 
-    lazy val syncAdapter = RoboGuice.getInjector(Robolectric.application.getApplicationContext).getInstance(classOf[SyncService.CloudAppSyncAdapter])
+    lazy val syncAdapter = RoboGuice.getInjector(Robolectric.application.getApplicationContext).getInstance(classOf[SyncService]).syncAdapter
     lazy val contentProvider = mock[ContentProvider]
     lazy val contentProviderClient = mock[ContentProviderClient]
     lazy val account = new Account("sdb", AccountType)

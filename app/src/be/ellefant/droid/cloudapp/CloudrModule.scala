@@ -10,14 +10,10 @@ import CloudrModule._
 class CloudrModule extends AbstractModule {
 
   def configure() = {
-    if (VERSION.SDK_INT >= 5) {
-      bind(classOf[AccountManager]).toProvider(classOf[AccountManagerProvider])
-    }
+    bind(classOf[AccountManager]).toProvider(classOf[AccountManagerProvider])
     bind(classOf[ThreadUtil]).toInstance(new ThreadUtil)
     bind(classOf[ApiFactory]).toInstance(new ApiFactory)
     bind(classOf[CloudAppManager]).toInstance(new CloudAppManager)
-    bind(classOf[AbstractAccountAuthenticator]).to(classOf[AuthenticationService.Authenticator])
-    bind(classOf[AbstractThreadedSyncAdapter]).to(classOf[SyncService.CloudAppSyncAdapter])
   }
 
 }

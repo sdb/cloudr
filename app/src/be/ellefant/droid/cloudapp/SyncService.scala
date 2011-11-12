@@ -17,21 +17,18 @@ import android.content.ContentProvider
 class SyncService extends RoboService
     with Base.Service
     with sdroid.Service
-    with Injection.SyncAdapter {
+    with Injection.AccountManager
+    with Injection.ApiFactory {
+  
+  protected[cloudapp] lazy val syncAdapter = new CloudAppSyncAdapter
 
   def onBind = {
     case intent if intent.getAction == "android.content.SyncAdapter" ⇒
       logger.debug("Returning the CloudAppSyncAdapter binder for intent '%s'." format intent)
       syncAdapter.getSyncAdapterBinder
   }
-
-}
-
-object SyncService {
-  class CloudAppSyncAdapter @Inject protected[cloudapp] (context: Context) extends AbstractThreadedSyncAdapter(context, true)
-      with Logging
-      with Injection.AccountManager
-      with Injection.ApiFactory {
+  
+  protected[cloudapp] class CloudAppSyncAdapter extends AbstractThreadedSyncAdapter(SyncService.this, true) {
 
     def onPerformSync(account: Account, extras: Bundle, authority: String,
       provider: ContentProviderClient, syncResult: SyncResult) {
@@ -132,4 +129,5 @@ object SyncService {
     }
 
   }
+
 }

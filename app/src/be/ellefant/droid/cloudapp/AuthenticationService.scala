@@ -9,24 +9,24 @@ import android.os.Bundle
 
 class AuthenticationService extends RoboService
     with Base.Service
-    with sdroid.Service
-    with Injection.AccountAuthenticator {
+    with sdroid.Service {
+  
+  lazy val authenticator = new Authenticator
 
   def onBind = {
     case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT ⇒
       logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
       authenticator.getIBinder
   }
-}
-
-object AuthenticationService {
-  class Authenticator @Inject protected (context: Context) extends AbstractAccountAuthenticator(context)
+  
+  
+  protected class Authenticator extends AbstractAccountAuthenticator(AuthenticationService.this)
       with Injection.AccountManager
       with Injection.ApiFactory {
 
     def addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,
       requiredFeatures: Array[String], options: Bundle): Bundle = {
-      val intent = new Intent(context, classOf[AuthenticatorActivity])
+      val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
       intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
       intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
       val bundle = new Bundle
@@ -43,7 +43,7 @@ object AuthenticationService {
           result.putBoolean(AndroidAccountManager.KEY_BOOLEAN_RESULT, verified)
           result
         case _ ⇒
-          val intent = new Intent(context, classOf[AuthenticatorActivity])
+          val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
           intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
           intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, true)
           intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
@@ -71,7 +71,7 @@ object AuthenticationService {
           return result
         }
       }
-      val intent = new Intent(context, classOf[AuthenticatorActivity])
+      val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
       intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
       intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
       intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
@@ -81,7 +81,7 @@ object AuthenticationService {
     }
 
     def getAuthTokenLabel(authTokenType: String): String = authTokenType match {
-      case AuthTokenType ⇒ context.getString(R.string.cloudapp_label)
+      case AuthTokenType ⇒ AuthenticationService.this.getString(R.string.cloudapp_label)
       case _             ⇒ null
     }
 
@@ -92,7 +92,7 @@ object AuthenticationService {
     }
 
     def updateCredentials(response: AccountAuthenticatorResponse, account: Account, authTokenType: String, loginOptions: Bundle): Bundle = {
-      val intent = new Intent(context, classOf[AuthenticatorActivity])
+      val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
       intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
       intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
       intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, false)

@@ -25,12 +25,4 @@ object Injection {
   trait CloudAppManager {
     @Inject protected var cloudAppManager: be.ellefant.droid.cloudapp.CloudAppManager = _
   }
-
-  trait AccountAuthenticator {
-    @Inject protected var authenticator: AbstractAccountAuthenticator = _
-  }
-
-  trait SyncAdapter {
-    @Inject protected var syncAdapter: AbstractThreadedSyncAdapter = _
-  }
 }
