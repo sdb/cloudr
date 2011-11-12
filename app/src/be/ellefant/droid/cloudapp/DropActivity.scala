@@ -34,10 +34,10 @@ class DropActivity extends RoboActivity
     pub.setClickable(false)
 
     val created = findViewById(R.id.dropCreated).asInstanceOf[TextView]
-    created.setText(drop map (d => ShortDateFormat.format(d.createdAt)) getOrElse ("")) // TODO locale
+    created.setText(drop map (d ⇒ ShortDateFormat.format(d.createdAt)) getOrElse ("")) // TODO locale
 
     val updated = findViewById(R.id.dropUpdated).asInstanceOf[TextView]
-    updated.setText(drop map (d => ShortDateFormat.format(d.updatedAt)) getOrElse (""))
+    updated.setText(drop map (d ⇒ ShortDateFormat.format(d.updatedAt)) getOrElse (""))
 
     val urlText = findViewById(R.id.dropUrl).asInstanceOf[TextView]
     urlText.setText(drop map (_.url) getOrElse (""))

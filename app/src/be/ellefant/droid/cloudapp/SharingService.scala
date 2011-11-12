@@ -11,7 +11,7 @@ class SharingService extends RoboIntentService(Name)
 
   def onHandleIntent(intent: Intent) = {
     accountManager.getAccountsByType(AccountType).headOption match {
-      case Some(acc) =>
+      case Some(acc) ⇒
         val url = intent.getStringExtra(Intent.EXTRA_TEXT) // TODO handle extras
         val title = intent.getStringExtra(Intent.EXTRA_SUBJECT)
         val pwd = accountManager.getPassword(acc)
@@ -20,10 +20,10 @@ class SharingService extends RoboIntentService(Name)
           val bm = api.createBookmark(title, url)
           logger.debug("New CloudAppItem created '%s'." format bm.getHref)
         } catch {
-          case e =>
+          case e ⇒
             logger.warn("Failed to create new CloudAppItem for '%s'." format url)
         }
-      case _ =>
+      case _ ⇒
         logger.warn("No CloudApp account found.")
     }
   }

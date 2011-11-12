@@ -20,7 +20,7 @@ class SyncService extends RoboService
     with Injection.SyncAdapter {
 
   def onBind = {
-    case intent if intent.getAction == "android.content.SyncAdapter" =>
+    case intent if intent.getAction == "android.content.SyncAdapter" ⇒
       logger.debug("Returning the CloudAppSyncAdapter binder for intent '%s'." format intent)
       syncAdapter.getSyncAdapterBinder
   }
@@ -37,13 +37,13 @@ object SyncService {
       provider: ContentProviderClient, syncResult: SyncResult) {
       logger.debug("onPerformSync for '%s'" % account.name)
       extras match {
-        case b =>
+        case b ⇒
           logger.info("Processing sync with extras " + extras)
           val p = provider.getLocalContentProvider
           Option(accountManager.getPassword(account)) match {
-            case Some(pwd) =>
+            case Some(pwd) ⇒
               processRequest(p, account, pwd, syncResult)
-            case _ =>
+            case _ ⇒
               syncResult.stats.numAuthExceptions += 1
               logger.warn("No password available")
             // TODO
@@ -70,7 +70,7 @@ object SyncService {
           l.toSeq
         }
       } catch {
-        case e =>
+        case e ⇒
           syncResult.databaseError = true
           logger.warn("error retrieving existing items", e)
           return
@@ -90,17 +90,17 @@ object SyncService {
           try {
             api.getItems(page, itemsPerPage, null, false, null).toList
           } catch {
-            case e: CloudAppException if e.getCode() == 500 && e.getCause.isInstanceOf[JSONException] =>
+            case e: CloudAppException if e.getCode() == 500 && e.getCause.isInstanceOf[JSONException] ⇒
               logger.warn("error fetching data", e)
               syncResult.stats.numParseExceptions += 1
               tried += 1
               Nil
-            case e: CloudAppException if e.getCode() == 500 =>
+            case e: CloudAppException if e.getCode() == 500 ⇒
               logger.warn("error fetching data", e)
               syncResult.stats.numIoExceptions += 1
               tried += 1
               Nil
-            case e: CloudAppException if e.getCode() == 401 =>
+            case e: CloudAppException if e.getCode() == 401 ⇒
               logger.warn("unauthenticated", e)
               syncResult.stats.numAuthExceptions += 1
               tried = 3
@@ -114,19 +114,19 @@ object SyncService {
       val items = it.flatten.toSeq
       val ids = items map (_.getId)
 
-      val deleted = existing.filterNot(e => ids.exists(_ == e))
-      val inserted = ids.filterNot(i => existing.exists(_ == i))
-      val toInsert = items filter (i => inserted exists (_ == i.getId)) map (_.toContentValues)
+      val deleted = existing.filterNot(e ⇒ ids.exists(_ == e))
+      val inserted = ids.filterNot(i ⇒ existing.exists(_ == i))
+      val toInsert = items filter (i ⇒ inserted exists (_ == i.getId)) map (_.toContentValues)
 
       if (syncResult.hasError()) return
 
       try {
-        deleted foreach { d =>
+        deleted foreach { d ⇒
           provider.delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d), Array.empty)
         }
         provider.bulkInsert(CloudAppProvider.ContentUri, toInsert.toArray)
       } catch {
-        case e =>
+        case e ⇒
           syncResult.databaseError = true
       }
     }

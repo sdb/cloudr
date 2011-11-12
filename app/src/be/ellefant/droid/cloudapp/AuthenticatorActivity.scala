@@ -1,6 +1,6 @@
 package be.ellefant.droid.cloudapp
 
-import android.accounts.{ Account, AccountManager => AndroidAccountManager }
+import android.accounts.{ Account, AccountManager ⇒ AndroidAccountManager }
 import android.os.{ Bundle, Handler }
 import android.text.TextUtils
 import android.view.{ View, Window }
@@ -163,7 +163,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   protected def authenticate(username: String, password: String, handler: Handler, context: Context) = {
       def sendResult(result: Boolean, handler: Handler, context: Context) = {
         if (handler != null && context != null) {
-          handler.post { () =>
+          handler.post { () ⇒
             (context.asInstanceOf[AuthenticatorActivity]).onAuthenticationResult(result)
           }
         }
@@ -173,13 +173,13 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
       (apiFactory create (username, password)).getAccountDetails
       sendResult(true, handler, context)
     } catch {
-      case e =>
+      case e ⇒
         sendResult(false, handler, context)
     }
   }
 
   protected def attemptAuth(username: String, password: String, handler: Handler, context: Context) = {
-    performOnBackgroundThread { () =>
+    performOnBackgroundThread { () ⇒
       authenticate(username, password, handler, context)
     }
   }

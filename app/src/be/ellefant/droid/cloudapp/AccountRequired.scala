@@ -6,7 +6,7 @@ import android.app.Activity
 
 trait AccountRequired extends Activity
     with Injection.AccountManager
-    with Injection.ThreadUtil { self: Activity with Logging =>
+    with Injection.ThreadUtil { self: Activity with Logging ⇒
 
   protected def onAccountSuccess(name: String): Any
   protected def onAccountFailure(): Any
@@ -17,16 +17,16 @@ trait AccountRequired extends Activity
     if (accounts.size == 0) {
       logger.debug("Adding account before continuing.")
       val amf = accountManager.addAccount(AccountType, AuthTokenType, null, null, this, null, null)
-      threadUtil.performOnBackgroundThread { () =>
+      threadUtil.performOnBackgroundThread { () ⇒
         try {
           val b = amf.getResult // TODO: use timeout
           val name = b.getString(android.accounts.AccountManager.KEY_ACCOUNT_NAME)
-          self.runOnUiThread { () =>
+          self.runOnUiThread { () ⇒
             onAccountSuccess(name)
           }
         } catch {
-          case e => // TODO handle other cases then wrong login/password: server unavailable, ...
-            self.runOnUiThread { () =>
+          case e ⇒ // TODO handle other cases then wrong login/password: server unavailable, ...
+            self.runOnUiThread { () ⇒
               onAccountFailure()
             }
         }

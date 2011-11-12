@@ -10,7 +10,7 @@ object General {
   lazy val buildVersion      = "0.0.1-SNAPSHOT"
   lazy val buildScalaVersion = "2.9.1"
 
-  lazy val settings = Defaults.defaultSettings ++ scalariformSettings ++ formattingSettings ++ Seq (
+  lazy val settings = Defaults.defaultSettings ++ formattingSettings ++ Seq (
     organization := buildOrganization,
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
@@ -24,7 +24,7 @@ object General {
     )
   )
 
-  lazy val formattingSettings = Seq(
+  lazy val formattingSettings = (inConfig(Compile)(baseScalariformSettings) ++ inConfig(Test)(baseScalariformSettings)) ++ Seq(
     ScalariformKeys.formatPreferences in Compile := formattingPreferences,
     ScalariformKeys.formatPreferences in Test    := formattingPreferences
   )
@@ -35,6 +35,7 @@ object General {
       .setPreference(AlignSingleLineCaseStatements, true)
       .setPreference(DoubleIndentClassDeclaration, true)
       .setPreference(IndentLocalDefs, true)
+      .setPreference(RewriteArrowSymbols, true)
   }
 
   lazy val fullAndroidSettings =

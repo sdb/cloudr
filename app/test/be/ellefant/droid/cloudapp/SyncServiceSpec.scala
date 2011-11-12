@@ -1,41 +1,45 @@
 package be.ellefant.droid.cloudapp
 
-import android.content.Intent
-import android.content.AbstractThreadedSyncAdapter
 import android.accounts.Account
-import android.os.Bundle
-import android.content.SyncResult
-import com.xtremelabs.robolectric.Robolectric
-import be.ellefant.droid.cloudapp.SyncService.CloudAppSyncAdapter
-import Robolectric._
-import android.content.ContentProviderClient
-import android.content.ContentProvider
-import roboguice.RoboGuice
-import DatabaseHelper._
-import com.xtremelabs.robolectric.tester.android.database.TestCursor
+import android.content.{ SyncResult, ContentProviderClient, ContentProvider, ContentValues }
 import android.database.Cursor
-import android.content.ContentValues
+import android.net.Uri
+import android.os.Bundle
+import roboguice.RoboGuice
+import com.cloudapp.api.CloudAppException
+import com.xtremelabs.robolectric.Robolectric
+import DatabaseHelper._
 
 class SyncServiceSpec extends CloudrSpecs {
 
   "SyncService" should {
-    "perform a sync" in syncNotItems
+    "perform an initial sync" in syncInitial
+    "perform an incremental sync" in pending
     "indicate an error when no password is found" in noPassword
     "indicate an error when a database exception occurs" in pending
+    "indicate an error when the password is invalid" in invalidPassword
+    "indicate an error when a JSON exception occurs" in pending
+    "indicate an error when a IO exception occurs" in pending
     "handle sync cancel" in pending
   }
 
   def noPassword = new context {
     syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)
-    syncResult.hasError must beTrue
+    hasError && noMods
   }
 
-  def syncNotItems = new success {
+  def invalidPassword = new context {
+    accountManagerMock.getPassword(account) returns "sdb"
+    cloudAppMock.getItems(1, 20, null, false, null) throws new CloudAppException(401, "", null)
+    syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)
+    hasError && noMods
+  }
+
+  def syncInitial = new success {
     val cursor = mock[Cursor]
     contentProvider.query(CloudAppProvider.ContentUri, Array(ColId), null, Array.empty, null) returns cursor
     cursor.moveToFirst returns false
     syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)
-    val noError = syncResult.hasError must beFalse
     val inserted = there was one(contentProvider).bulkInsert(CloudAppProvider.ContentUri, Array())
     noError && inserted
   }
@@ -55,5 +59,11 @@ class SyncServiceSpec extends CloudrSpecs {
     lazy val syncResult = new SyncResult
 
     contentProviderClient.getLocalContentProvider returns contentProvider
+
+    def noInsert = there was no(contentProvider).bulkInsert(any[Uri], any[Array[ContentValues]])
+    def noDelete = there was no(contentProvider).delete(any[Uri], anyString, any[Array[String]])
+    def noMods = noInsert && noDelete
+    def hasError = syncResult.hasError must beTrue
+    def noError = syncResult.hasError must beFalse
   }
 }

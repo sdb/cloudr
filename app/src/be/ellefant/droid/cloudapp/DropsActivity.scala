@@ -18,11 +18,11 @@ class DropsActivity extends RoboListActivity
     val projection = Array(ColId, ColName, ColUrl)
     val order = "%s DESC" format ColId
     val cursor = ItemType.withName(itemType) match {
-      case ItemType.All =>
+      case ItemType.All ⇒
         managedQuery(CloudAppProvider.ContentUri, projection, null, null, order)
-      case ItemType.Popular =>
+      case ItemType.Popular ⇒
         managedQuery(CloudAppProvider.ContentUri, projection, null, null, "%s DESC, %s" format (ColViewCounter, order))
-      case it =>
+      case it ⇒
         managedQuery(CloudAppProvider.ContentUri, projection, "item_type = ?", Array(it.toString.toLowerCase), order)
     }
     val displayFields = Array(ColName, ColUrl)

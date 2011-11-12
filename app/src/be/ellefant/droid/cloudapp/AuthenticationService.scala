@@ -1,9 +1,9 @@
 package be.ellefant.droid.cloudapp
 
 import roboguice.service.RoboService
-import android.accounts.{ AccountManager => AndroidAccountManager }
+import android.accounts.{ AccountManager ⇒ AndroidAccountManager }
 import android.content.{ Intent, Context }
-import android.accounts.{ Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager => AndroidAccountManager }
+import android.accounts.{ Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager ⇒ AndroidAccountManager }
 import com.google.inject.Inject
 import android.os.Bundle
 
@@ -13,7 +13,7 @@ class AuthenticationService extends RoboService
     with Injection.AccountAuthenticator {
 
   def onBind = {
-    case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT =>
+    case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT ⇒
       logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
       authenticator.getIBinder
   }
@@ -36,13 +36,13 @@ object AuthenticationService {
 
     def confirmCredentials(response: AccountAuthenticatorResponse, account: Account, options: Bundle) =
       Option(options) match {
-        case Some(opts) if opts.containsKey(AndroidAccountManager.KEY_PASSWORD) =>
+        case Some(opts) if opts.containsKey(AndroidAccountManager.KEY_PASSWORD) ⇒
           val password = options.getString(AndroidAccountManager.KEY_PASSWORD)
           val verified = authenticate(account.name, password)
           val result = new Bundle
           result.putBoolean(AndroidAccountManager.KEY_BOOLEAN_RESULT, verified)
           result
-        case _ =>
+        case _ ⇒
           val intent = new Intent(context, classOf[AuthenticatorActivity])
           intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
           intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, true)
@@ -81,8 +81,8 @@ object AuthenticationService {
     }
 
     def getAuthTokenLabel(authTokenType: String): String = authTokenType match {
-      case AuthTokenType => context.getString(R.string.cloudapp_label)
-      case _             => null
+      case AuthTokenType ⇒ context.getString(R.string.cloudapp_label)
+      case _             ⇒ null
     }
 
     def hasFeatures(response: AccountAuthenticatorResponse, account: Account, features: Array[String]): Bundle = {
@@ -106,7 +106,7 @@ object AuthenticationService {
         (apiFactory create (username, password)).getAccountDetails
         true
       } catch {
-        case e => false
+        case e ⇒ false
       }
     }
 
