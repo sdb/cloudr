@@ -12,6 +12,7 @@ import android.content.{SyncResult, Context, ContentProviderClient, AbstractThre
 import android.database.Cursor
 import android.os.Bundle
 import roboguice.service.RoboService
+import android.content.ContentProvider
 
 class SyncService extends RoboService
   with Base.Service
@@ -27,7 +28,7 @@ class SyncService extends RoboService
 }
 
 object SyncService {
-  class CloudAppSyncAdapter @Inject protected (context: Context) extends AbstractThreadedSyncAdapter(context, true)
+  class CloudAppSyncAdapter @Inject protected[cloudapp] (context: Context) extends AbstractThreadedSyncAdapter(context, true)
     with Logging
     with Injection.AccountManager
     with Injection.ApiFactory {
@@ -38,11 +39,12 @@ object SyncService {
       extras match {
         case b =>
           logger.info("Processing sync with extras " + extras)
-          val p = provider.getLocalContentProvider.asInstanceOf[CloudAppProvider]
+          val p = provider.getLocalContentProvider
           Option(accountManager.getPassword(account)) match {
             case Some(pwd) =>
               processRequest(p, account, pwd, syncResult)
             case _ =>
+              syncResult.stats.numAuthExceptions += 1
               logger.warn("No password available")
             // TODO
           }
@@ -51,7 +53,7 @@ object SyncService {
       }
     }
 
-    protected def processRequest(provider: CloudAppProvider, account: Account, pwd: String, syncResult: SyncResult) {
+    protected def processRequest(provider: ContentProvider, account: Account, pwd: String, syncResult: SyncResult) {
       // provider.delete(CloudAppProvider.ContentUri, null, null)
       var existingCursor: Cursor = null
       var existing: Seq[Long] = null
