@@ -24,6 +24,12 @@ class SharingServiceSpec extends CloudrSpecs {
     "do nothing when the title or url of the bookmark are blank" in {
       pending
     }
+    
+    "show a toast message when authentication fails" in pending
+    
+    "retry when an IO exception occurs" in pending
+    
+    "show a toast message when more than 3 IO exceptions occur" in pending
   }
 
   trait context extends RoboContext

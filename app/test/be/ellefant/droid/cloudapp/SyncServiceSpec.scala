@@ -19,7 +19,8 @@ class SyncServiceSpec extends CloudrSpecs {
     "indicate an error when a database exception occurs" in pending
     "indicate an error when the password is invalid" in invalidPassword
     "indicate an error when a JSON exception occurs" in pending
-    "indicate an error when a IO exception occurs" in pending
+    "retry in case of an IO exception" in pending
+    "indicate an error when more than 3 IO exception occur" in pending
     "handle sync cancel" in pending
   }
 
