@@ -7,7 +7,7 @@ package object cloudapp extends Imports with Constants
 }
 
 class CloudrString(s: String) {
-  def %(args: Any*) = s.format(args:_*)
+  def %(args: Any*) = s.format(args: _*)
 }
 
 trait Imports {

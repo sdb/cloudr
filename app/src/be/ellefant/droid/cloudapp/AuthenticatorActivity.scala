@@ -6,11 +6,11 @@ import android.text.TextUtils
 import android.view.{ View, Window }
 import android.app.{ Activity, ProgressDialog }
 import AuthenticatorActivity._
-import android.widget.{Toast, EditText, TextView}
+import android.widget.{ Toast, EditText, TextView }
 import roboguice.activity.RoboAccountAuthenticatorActivity
 import be.ellefant.droid.cloudapp.ThreadUtils._
 import android.provider.ContactsContract
-import android.content.{ContentResolver, Context, DialogInterface, Intent}
+import android.content.{ ContentResolver, Context, DialogInterface, Intent }
 
 /**
  * Activity which displays login screen to the user.
@@ -83,8 +83,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     password = passwordEdit.getText.toString
     if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
       message.setText(getMessage)
-    }
-    else {
+    } else {
       showProgress
       authThread = attemptAuth(username, password, handler, AuthenticatorActivity.this)
     }
@@ -107,8 +106,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     if (requestNewAccount) {
       accountManager.addAccountExplicitly(account, password, null)
       ContentResolver.setSyncAutomatically(account, "cloudapp", true)
-    }
-    else {
+    } else {
       accountManager.setPassword(account, password)
     }
     val intent = new Intent
@@ -133,17 +131,14 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     if (result) {
       if (!confirmCredentials) {
         finishLogin
-      }
-      else {
+      } else {
         finishConfirmCredentials(true)
       }
-    }
-    else {
+    } else {
       logger.info("onAuthenticationResult: failed to authenticate")
       if (requestNewAccount) {
         message.setText(getText(R.string.login_activity_loginfail_text_both))
-      }
-      else {
+      } else {
         message.setText(getText(R.string.login_activity_loginfail_text_pwonly))
       }
     }
@@ -166,14 +161,14 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   }
 
   protected def authenticate(username: String, password: String, handler: Handler, context: Context) = {
-    def sendResult(result: Boolean, handler: Handler, context: Context) = {
-      if (handler != null && context != null) {
-        handler.post { () =>
-          (context.asInstanceOf[AuthenticatorActivity]).onAuthenticationResult(result)
+      def sendResult(result: Boolean, handler: Handler, context: Context) = {
+        if (handler != null && context != null) {
+          handler.post { () =>
+            (context.asInstanceOf[AuthenticatorActivity]).onAuthenticationResult(result)
+          }
         }
+        result
       }
-      result
-    }
     try {
       (apiFactory create (username, password)).getAccountDetails
       sendResult(true, handler, context)

@@ -2,7 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import android.content.Context
 import DatabaseHelper._
-import android.database.sqlite.{SQLiteDatabase, SQLiteOpenHelper}
+import android.database.sqlite.{ SQLiteDatabase, SQLiteOpenHelper }
 import com.cloudapp.api.model.CloudAppItem
 import android.content.ContentValues
 import java.text.SimpleDateFormat
@@ -25,7 +25,7 @@ object DatabaseHelper {
   val DbName = "cloudapp"
   val TblItems = "items"
   val IndItemsHref = "ind_items_href"
-    
+
   val ColId = "_id"
   val ColHref = "href"
   val ColName = "name"
@@ -69,11 +69,11 @@ object DatabaseHelper {
   val SqlCreateIndex = "CREATE INDEX %s ON %s (%s)" format (IndItemsHref, TblItems, ColHref)
 
   val SqlDrop = "DROP TABLE IF EXISTS " + TblItems
-  
+
   val SqlDropIndex = "DROP INDEX IF EXISTS " + IndItemsHref
-  
+
   val DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS") // ISO8601
-  
+
   class RichCloudAppItem(item: CloudAppItem) {
     def toContentValues = {
       val values = new ContentValues()
@@ -105,6 +105,6 @@ object DatabaseHelper {
       values
     }
   }
-  
+
   implicit def richCloudAppItem(item: CloudAppItem) = new RichCloudAppItem(item)
 }

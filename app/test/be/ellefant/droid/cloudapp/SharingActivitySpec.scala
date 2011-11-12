@@ -43,7 +43,7 @@ class SharingActivitySpec extends CloudrSpecs {
 
     def testToast(msg: String) = {
       activity.onCreate(null)
-      ShadowToast.getTextOfLatestToast must be_== (msg)
+      ShadowToast.getTextOfLatestToast must be_==(msg)
     }
   }
 

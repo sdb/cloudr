@@ -2,7 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import android.net.Uri
 import android.database.Cursor
-import android.content.{UriMatcher, ContentValues, ContentProvider}
+import android.content.{ UriMatcher, ContentValues, ContentProvider }
 import android.database.sqlite.SQLiteQueryBuilder
 import CloudAppProvider._
 
@@ -48,7 +48,7 @@ class CloudAppProvider extends ContentProvider with Logging {
     Matcher.`match`(uri) match {
       case 1 if initialValues != null =>
         val newID = db.getWritableDatabase().insert(DatabaseHelper.TblItems, DatabaseHelper.ColId, initialValues)
-    	  Uri.withAppendedPath(uri, newID.toString)
+        Uri.withAppendedPath(uri, newID.toString)
       case _ => null
     }
   }

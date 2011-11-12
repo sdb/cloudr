@@ -5,9 +5,9 @@ import roboguice.service.RoboIntentService
 import SharingService._
 
 class SharingService extends RoboIntentService(Name)
-  with Base.Service
-  with Injection.AccountManager
-  with Injection.ApiFactory {
+    with Base.Service
+    with Injection.AccountManager
+    with Injection.ApiFactory {
 
   def onHandleIntent(intent: Intent) = {
     accountManager.getAccountsByType(AccountType).headOption match {

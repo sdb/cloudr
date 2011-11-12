@@ -4,14 +4,14 @@ import org.specs2.mutable._
 import org.specs2.mock.Mockito
 import com.github.jbrechtel.robospecs.RoboSpecs
 import roboguice.RoboGuice
-import com.xtremelabs.robolectric.{Robolectric,RobolectricConfig}
+import com.xtremelabs.robolectric.{ Robolectric, RobolectricConfig }
 import com.google.inject.AbstractModule
 import com.google.inject.util.Modules
 import com.cloudapp.api.CloudApp
 import android.accounts.AccountManager
 
 trait CloudrSpecs extends RoboSpecs with Mockito {
-  args(sequential=true)
+  args(sequential = true)
 
   override lazy val robolectricConfig = new RobolectricConfig(new java.io.File("./app/"))
 

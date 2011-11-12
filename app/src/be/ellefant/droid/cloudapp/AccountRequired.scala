@@ -5,8 +5,8 @@ import ThreadUtils._
 import android.app.Activity
 
 trait AccountRequired extends Activity
-  with Injection.AccountManager
-  with Injection.ThreadUtil { self: Activity with Logging =>
+    with Injection.AccountManager
+    with Injection.ThreadUtil { self: Activity with Logging =>
 
   protected def onAccountSuccess(name: String): Any
   protected def onAccountFailure(): Any

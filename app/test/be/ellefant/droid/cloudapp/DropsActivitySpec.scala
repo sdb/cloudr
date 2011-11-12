@@ -8,9 +8,9 @@ import DatabaseHelper._
 import com.xtremelabs.robolectric.Robolectric._
 
 class DropsActivitySpec extends CloudrSpecs {
-  
+
   "DropsActivity" should {
-    
+
     "show all drops when invoked with an item type" in new context {
       pending
       /*val cv = new ContentValues()
@@ -27,7 +27,7 @@ class DropsActivitySpec extends CloudrSpecs {
       activity.onCreate(null)
       shadow.getListAdapter.getCount must be_== (1)*/
     }
-    
+
     "show all drops when invoked with an unknown item type" in {
       pending
     }

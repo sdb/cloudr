@@ -8,9 +8,9 @@ import com.google.inject.Inject
 import android.os.Bundle
 
 class AuthenticationService extends RoboService
-  with Base.Service
-  with sdroid.Service
-  with Injection.AccountAuthenticator {
+    with Base.Service
+    with sdroid.Service
+    with Injection.AccountAuthenticator {
 
   def onBind = {
     case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT =>
@@ -21,8 +21,8 @@ class AuthenticationService extends RoboService
 
 object AuthenticationService {
   class Authenticator @Inject protected (context: Context) extends AbstractAccountAuthenticator(context)
-    with Injection.AccountManager
-    with Injection.ApiFactory {
+      with Injection.AccountManager
+      with Injection.ApiFactory {
 
     def addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,
       requiredFeatures: Array[String], options: Bundle): Bundle = {
@@ -82,7 +82,7 @@ object AuthenticationService {
 
     def getAuthTokenLabel(authTokenType: String): String = authTokenType match {
       case AuthTokenType => context.getString(R.string.cloudapp_label)
-      case _ => null
+      case _             => null
     }
 
     def hasFeatures(response: AccountAuthenticatorResponse, account: Account, features: Array[String]): Bundle = {

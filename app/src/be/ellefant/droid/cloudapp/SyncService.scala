@@ -8,16 +8,16 @@ import com.cloudapp.api.CloudAppException
 import com.google.inject.Inject
 import DatabaseHelper._
 import android.accounts.Account
-import android.content.{SyncResult, Context, ContentProviderClient, AbstractThreadedSyncAdapter}
+import android.content.{ SyncResult, Context, ContentProviderClient, AbstractThreadedSyncAdapter }
 import android.database.Cursor
 import android.os.Bundle
 import roboguice.service.RoboService
 import android.content.ContentProvider
 
 class SyncService extends RoboService
-  with Base.Service
-  with sdroid.Service
-  with Injection.SyncAdapter {
+    with Base.Service
+    with sdroid.Service
+    with Injection.SyncAdapter {
 
   def onBind = {
     case intent if intent.getAction == "android.content.SyncAdapter" =>
@@ -29,9 +29,9 @@ class SyncService extends RoboService
 
 object SyncService {
   class CloudAppSyncAdapter @Inject protected[cloudapp] (context: Context) extends AbstractThreadedSyncAdapter(context, true)
-    with Logging
-    with Injection.AccountManager
-    with Injection.ApiFactory {
+      with Logging
+      with Injection.AccountManager
+      with Injection.ApiFactory {
 
     def onPerformSync(account: Account, extras: Bundle, authority: String,
       provider: ContentProviderClient, syncResult: SyncResult) {

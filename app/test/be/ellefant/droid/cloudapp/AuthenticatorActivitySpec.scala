@@ -2,11 +2,11 @@ package be.ellefant.droid.cloudapp
 
 class AuthenticatorActivitySpec extends CloudrSpecs {
 
-  "AuthenticatorActivity" should  {
-    "display a toast when an account is already available" in  {
+  "AuthenticatorActivity" should {
+    "display a toast when an account is already available" in {
       pending
     }
-    "display the login when no account is available" in  {
+    "display the login when no account is available" in {
       pending
     }
   }

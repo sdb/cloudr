@@ -1,6 +1,6 @@
 package be.ellefant.droid.cloudapp
 
-import android.widget.{AdapterView, ArrayAdapter}
+import android.widget.{ AdapterView, ArrayAdapter }
 import android.content.Intent
 import android.view.View
 import roboguice.activity.RoboListActivity

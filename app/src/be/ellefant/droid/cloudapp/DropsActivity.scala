@@ -1,7 +1,7 @@
 package be.ellefant.droid.cloudapp
 
 import roboguice.activity.RoboListActivity
-import android.widget.{AdapterView, SimpleCursorAdapter, ArrayAdapter, TextView}
+import android.widget.{ AdapterView, SimpleCursorAdapter, ArrayAdapter, TextView }
 import android.content.Intent
 import android.view.View
 import DatabaseHelper._
@@ -18,7 +18,7 @@ class DropsActivity extends RoboListActivity
     val projection = Array(ColId, ColName, ColUrl)
     val order = "%s DESC" format ColId
     val cursor = ItemType.withName(itemType) match {
-     	case ItemType.All =>
+      case ItemType.All =>
         managedQuery(CloudAppProvider.ContentUri, projection, null, null, order)
       case ItemType.Popular =>
         managedQuery(CloudAppProvider.ContentUri, projection, null, null, "%s DESC, %s" format (ColViewCounter, order))

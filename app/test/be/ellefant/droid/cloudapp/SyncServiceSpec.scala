@@ -24,12 +24,12 @@ class SyncServiceSpec extends CloudrSpecs {
     "indicate an error when a database exception occurs" in pending
     "handle sync cancel" in pending
   }
-  
+
   def noPassword = new context {
     syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)
     syncResult.hasError must beTrue
   }
-  
+
   def syncNotItems = new success {
     val cursor = mock[Cursor]
     contentProvider.query(CloudAppProvider.ContentUri, Array(ColId), null, Array.empty, null) returns cursor
@@ -39,21 +39,21 @@ class SyncServiceSpec extends CloudrSpecs {
     val inserted = there was one(contentProvider).bulkInsert(CloudAppProvider.ContentUri, Array())
     noError && inserted
   }
-  
+
   trait success extends context {
     accountManagerMock.getPassword(account) returns "sdb"
   }
-  
+
   trait context extends RoboContext
       with Mocks.AccountManagerMock
-      with Mocks.CloudAppMock { 
-      
+      with Mocks.CloudAppMock {
+
     lazy val syncAdapter = RoboGuice.getInjector(Robolectric.application.getApplicationContext).getInstance(classOf[SyncService.CloudAppSyncAdapter])
     lazy val contentProvider = mock[ContentProvider]
     lazy val contentProviderClient = mock[ContentProviderClient]
     lazy val account = new Account("sdb", AccountType)
     lazy val syncResult = new SyncResult
-    
+
     contentProviderClient.getLocalContentProvider returns contentProvider
   }
 }

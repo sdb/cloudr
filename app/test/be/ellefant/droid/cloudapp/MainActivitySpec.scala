@@ -2,7 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import android.accounts.Account
 import android.widget.ListView
-import android.content.{Intent, ContextWrapper}
+import android.content.{ Intent, ContextWrapper }
 import android.app.ListActivity
 import com.xtremelabs.robolectric.Robolectric._
 
@@ -11,7 +11,7 @@ class MainActivitySpec extends CloudrSpecs {
   "MainActivity" should {
 
     "show list of item types" in new success {
-      activity.getListAdapter.getCount must be_== (1)
+      activity.getListAdapter.getCount must be_==(1)
     }
 
     "trigger DropActivity when an item is clicked" in new success {

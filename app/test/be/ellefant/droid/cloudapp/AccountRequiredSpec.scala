@@ -1,7 +1,7 @@
 package be.ellefant.droid.cloudapp
 
 import android.os.Bundle
-import android.accounts.{AuthenticatorException, OperationCanceledException, AccountManagerFuture, Account}
+import android.accounts.{ AuthenticatorException, OperationCanceledException, AccountManagerFuture, Account }
 import roboguice.activity.RoboActivity
 import java.io.IOException
 

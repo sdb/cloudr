@@ -23,7 +23,7 @@ object Injection {
   }
 
   trait CloudAppManager {
-    @Inject protected var cloudAppManager: be.ellefant.droid.cloudapp.CloudAppManager  = _
+    @Inject protected var cloudAppManager: be.ellefant.droid.cloudapp.CloudAppManager = _
   }
 
   trait AccountAuthenticator {

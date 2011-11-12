@@ -1,10 +1,10 @@
 package be.ellefant.droid.cloudapp
 
 import android.os.Build.VERSION
-import android.content.{Context, AbstractThreadedSyncAdapter}
-import android.accounts.{AccountManager, AbstractAccountAuthenticator}
+import android.content.{ Context, AbstractThreadedSyncAdapter }
+import android.accounts.{ AccountManager, AbstractAccountAuthenticator }
 import roboguice.inject.ContextScoped
-import com.google.inject.{Inject, Provider, AbstractModule}
+import com.google.inject.{ Inject, Provider, AbstractModule }
 import CloudrModule._
 
 class CloudrModule extends AbstractModule {
