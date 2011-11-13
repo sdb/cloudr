@@ -3,4 +3,5 @@
                        android:accountType="be.ellefant.droid.cloudapp"
                        android:icon="@drawable/cloud_icon"
                        android:smallIcon="@drawable/cloud_icon"
-                       android:label="@string/cloudapp_label" />
+                       android:label="@string/cloudapp_label"
+                       android:accountPreferences="@xml/account_preferences" />

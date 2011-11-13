@@ -64,6 +64,20 @@ android:versionName="0.1" android:versionCode="1" package="be.ellefant.droid.clo
             android:label="@string/ui_activity_title"
             android:excludeFromRecents="true">
         </activity>
+        
+            
+		    <activity android:name=".AccountPreferencesActivity"
+            android:label="@string/account_settings"
+	          android:taskAffinity="android.system"
+	          android:launchMode="singleTask"
+	          android:noHistory="true"
+	          android:excludeFromRecents="true"
+	          android:exported="true">>
+			      <intent-filter>
+				        <action android:name="android.intent.action.VIEW" />
+				        <category android:name="android.intent.category.DEFAULT" />
+			      </intent-filter>
+		    </activity>
 
         <service
             android:name=".SyncService"

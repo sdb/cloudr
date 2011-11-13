@@ -3,6 +3,7 @@
     <string name="cloudapp_name">Cloudr</string>
     <string name="cloudapp_label">Cloudr</string>
     <string name="share_link">Link</string>
+    <string name="account_settings">Account Settings</string>
 
     <string name="drops_label">Drops</string>
     <string name="drop_label">Drop</string>
