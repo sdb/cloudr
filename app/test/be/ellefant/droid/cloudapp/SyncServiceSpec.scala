@@ -46,7 +46,7 @@ class SyncServiceSpec extends CloudrSpecs {
   }
 
   trait success extends context {
-    accountManagerMock.getPassword(account) returns "sdb"
+    accountManagerMock.blockingGetAuthToken(account, AuthTokenType, true) returns "sdb"
   }
 
   trait context extends RoboContext

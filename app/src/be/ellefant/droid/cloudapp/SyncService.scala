@@ -13,6 +13,8 @@ import android.database.Cursor
 import android.os.Bundle
 import roboguice.service.RoboService
 import android.content.ContentProvider
+import android.accounts.AuthenticatorException
+import android.accounts.OperationCanceledException
 
 class SyncService extends RoboService
     with Base.Service
@@ -32,21 +34,31 @@ class SyncService extends RoboService
 
     def onPerformSync(account: Account, extras: Bundle, authority: String,
       provider: ContentProviderClient, syncResult: SyncResult) {
-      logger.debug("onPerformSync for '%s'" % account.name)
-      extras match {
-        case b ⇒
-          logger.info("Processing sync with extras " + extras)
-          val p = provider.getLocalContentProvider
-          Option(accountManager.getPassword(account)) match {
-            case Some(pwd) ⇒
-              processRequest(p, account, pwd, syncResult)
-            case _ ⇒
-              syncResult.stats.numAuthExceptions += 1
-              logger.warn("No password available")
-            // TODO
-          }
-        //      case _ =>
-        //        logger.info("Didn't process sync with extras " + extras)
+      try {
+	      logger.debug("onPerformSync for '%s'" % account.name)
+	      extras match {
+	        case b ⇒
+	          logger.info("Processing sync with extras " + extras)
+	          val p = provider.getLocalContentProvider
+	          Option(accountManager.blockingGetAuthToken(account, AuthTokenType, true)) match {
+	            case Some(pwd) ⇒
+	              processRequest(p, account, pwd, syncResult)
+	            case _ ⇒
+	              syncResult.stats.numAuthExceptions += 1
+	              logger.warn("No password available")
+	            // TODO
+	          }
+	        //      case _ =>
+	        //        logger.info("Didn't process sync with extras " + extras)
+	      }
+      } catch {
+        case e: AuthenticatorException =>
+          syncResult.stats.numParseExceptions += 1
+          logger.warn("AuthenticatorException", e)
+        case e: OperationCanceledException =>
+          logger.warn("OperationCanceledException", e)
+        case e =>
+          logger.warn("Exception", e)
       }
     }
 
@@ -99,6 +111,7 @@ class SyncService extends RoboService
               Nil
             case e: CloudAppException if e.getCode() == 401 ⇒
               logger.warn("unauthenticated", e)
+              accountManager.invalidateAuthToken(AccountType, pwd)
               syncResult.stats.numAuthExceptions += 1
               tried = 3
               Nil

@@ -9,20 +9,20 @@ import android.os.Bundle
 
 class AuthenticationService extends RoboService
     with Base.Service
-    with sdroid.Service {
+    with sdroid.Service
+    with Injection.AccountManager
+    with Injection.ApiFactory {
   
   lazy val authenticator = new Authenticator
 
   def onBind = {
     case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT ⇒
-      logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
+      logger.info("Returning the AccountAuthenticator binder for intent '%s'." format intent)
       authenticator.getIBinder
   }
   
   
-  protected class Authenticator extends AbstractAccountAuthenticator(AuthenticationService.this)
-      with Injection.AccountManager
-      with Injection.ApiFactory {
+  protected class Authenticator extends AbstractAccountAuthenticator(AuthenticationService.this) {
 
     def addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,
       requiredFeatures: Array[String], options: Bundle): Bundle = {

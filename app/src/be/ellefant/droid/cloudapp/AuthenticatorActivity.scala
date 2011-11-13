@@ -145,7 +145,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   }
 
   private def getMessage: CharSequence = {
-    getString(R.string.cloudapp_label)
+    getString(R.string.cloudapp_label) // TODO ?
     if (TextUtils.isEmpty(username)) {
       val msg: CharSequence = getText(R.string.login_activity_newaccount_text)
       return msg
