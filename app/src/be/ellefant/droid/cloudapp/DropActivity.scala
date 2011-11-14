@@ -11,6 +11,7 @@ import java.util.Date
 import DatabaseHelper._
 import DropActivity._
 import CloudAppManager._
+import android.view.View
 
 class DropActivity extends RoboActivity
     with Base.AccountRequired {
@@ -31,6 +32,7 @@ class DropActivity extends RoboActivity
 
     val nameText = findViewById(R.id.dropTitle).asInstanceOf[TextView]
     nameText.setText(drop map (_.name.toString) getOrElse (""))
+    nameText setOnClickListener (onClickName _)
 
     val viewCount = findViewById(R.id.dropViewCount).asInstanceOf[TextView]
     viewCount.setText(drop map (_.viewCounter.toString) getOrElse (""))
@@ -47,6 +49,7 @@ class DropActivity extends RoboActivity
 
     val urlText = findViewById(R.id.dropUrl).asInstanceOf[TextView]
     urlText.setText(drop map (_.url) getOrElse (""))
+    urlText setOnClickListener (onClickUrl _)
 
     val sourceText = findViewById(R.id.dropSource).asInstanceOf[TextView]
     sourceText.setText(drop map (_.source) getOrElse (""))
@@ -59,24 +62,35 @@ class DropActivity extends RoboActivity
     super.onCreateOptionsMenu(menu)
     true
   }
+  
+  private def onClickUrl(view: View) = openBrowser()
+  private def onClickName(view: View) = openApplication()
+  
+  private def openBrowser() = {
+    drop foreach { d ⇒
+      val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.url))
+      startActivity(browserIntent)
+    }
+  }
+  
+  private def openApplication() = {
+    drop foreach { d ⇒
+      d.itemType match {
+        case ItemType.Bookmark ⇒
+          val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.contentUrl))
+          startActivity(browserIntent)
+        case _ ⇒
+        // TODO open drop
+      }
+    }
+  }
 
   override def onOptionsItemSelected(item: MenuItem) = item.getItemId match {
     case R.id.open ⇒
-      drop foreach { d ⇒
-        d.itemType match {
-          case ItemType.Bookmark ⇒
-            val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.contentUrl))
-            startActivity(browserIntent)
-          case _ ⇒
-          // TODO open drop
-        }
-      }
+      openApplication()
       true
     case R.id.browse ⇒
-      drop foreach { d ⇒
-        val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.url))
-        startActivity(browserIntent)
-      }
+    	openBrowser()
       true
     case R.id.delete ⇒
       true
