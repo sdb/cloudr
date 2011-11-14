@@ -32,18 +32,15 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   private var usernameEdit: EditText = null
   private val handler: Handler = new Handler
 
-  override def onCreate(icicle: Bundle) {
-    super.onCreate(icicle)
-    logger.info("onCreate(" + icicle + ")")
+  override def onCreate(bundle: Bundle) {
+    super.onCreate(bundle)
     val accounts = accountManager.getAccountsByType(AccountType)
     if (accounts.size == 0) {
-      logger.info("loading data from Intent")
       val intent = getIntent
       username = intent.getStringExtra(ParamUsername)
       authtokenType = intent.getStringExtra(ParamAuthTokenType)
       requestNewAccount = username == null
       confirmCredentials = intent.getBooleanExtra(ParamConfirmCredentials, false)
-      logger.info("request new: " + requestNewAccount)
       requestWindowFeature(Window.FEATURE_LEFT_ICON)
       setContentView(R.layout.login_activity)
       getWindow.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_alert)
@@ -66,7 +63,6 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     dialog.setCancelable(true)
     dialog.setOnCancelListener(new DialogInterface.OnCancelListener {
       def onCancel(dialog: DialogInterface) {
-        logger.info("dialog cancel has been invoked")
         if (authThread != null) {
           authThread.interrupt
           finish
@@ -90,7 +86,6 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   }
 
   private def finishConfirmCredentials(result: Boolean) {
-    logger.info("finishConfirmCredentials()")
     val account = new Account(username, AccountType)
     accountManager.setPassword(account, password)
     val intent = new Intent
@@ -101,7 +96,6 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   }
 
   private def finishLogin {
-    logger.info("finishLogin()")
     val account = new Account(username, AccountType)
     if (requestNewAccount) {
       accountManager.addAccountExplicitly(account, password, null)
@@ -126,7 +120,6 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   }
 
   def onAuthenticationResult(result: Boolean) {
-    logger.info("onAuthenticationResult(" + result + ")")
     hideProgress
     if (result) {
       if (!confirmCredentials) {
@@ -135,7 +128,6 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
         finishConfirmCredentials(true)
       }
     } else {
-      logger.info("onAuthenticationResult: failed to authenticate")
       if (requestNewAccount) {
         message.setText(getText(R.string.login_activity_loginfail_text_both))
       } else {

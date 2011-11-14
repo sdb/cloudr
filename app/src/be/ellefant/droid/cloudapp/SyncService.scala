@@ -38,14 +38,14 @@ class SyncService extends RoboService
         logger.debug("onPerformSync for '%s'" % account.name)
         extras match {
           case b ⇒
-            logger.info("Processing sync with extras " + extras)
+            logger.debug("Processing sync with extras " + extras)
             val p = provider.getLocalContentProvider
             Option(accountManager.blockingGetAuthToken(account, AuthTokenType, true)) match {
               case Some(pwd) ⇒
                 processRequest(p, account, pwd, syncResult)
               case _ ⇒
                 syncResult.stats.numAuthExceptions += 1
-                logger.warn("No password available")
+                logger.warn("No password available for CloudApp")
               // TODO
             }
           //      case _ =>
@@ -54,11 +54,9 @@ class SyncService extends RoboService
       } catch {
         case e: AuthenticatorException ⇒
           syncResult.stats.numParseExceptions += 1
-          logger.warn("AuthenticatorException", e)
+          logger.warn("error getting auth token", e)
         case e: OperationCanceledException ⇒
-          logger.warn("OperationCanceledException", e)
-        case e ⇒
-          logger.warn("Exception", e)
+          logger.debug("sync operation canceled", e)
       }
     }
 
@@ -73,7 +71,6 @@ class SyncService extends RoboService
           while (!existingCursor.isAfterLast()) {
             val id = existingCursor.getLong(0)
             existingCursor.moveToNext()
-            logger.info("id: " + id)
             l += id
           }
           l.toSeq
@@ -86,7 +83,7 @@ class SyncService extends RoboService
       } finally {
         if (existingCursor != null) existingCursor.close()
       }
-      logger.info("existing " + existing)
+      logger.debug("existing items: " + existing)
 
       val api = apiFactory.create(account.name, pwd)
       val itemsPerPage = 20
@@ -94,13 +91,13 @@ class SyncService extends RoboService
       var tried = 0
       var finished = false
       val it = Iterator.continually {
-        logger.info("getting page " + page)
+        logger.debug("getting page " + page)
         var items: List[CloudAppItem] = if (finished || tried > 2) List.empty else
           try {
             api.getItems(page, itemsPerPage, null, false, null).toList
           } catch {
             case e: CloudAppException if e.getCode() == 500 && e.getCause.isInstanceOf[JSONException] ⇒
-              logger.warn("error fetching data", e)
+              logger.warn("error reading json", e)
               syncResult.stats.numParseExceptions += 1
               tried += 1
               Nil
@@ -137,6 +134,7 @@ class SyncService extends RoboService
         provider.bulkInsert(CloudAppProvider.ContentUri, toInsert.toArray)
       } catch {
         case e ⇒
+          logger.warn("update failed", e)
           syncResult.databaseError = true
       }
     }

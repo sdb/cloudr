@@ -17,7 +17,7 @@ class AuthenticationService extends RoboService
 
   def onBind = {
     case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT ⇒
-      logger.info("Returning the AccountAuthenticator binder for intent '%s'." format intent)
+      logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
       authenticator.getIBinder
   }
 

@@ -30,7 +30,7 @@ class SharingService extends RoboIntentService(Name)
           logger.debug("New CloudAppItem created '%d'." format bm.getId())
         } catch {
           case e ⇒
-            logger.warn("Failed to create new CloudAppItem for '%s'." format url) // TODO catch specific exceptions and show toast message
+            logger.warn("Failed to create new CloudAppItem for '%s'." format url, e) // TODO catch specific exceptions and show toast message
         }
       case _ ⇒
         logger.warn("No CloudApp account found.")
