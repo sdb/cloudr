@@ -1,18 +1,21 @@
 package be.ellefant.droid.cloudapp
 
-import roboguice.activity.RoboActivity
-import android.widget.TextView
+import android.content.Intent
 import android.database.Cursor
+import android.net.Uri
+import android.view.{MenuItem, Menu}
+import android.widget.{TextView, CheckBox}
+import roboguice.activity.RoboActivity
+import java.text.SimpleDateFormat
+import java.util.Date
 import DatabaseHelper._
 import DropActivity._
-import java.util.Date
-import android.widget.CheckBox
-import java.text.SimpleDateFormat
-import android.view.Menu
+import CloudAppManager._
 
 class DropActivity extends RoboActivity
-    with Base.AccountRequired
-    with Base.Default {
+    with Base.AccountRequired {
+  
+  private var drop: Option[Drop] = None
 
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
@@ -21,10 +24,10 @@ class DropActivity extends RoboActivity
     setTitle("Cloudr")
     setContentView(R.layout.drop)
     val cursor = managedQuery(CloudAppProvider.ContentUri,
-      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource),
+      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType, ColContentUrl),
       "%s = %d" format (ColId, id), null, null)
     // TODO: check if item is found
-    val drop = if (cursor.moveToFirst()) Some(Drop(cursor)) else Option.empty[Drop]
+    drop = if (cursor.moveToFirst()) Some(Drop(cursor)) else Option.empty[Drop]
 
     val nameText = findViewById(R.id.dropTitle).asInstanceOf[TextView]
     nameText.setText(drop map (_.name.toString) getOrElse (""))
@@ -50,9 +53,34 @@ class DropActivity extends RoboActivity
   }
   
   override def onCreateOptionsMenu(menu: Menu) = {
-    menu.add(R.string.delete)
+    // Seq(R.string.open, R.string.browse, R.string.delete) foreach (i => menu.add(Menu.NONE, ))
+    val inflater = getMenuInflater()
+    inflater.inflate(R.menu.drop_menu, menu)
     super.onCreateOptionsMenu(menu)
     true
+  }
+  
+  override def onOptionsItemSelected(item: MenuItem) = item.getItemId match {
+    case R.id.open =>
+      drop foreach { d =>
+        d.itemType match {
+          case ItemType.Bookmark =>
+            val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.contentUrl))
+            startActivity(browserIntent)
+          case _ =>
+            // TODO open drop
+        }
+      }
+      true
+    case R.id.browse =>
+      drop foreach { d =>
+        val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.url))
+        startActivity(browserIntent)
+      }
+      true
+    case R.id.delete =>
+      true
+    case _ => super.onOptionsItemSelected(item)
   }
 }
 
@@ -62,9 +90,11 @@ object DropActivity {
 
   case class Drop(
     id: Long,
+    itemType: ItemType.ItemType,
     name: String,
     viewCounter: Int,
     url: String,
+    contentUrl: String,
     priv: Boolean,
     source: String,
     createdAt: Date,
@@ -73,9 +103,11 @@ object DropActivity {
   object Drop {
     def apply(cursor: Cursor): Drop = {
       Drop(id = cursor.getLong(0),
+        itemType = ItemType.withName(cursor.getString(8).capitalize),
         name = cursor.getString(1),
         viewCounter = cursor.getInt(2),
         url = cursor.getString(3),
+        contentUrl = cursor.getString(9),
         priv = cursor.getInt(4) == 1,
         createdAt = DateFormat.parse(cursor.getString(5)),
         updatedAt = DateFormat.parse(cursor.getString(6)),

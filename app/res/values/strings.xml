@@ -11,6 +11,8 @@
     <string name="drop_label">Drop</string>
     
     <string name="delete">Delete</string>
+    <string name="open">Open</string>
+    <string name="browse">Browse</string>
 
     <string name="notification_login_error">Touch to sign into your CloudApp account.</string>
 
