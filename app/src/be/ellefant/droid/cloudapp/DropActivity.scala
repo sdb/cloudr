@@ -3,8 +3,8 @@ package be.ellefant.droid.cloudapp
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
-import android.view.{MenuItem, Menu}
-import android.widget.{TextView, CheckBox}
+import android.view.{ MenuItem, Menu }
+import android.widget.{ TextView, CheckBox }
 import roboguice.activity.RoboActivity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -14,7 +14,7 @@ import CloudAppManager._
 
 class DropActivity extends RoboActivity
     with Base.AccountRequired {
-  
+
   private var drop: Option[Drop] = None
 
   protected def onAccountSuccess(name: String) = {
@@ -51,7 +51,7 @@ class DropActivity extends RoboActivity
     val sourceText = findViewById(R.id.dropSource).asInstanceOf[TextView]
     sourceText.setText(drop map (_.source) getOrElse (""))
   }
-  
+
   override def onCreateOptionsMenu(menu: Menu) = {
     // Seq(R.string.open, R.string.browse, R.string.delete) foreach (i => menu.add(Menu.NONE, ))
     val inflater = getMenuInflater()
@@ -59,28 +59,28 @@ class DropActivity extends RoboActivity
     super.onCreateOptionsMenu(menu)
     true
   }
-  
+
   override def onOptionsItemSelected(item: MenuItem) = item.getItemId match {
-    case R.id.open =>
-      drop foreach { d =>
+    case R.id.open ⇒
+      drop foreach { d ⇒
         d.itemType match {
-          case ItemType.Bookmark =>
+          case ItemType.Bookmark ⇒
             val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.contentUrl))
             startActivity(browserIntent)
-          case _ =>
-            // TODO open drop
+          case _ ⇒
+          // TODO open drop
         }
       }
       true
-    case R.id.browse =>
-      drop foreach { d =>
+    case R.id.browse ⇒
+      drop foreach { d ⇒
         val browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(d.url))
         startActivity(browserIntent)
       }
       true
-    case R.id.delete =>
+    case R.id.delete ⇒
       true
-    case _ => super.onOptionsItemSelected(item)
+    case _ ⇒ super.onOptionsItemSelected(item)
   }
 }
 

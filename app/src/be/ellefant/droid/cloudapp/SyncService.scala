@@ -21,7 +21,7 @@ class SyncService extends RoboService
     with sdroid.Service
     with Injection.AccountManager
     with Injection.ApiFactory {
-  
+
   protected[cloudapp] lazy val syncAdapter = new CloudAppSyncAdapter
 
   def onBind = {
@@ -29,35 +29,35 @@ class SyncService extends RoboService
       logger.debug("Returning the CloudAppSyncAdapter binder for intent '%s'." format intent)
       syncAdapter.getSyncAdapterBinder
   }
-  
+
   protected[cloudapp] class CloudAppSyncAdapter extends AbstractThreadedSyncAdapter(SyncService.this, true) {
 
     def onPerformSync(account: Account, extras: Bundle, authority: String,
       provider: ContentProviderClient, syncResult: SyncResult) {
       try {
-	      logger.debug("onPerformSync for '%s'" % account.name)
-	      extras match {
-	        case b ⇒
-	          logger.info("Processing sync with extras " + extras)
-	          val p = provider.getLocalContentProvider
-	          Option(accountManager.blockingGetAuthToken(account, AuthTokenType, true)) match {
-	            case Some(pwd) ⇒
-	              processRequest(p, account, pwd, syncResult)
-	            case _ ⇒
-	              syncResult.stats.numAuthExceptions += 1
-	              logger.warn("No password available")
-	            // TODO
-	          }
-	        //      case _ =>
-	        //        logger.info("Didn't process sync with extras " + extras)
-	      }
+        logger.debug("onPerformSync for '%s'" % account.name)
+        extras match {
+          case b ⇒
+            logger.info("Processing sync with extras " + extras)
+            val p = provider.getLocalContentProvider
+            Option(accountManager.blockingGetAuthToken(account, AuthTokenType, true)) match {
+              case Some(pwd) ⇒
+                processRequest(p, account, pwd, syncResult)
+              case _ ⇒
+                syncResult.stats.numAuthExceptions += 1
+                logger.warn("No password available")
+              // TODO
+            }
+          //      case _ =>
+          //        logger.info("Didn't process sync with extras " + extras)
+        }
       } catch {
-        case e: AuthenticatorException =>
+        case e: AuthenticatorException ⇒
           syncResult.stats.numParseExceptions += 1
           logger.warn("AuthenticatorException", e)
-        case e: OperationCanceledException =>
+        case e: OperationCanceledException ⇒
           logger.warn("OperationCanceledException", e)
-        case e =>
+        case e ⇒
           logger.warn("Exception", e)
       }
     }

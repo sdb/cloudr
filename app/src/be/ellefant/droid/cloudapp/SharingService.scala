@@ -24,8 +24,8 @@ class SharingService extends RoboIntentService(Name)
           val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
           val copy = sharedPrefs.getBoolean("copy_url", true)
           if (copy) {
-          	val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
-          	clipboard.setText(bm.getUrl())
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
+            clipboard.setText(bm.getUrl())
           }
           logger.debug("New CloudAppItem created '%d'." format bm.getId())
         } catch {

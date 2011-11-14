@@ -20,10 +20,10 @@ class SharingServiceSpec extends CloudrSpecs {
       sendIntent()
       val created = there was one(cloudAppMock).createBookmark(title, url)
       val clipboard = service.getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
-      val clipped = clipboard.getText must be_== ("http://cl.ly/361w0L1b2r320T2u023V")
+      val clipped = clipboard.getText must be_==("http://cl.ly/361w0L1b2r320T2u023V")
       created && clipped
     }
-    
+
     "create a new bookmark when there is an account available" in pending
 
     "do nothing when there is no account available" in new context {
@@ -35,11 +35,11 @@ class SharingServiceSpec extends CloudrSpecs {
     "do nothing when the title or url of the bookmark are blank" in {
       pending
     }
-    
+
     "show a toast message when authentication fails" in pending
-    
+
     "retry when an IO exception occurs" in pending
-    
+
     "show a toast message when more than 3 IO exceptions occur" in pending
   }
 

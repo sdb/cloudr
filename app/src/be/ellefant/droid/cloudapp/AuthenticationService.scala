@@ -12,7 +12,7 @@ class AuthenticationService extends RoboService
     with sdroid.Service
     with Injection.AccountManager
     with Injection.ApiFactory {
-  
+
   lazy val authenticator = new Authenticator
 
   def onBind = {
@@ -20,8 +20,7 @@ class AuthenticationService extends RoboService
       logger.info("Returning the AccountAuthenticator binder for intent '%s'." format intent)
       authenticator.getIBinder
   }
-  
-  
+
   protected class Authenticator extends AbstractAccountAuthenticator(AuthenticationService.this) {
 
     def addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,

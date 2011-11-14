@@ -2,7 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import android.accounts.AccountManager
 import android.content.Context
-import com.google.inject.{Inject, Provider, AbstractModule}
+import com.google.inject.{ Inject, Provider, AbstractModule }
 import roboguice.inject.ContextScoped
 import CloudrModule._
 

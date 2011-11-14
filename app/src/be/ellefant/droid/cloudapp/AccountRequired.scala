@@ -8,7 +8,7 @@ import android.accounts.Account
 trait AccountRequired extends Activity
     with Injection.AccountManager
     with Injection.ThreadUtil { self: Activity with Logging ⇒
-  
+
   protected def account() = accountManager.getAccountsByType(AccountType).head
 
   protected def onAccountSuccess(name: String): Any // TODO: remove param name

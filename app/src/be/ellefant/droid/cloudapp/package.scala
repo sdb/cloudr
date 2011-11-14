@@ -1,40 +1,40 @@
 package be.ellefant.droid {
 
-import com.weiglewilczek.slf4s.Logger
+  import com.weiglewilczek.slf4s.Logger
 
-package object cloudapp extends Imports with Constants
-    with sdroid.Implicits {
+  package object cloudapp extends Imports with Constants
+      with sdroid.Implicits {
 
-  implicit def string2cloudrString(s: String) = new CloudrString(s)
-}
+    implicit def string2cloudrString(s: String) = new CloudrString(s)
+  }
 
-package cloudapp {
-  
-class CloudrString(s: String) {
-  def %(args: Any*) = s.format(args: _*)
-  def isBlank = s == null || s.length == 0
-  def toBlankOption = if (isBlank) None else Some(s)
-}
+  package cloudapp {
 
-/**
- * Creates a Logger with the simple class name
- */
-trait CloudrLogging {
-  lazy val logger = Logger(loggerName)
-  lazy val loggerName = Option("Cloudr/" + this.getClass.getSimpleName) map (n => n substring(0, math min (n.length, 23))) get
-}
+    class CloudrString(s: String) {
+      def %(args: Any*) = s.format(args: _*)
+      def isBlank = s == null || s.length == 0
+      def toBlankOption = if (isBlank) None else Some(s)
+    }
 
-trait Imports {
-  type Logging = CloudrLogging
-}
+    /**
+     * Creates a Logger with the simple class name
+     */
+    trait CloudrLogging {
+      lazy val logger = Logger(loggerName)
+      lazy val loggerName = Option("Cloudr/" + this.getClass.getSimpleName) map (n ⇒ n substring (0, math min (n.length, 23))) get
+    }
 
-trait Constants {
-  lazy val Id = "be.ellefant.droid.cloudapp"
-  lazy val AuthTokenType = Id
-  lazy val AccountType = Id
+    trait Imports {
+      type Logging = CloudrLogging
+    }
 
-  lazy val KeyItemType = "%s.%s" format (Id, "ITEM_TYPE")
-  lazy val KeyId = "%s.%s" format (Id, "ID")
-}
-}
+    trait Constants {
+      lazy val Id = "be.ellefant.droid.cloudapp"
+      lazy val AuthTokenType = Id
+      lazy val AccountType = Id
+
+      lazy val KeyItemType = "%s.%s" format (Id, "ITEM_TYPE")
+      lazy val KeyId = "%s.%s" format (Id, "ID")
+    }
+  }
 }
