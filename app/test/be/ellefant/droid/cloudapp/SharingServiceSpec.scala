@@ -2,18 +2,29 @@ package be.ellefant.droid.cloudapp
 
 import android.content.Intent
 import android.accounts.Account
+import com.cloudapp.api.model.CloudAppItem
+import android.content.Context
+import android.text.ClipboardManager
 
 class SharingServiceSpec extends CloudrSpecs {
 
   "SharingService" should {
 
-    "create a new bookmark when there is an account available" in new context {
+    "create a new bookmark and copy the URL to clipboard when there is an account available" in new context {
       val acc = new Account("sdb", AccountType)
       accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
       accountManagerMock.getPassword(acc) returns "blabla"
+      val item = mock[CloudAppItem]
+      item.getUrl() returns "http://cl.ly/361w0L1b2r320T2u023V"
+      cloudAppMock.createBookmark(title, url) returns item
       sendIntent()
-      there was one(cloudAppMock).createBookmark(title, url)
+      val created = there was one(cloudAppMock).createBookmark(title, url)
+      val clipboard = service.getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
+      val clipped = clipboard.getText must be_== ("http://cl.ly/361w0L1b2r320T2u023V")
+      created && clipped
     }
+    
+    "create a new bookmark when there is an account available" in pending
 
     "do nothing when there is no account available" in new context {
       accountManagerMock.getAccountsByType(AccountType) returns Array.empty

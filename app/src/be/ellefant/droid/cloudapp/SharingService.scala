@@ -3,6 +3,9 @@ package be.ellefant.droid.cloudapp
 import android.content.Intent
 import roboguice.service.RoboIntentService
 import SharingService._
+import android.text.ClipboardManager
+import android.content.Context
+import android.preference.PreferenceManager
 
 class SharingService extends RoboIntentService(Name)
     with Base.Service
@@ -18,7 +21,13 @@ class SharingService extends RoboIntentService(Name)
         try {
           val api = apiFactory.create(acc.name, pwd)
           val bm = api.createBookmark(title, url)
-          logger.debug("New CloudAppItem created '%s'." format bm.getHref)
+          val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+          val copy = sharedPrefs.getBoolean("copy_url", true)
+          if (copy) {
+          	val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
+          	clipboard.setText(bm.getUrl())
+          }
+          logger.debug("New CloudAppItem created '%d'." format bm.getId())
         } catch {
           case e ⇒
             logger.warn("Failed to create new CloudAppItem for '%s'." format url) // TODO catch specific exceptions and show toast message
