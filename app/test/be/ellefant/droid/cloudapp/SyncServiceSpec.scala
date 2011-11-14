@@ -38,7 +38,7 @@ class SyncServiceSpec extends CloudrSpecs {
 
   def syncInitial = new success {
     val cursor = mock[Cursor]
-    contentProvider.query(CloudAppProvider.ContentUri, Array(ColId), null, Array.empty, null) returns cursor
+    contentProvider.query(CloudAppProvider.ContentUri, Array(ColId, ColUpdatedAt), null, Array.empty, null) returns cursor
     cursor.moveToFirst returns false
     syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)
     val inserted = there was one(contentProvider).bulkInsert(CloudAppProvider.ContentUri, Array())

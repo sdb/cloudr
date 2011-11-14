@@ -15,6 +15,7 @@ import roboguice.service.RoboService
 import android.content.ContentProvider
 import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
+import java.util.Date
 
 class SyncService extends RoboService
     with Base.Service
@@ -63,15 +64,16 @@ class SyncService extends RoboService
     protected def processRequest(provider: ContentProvider, account: Account, pwd: String, syncResult: SyncResult) {
       // provider.delete(CloudAppProvider.ContentUri, null, null)
       var existingCursor: Cursor = null
-      var existing: Seq[Long] = null
+      var existing: Seq[(Long, Date)] = null
       try {
-        existingCursor = provider.query(CloudAppProvider.ContentUri, Array(ColId), null, Array.empty, null)
+        existingCursor = provider.query(CloudAppProvider.ContentUri, Array(ColId, ColUpdatedAt), null, Array.empty, null)
         existing = if (!existingCursor.moveToFirst()) Seq.empty else {
-          val l = new ListBuffer[Long]
+          val l = new ListBuffer[(Long, Date)]
           while (!existingCursor.isAfterLast()) {
             val id = existingCursor.getLong(0)
+            val updated = DateFormat.parse(existingCursor.getString(1))
             existingCursor.moveToNext()
-            l += id
+            l += (id -> updated)
           }
           l.toSeq
         }
@@ -121,8 +123,11 @@ class SyncService extends RoboService
       val items = it.flatten.toSeq
       val ids = items map (_.getId)
 
-      val deleted = existing.filterNot(e ⇒ ids.exists(_ == e))
-      val inserted = ids.filterNot(i ⇒ existing.exists(_ == i))
+      val deleted = existing.filterNot(e ⇒ ids.exists(_ == e._1))
+      val inserted = ids.filterNot(i ⇒ existing.exists(e => e._1 == i))
+      val updated = items filter { item =>
+        existing find (_._1 == item.getId) map (e => item.getUpdatedAt.after(e._2)) getOrElse (false)
+      }
       val toInsert = items filter (i ⇒ inserted exists (_ == i.getId)) map (_.toContentValues)
 
       if (syncResult.hasError()) return
@@ -132,6 +137,9 @@ class SyncService extends RoboService
           provider.delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d), Array.empty)
         }
         provider.bulkInsert(CloudAppProvider.ContentUri, toInsert.toArray)
+        updated foreach { u =>
+          provider.update(CloudAppProvider.ContentUri, u.toContentValues, "%s = %d" format (ColId, u.getId), Array.empty)
+        }
       } catch {
         case e ⇒
           logger.warn("update failed", e)

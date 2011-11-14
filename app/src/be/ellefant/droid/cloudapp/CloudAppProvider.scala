@@ -48,7 +48,13 @@ class CloudAppProvider extends ContentProvider with Logging {
     }
   }
 
-  def update(uri: Uri, values: ContentValues, where: String, whereArgs: Array[String]): Int = 0
+  def update(uri: Uri, values: ContentValues, where: String, whereArgs: Array[String]): Int = {
+    Matcher.`match`(uri) match {
+      case 1 if values != null ⇒
+        db.getWritableDatabase().update(DatabaseHelper.TblItems, values, where, whereArgs)
+      case _ ⇒ 0
+    }
+  }
 }
 
 object CloudAppProvider {
