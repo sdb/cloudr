@@ -6,9 +6,11 @@ import android.content.Intent
 import android.view.View
 import DatabaseHelper._
 import CloudAppManager._
+import android.view.Menu
 
 class DropsActivity extends RoboListActivity
-    with Base.AccountRequired {
+    with Base.AccountRequired
+    with Base.Default {
 
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent

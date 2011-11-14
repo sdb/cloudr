@@ -8,14 +8,17 @@ import DropActivity._
 import java.util.Date
 import android.widget.CheckBox
 import java.text.SimpleDateFormat
+import android.view.Menu
 
 class DropActivity extends RoboActivity
-    with Base.AccountRequired {
+    with Base.AccountRequired
+    with Base.Default {
 
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
     val id = intent.getLongExtra(KeyId, -1) // TODO: check valid id
-    setTitle("Cloudr - Drop %d" % id)
+    // setTitle("Cloudr - Drop %d" % id)
+    setTitle("Cloudr")
     setContentView(R.layout.drop)
     val cursor = managedQuery(CloudAppProvider.ContentUri,
       Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource),
@@ -44,6 +47,12 @@ class DropActivity extends RoboActivity
 
     val sourceText = findViewById(R.id.dropSource).asInstanceOf[TextView]
     sourceText.setText(drop map (_.source) getOrElse (""))
+  }
+  
+  override def onCreateOptionsMenu(menu: Menu) = {
+    menu.add(R.string.delete)
+    super.onCreateOptionsMenu(menu)
+    true
   }
 }
 

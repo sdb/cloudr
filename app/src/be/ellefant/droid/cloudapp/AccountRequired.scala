@@ -3,12 +3,15 @@ package be.ellefant.droid.cloudapp
 import android.os.Bundle
 import ThreadUtils._
 import android.app.Activity
+import android.accounts.Account
 
 trait AccountRequired extends Activity
     with Injection.AccountManager
     with Injection.ThreadUtil { self: Activity with Logging ⇒
+  
+  protected def account() = accountManager.getAccountsByType(AccountType).head
 
-  protected def onAccountSuccess(name: String): Any
+  protected def onAccountSuccess(name: String): Any // TODO: remove param name
   protected def onAccountFailure(): Any
 
   abstract override def onCreate(savedInstanceState: Bundle) {
