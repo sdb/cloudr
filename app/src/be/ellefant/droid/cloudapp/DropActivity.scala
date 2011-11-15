@@ -12,9 +12,14 @@ import DatabaseHelper._
 import DropActivity._
 import CloudAppManager._
 import android.view.View
+import com.cloudapp.impl.model.CloudAppItemImpl
+import scala.util.parsing.json.JSON
+import org.json.JSONObject
+import android.widget.Toast
 
 class DropActivity extends RoboActivity
-    with Base.AccountRequired {
+    with Base.AccountRequired
+    with Injection.ApiFactory {
 
   private var drop: Option[Drop] = None
 
@@ -25,7 +30,7 @@ class DropActivity extends RoboActivity
     setTitle("Cloudr")
     setContentView(R.layout.drop)
     val cursor = managedQuery(CloudAppProvider.ContentUri,
-      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType, ColContentUrl),
+      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType, ColContentUrl, ColHref),
       "%s = %d" format (ColId, id), null, null)
     // TODO: check if item is found
     drop = if (cursor.moveToFirst()) Some(Drop(cursor)) else Option.empty[Drop]
@@ -93,6 +98,18 @@ class DropActivity extends RoboActivity
     	openBrowser()
       true
     case R.id.delete ⇒
+    	drop foreach { d => // TODO: send intent to service and process in the background ?
+		  	val acc = account()
+		  	val pwd = accountManager.getPassword(acc)
+		  	val api = apiFactory.create(acc.name, pwd)
+		  	val json = new JSONObject()
+		  	json.put("href", d.href)
+		  	val item = new CloudAppItemImpl(json)
+		  	api.delete(item)
+		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
+		  	toast.show()
+		  	finish()
+    	}
       true
     case _ ⇒ super.onOptionsItemSelected(item)
   }
@@ -109,6 +126,7 @@ object DropActivity {
     viewCounter: Int,
     url: String,
     contentUrl: String,
+    href: String,
     priv: Boolean,
     source: String,
     createdAt: Date,
@@ -122,6 +140,7 @@ object DropActivity {
         viewCounter = cursor.getInt(2),
         url = cursor.getString(3),
         contentUrl = cursor.getString(9),
+        href = cursor.getString(10),
         priv = cursor.getInt(4) == 1,
         createdAt = DateFormat.parse(cursor.getString(5)),
         updatedAt = DateFormat.parse(cursor.getString(6)),

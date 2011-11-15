@@ -134,7 +134,7 @@ class SyncService extends RoboService
 
       try {
         deleted foreach { d ⇒
-          provider.delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d), Array.empty)
+          provider.delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d._1), Array.empty)
         }
         provider.bulkInsert(CloudAppProvider.ContentUri, toInsert.toArray)
         updated foreach { u =>
