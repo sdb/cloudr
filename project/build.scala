@@ -2,8 +2,8 @@
 import sbt._
 import Keys._
 import AndroidKeys._
-import com.typesafe.sbteclipse.SbtEclipsePlugin._
 import com.typesafe.sbtscalariform.ScalariformPlugin._
+import de.element34.sbteclipsify.Eclipsify._
 
 object General {
   lazy val buildOrganization = "be.ellefant"
@@ -21,7 +21,8 @@ object General {
       ScalaToolsReleases,
       "Local Maven" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-    )
+    ),
+    projectNature := de.element34.sbteclipsify.ProjectType.Scala
   )
 
   lazy val formattingSettings = (inConfig(Compile)(baseScalariformSettings) ++ inConfig(Test)(baseScalariformSettings)) ++ Seq(
@@ -44,6 +45,8 @@ object General {
     TypedResources.settings ++
     AndroidMarketPublish.settings ++ Seq (
       keyalias in Android := "cloudr" // TODO
+    ) ++ Seq(
+      projectNature := de.element34.sbteclipsify.ProjectType.ScalaAndroid
     )
 }
 
@@ -64,7 +67,7 @@ object Dependencies {
   lazy val Slf4jAndroid = "org.slf4j" % "slf4j-android" % Slf4jVer
   lazy val Slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % "1.0.7"
   lazy val Logback = "ch.qos.logback" % "logback-classic" % "0.9.30"
-  lazy val AndroidSupport13 = "android.support" % "compatibility-v13" % "r3"
+  lazy val AndroidSupport13 = "android.support" % "compatibility-v13" % "r4"
 }
 
 object AndroidBuild extends Build {
@@ -137,25 +140,7 @@ object AndroidBuild extends Build {
       scalaSource in Compile <<= baseDirectory (_ / "src"),
       resourceDirectory in Compile <<= baseDirectory (_ /"resources"),
       scalaSource in Test <<= baseDirectory (_ /"test"),
-      resourceDirectory in Test <<= baseDirectory (_ /"test-resources"),
-      EclipseKeys.buildCommands := Seq(
-        "com.android.ide.eclipse.adt.ResourceManagerBuilder",
-        "com.android.ide.eclipse.adt.PreCompilerBuilder",
-        "org.scala-ide.sdt.core.scalabuilder",
-        "com.android.ide.eclipse.adt.ApkBuilder"),
-      EclipseKeys.natures := Seq(
-        "com.android.ide.eclipse.adt.AndroidNature",
-        "org.scala-ide.sdt.core.scalanature",
-        "org.eclipse.jdt.core.javanature"),
-      EclipseKeys.extraSourceDirs := Nil,
-      EclipseKeys.extraSourceDirs <+= baseDirectory(_ / "gen"),
-      EclipseKeys.extraSourceDirs <+= (target) ( _ / "src_managed" / "main" / "scala"),
-      EclipseKeys.containers := Seq(
-        "org.scala-ide.sdt.launching.SCALA_CONTAINER",
-        "com.android.ide.eclipse.adt.ANDROID_FRAMEWORK",
-        "com.android.ide.eclipse.adt.LIBRARIES"
-      ),
-      EclipseKeys.excludes := "*android.jar"
+      resourceDirectory in Test <<= baseDirectory (_ /"test-resources")
     )
   ) dependsOn (slf4jAndroid, sdroid)
 
