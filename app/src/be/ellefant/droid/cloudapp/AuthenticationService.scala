@@ -9,13 +9,13 @@ import android.os.Bundle
 
 class AuthenticationService extends RoboService
     with Base.Service
-    with sdroid.Service
+    with scala.android.Service
     with Injection.AccountManager
     with Injection.ApiFactory {
 
   lazy val authenticator = new Authenticator
 
-  def onBind = {
+  override def onBind = {
     case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT ⇒
       logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
       authenticator.getIBinder

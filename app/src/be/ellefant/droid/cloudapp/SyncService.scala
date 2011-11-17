@@ -19,13 +19,13 @@ import java.util.Date
 
 class SyncService extends RoboService
     with Base.Service
-    with sdroid.Service
+    with scala.android.Service
     with Injection.AccountManager
     with Injection.ApiFactory {
 
   protected[cloudapp] lazy val syncAdapter = new CloudAppSyncAdapter
 
-  def onBind = {
+  override def onBind = {
     case intent if intent.getAction == "android.content.SyncAdapter" ⇒
       logger.debug("Returning the CloudAppSyncAdapter binder for intent '%s'." format intent)
       syncAdapter.getSyncAdapterBinder
