@@ -4,7 +4,7 @@ import roboguice.activity.RoboPreferenceActivity
 import android.os.Bundle
 
 class AccountPreferencesActivity extends RoboPreferenceActivity
-    with Base.Activity {
+    with Base.CloudrActivity {
 
   override def onCreate(savedInstance: Bundle) {
     super.onCreate(savedInstance)

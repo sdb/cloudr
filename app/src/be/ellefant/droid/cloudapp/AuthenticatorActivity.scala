@@ -16,7 +16,7 @@ import android.content.{ ContentResolver, Context, DialogInterface, Intent }
  * Activity which displays login screen to the user.
  */
 class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
-    with Base.Activity
+    with Base.CloudrActivity
     with Injection.AccountManager
     with Injection.ApiFactory {
 

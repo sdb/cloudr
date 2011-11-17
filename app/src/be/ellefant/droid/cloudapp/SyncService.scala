@@ -16,17 +16,17 @@ import android.content.ContentProvider
 import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
 import java.util.Date
-import scala.android._
+import scalaandroid._
 
 class SyncService extends RoboService
-    with Base.Service
-    with scala.android.Service
+    with Base.CloudrService
+    with Service
     with Injection.AccountManager
     with Injection.ApiFactory {
 
   protected[cloudapp] lazy val syncAdapter = new CloudAppSyncAdapter
 
-  override def onBind = {
+  bind {
     case Intent("android.content.SyncAdapter") ⇒
       syncAdapter.getSyncAdapterBinder
   }

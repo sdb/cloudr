@@ -3,7 +3,6 @@ package be.ellefant.droid.cloudapp
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
-import android.view.{ MenuItem, Menu }
 import android.widget.{ TextView, CheckBox }
 import roboguice.activity.RoboActivity
 import java.text.SimpleDateFormat
@@ -16,12 +15,42 @@ import com.cloudapp.impl.model.CloudAppItemImpl
 import scala.util.parsing.json.JSON
 import org.json.JSONObject
 import android.widget.Toast
+import scalaandroid._
 
 class DropActivity extends RoboActivity
+    with Activity
     with Base.AccountRequired
+    with Base.Default
     with Injection.ApiFactory {
 
   private var drop: Option[Drop] = None
+
+  optionsMenu { menu =>
+    // Seq(R.string.open, R.string.browse, R.string.delete) foreach (i => menu.add(Menu.NONE, ))
+    val inflater = getMenuInflater()
+    inflater.inflate(R.menu.drop_menu, menu)
+    true
+  }
+  
+  optionsItemSelected {
+    case MenuItem(R.id.open) ⇒
+      openApplication()
+    case MenuItem(R.id.browse) ⇒
+    	openBrowser()
+    case MenuItem(R.id.delete) ⇒
+    	drop foreach { d => // TODO: send intent to service and process in the background ?
+		  	val acc = account()
+		  	val pwd = accountManager.getPassword(acc)
+		  	val api = apiFactory.create(acc.name, pwd)
+		  	val json = new JSONObject()
+		  	json.put("href", d.href)
+		  	val item = new CloudAppItemImpl(json)
+		  	api.delete(item)
+		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
+		  	toast.show()
+		  	finish()
+    	}
+  }
 
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
@@ -59,14 +88,6 @@ class DropActivity extends RoboActivity
     val sourceText = findViewById(R.id.dropSource).asInstanceOf[TextView]
     sourceText.setText(drop map (_.source) getOrElse (""))
   }
-
-  override def onCreateOptionsMenu(menu: Menu) = {
-    // Seq(R.string.open, R.string.browse, R.string.delete) foreach (i => menu.add(Menu.NONE, ))
-    val inflater = getMenuInflater()
-    inflater.inflate(R.menu.drop_menu, menu)
-    super.onCreateOptionsMenu(menu)
-    true
-  }
   
   private def onClickUrl(view: View) = openBrowser()
   private def onClickName(view: View) = openApplication()
@@ -88,30 +109,6 @@ class DropActivity extends RoboActivity
         // TODO open drop
       }
     }
-  }
-
-  override def onOptionsItemSelected(item: MenuItem) = item.getItemId match {
-    case R.id.open ⇒
-      openApplication()
-      true
-    case R.id.browse ⇒
-    	openBrowser()
-      true
-    case R.id.delete ⇒
-    	drop foreach { d => // TODO: send intent to service and process in the background ?
-		  	val acc = account()
-		  	val pwd = accountManager.getPassword(acc)
-		  	val api = apiFactory.create(acc.name, pwd)
-		  	val json = new JSONObject()
-		  	json.put("href", d.href)
-		  	val item = new CloudAppItemImpl(json)
-		  	api.delete(item)
-		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
-		  	toast.show()
-		  	finish()
-    	}
-      true
-    case _ ⇒ super.onOptionsItemSelected(item)
   }
 }
 

@@ -4,8 +4,10 @@ import android.widget.{ AdapterView, ArrayAdapter }
 import android.content.Intent
 import android.view.View
 import roboguice.activity.RoboListActivity
+import scalaandroid._
 
 class MainActivity extends RoboListActivity
+		with Activity
     with Base.AccountRequired
     with Base.Default
     with Injection.CloudAppManager

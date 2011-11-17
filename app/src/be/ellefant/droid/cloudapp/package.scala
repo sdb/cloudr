@@ -1,10 +1,11 @@
 package be.ellefant.droid {
 
   import com.weiglewilczek.slf4s.Logger
+  import scalaandroid._
 
   package object cloudapp extends Imports with Constants
-      with scala.android.ViewImplicits
-      with scala.android.AdapterViewImplicits {
+      with ViewImplicits
+      with AdapterViewImplicits {
 
     implicit def string2cloudrString(s: String) = new CloudrString(s)
   }

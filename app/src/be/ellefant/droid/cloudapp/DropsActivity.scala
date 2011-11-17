@@ -6,9 +6,10 @@ import android.content.Intent
 import android.view.View
 import DatabaseHelper._
 import CloudAppManager._
-import android.view.Menu
+import scalaandroid._
 
 class DropsActivity extends RoboListActivity
+		with Activity
     with Base.AccountRequired
     with Base.Default {
 

@@ -8,7 +8,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 
 class SharingService extends RoboIntentService(Name)
-    with Base.Service
+    with Base.CloudrService
     with Injection.AccountManager
     with Injection.ApiFactory {
 

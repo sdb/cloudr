@@ -6,17 +6,17 @@ import android.content.Context
 import android.accounts.{ Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager ⇒ AndroidAccountManager }
 import com.google.inject.Inject
 import android.os.Bundle
-import scala.android._
+import scalaandroid._
 
 class AuthenticationService extends RoboService
-    with Base.Service
+    with Base.CloudrService
     with Service
     with Injection.AccountManager
     with Injection.ApiFactory {
 
   lazy val authenticator = new Authenticator
 
-  override def onBind = {
+  bind {
     case Intent(AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT) ⇒
       authenticator.getIBinder
   }

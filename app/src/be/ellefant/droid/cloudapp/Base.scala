@@ -1,15 +1,15 @@
 package be.ellefant.droid.cloudapp
 
-import android.app.Activity
+import android.app.{ Activity => AActivity }
 import android.content.{ Intent, ContentResolver }
 import android.os.Bundle
-import android.view.{ MenuItem, Menu }
+import scalaandroid._
 
 object Base extends sdroid.Types {
 
-  trait Activity extends AActivity with Logging
+  trait CloudrActivity extends AActivity with Logging
 
-  trait AccountRequired extends Activity with be.ellefant.droid.cloudapp.AccountRequired {
+  trait AccountRequired extends CloudrActivity with be.ellefant.droid.cloudapp.AccountRequired {
     protected[cloudapp] def onAccountFailure() = {
       finish()
     }
@@ -18,25 +18,20 @@ object Base extends sdroid.Types {
   trait Default extends Activity {
     self: Activity with Logging with AccountRequired ⇒
 
-    abstract override def onCreateOptionsMenu(menu: Menu) = {
-      // super.onCreateOptionsMenu(menu)
+    optionsMenu { menu =>
       val inflater = getMenuInflater()
       inflater.inflate(R.menu.main_menu, menu)
-      true
     }
 
-    abstract override def onOptionsItemSelected(item: MenuItem) = item.getItemId match {
-      case R.id.sync ⇒
+    optionsItemSelected {
+      case MenuItem(R.id.sync) ⇒
         ContentResolver.requestSync(account(), "cloudapp", new Bundle)
-        true
-      case R.id.settings ⇒
+      case MenuItem(R.id.settings) ⇒
         val intent = new Intent("android.intent.action.VIEW")
         intent.setClass(this, classOf[AccountPreferencesActivity])
         startActivity(intent)
-        true
-      case _ ⇒ super.onOptionsItemSelected(item)
     }
   }
 
-  trait Service extends AService with Logging
+  trait CloudrService extends AService with Logging
 }
