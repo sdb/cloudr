@@ -2,22 +2,22 @@ package be.ellefant.droid.cloudapp
 
 import roboguice.service.RoboService
 import android.accounts.{ AccountManager ⇒ AndroidAccountManager }
-import android.content.{ Intent, Context }
+import android.content.Context 
 import android.accounts.{ Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager ⇒ AndroidAccountManager }
 import com.google.inject.Inject
 import android.os.Bundle
+import scala.android._
 
 class AuthenticationService extends RoboService
     with Base.Service
-    with scala.android.Service
+    with Service
     with Injection.AccountManager
     with Injection.ApiFactory {
 
   lazy val authenticator = new Authenticator
 
   override def onBind = {
-    case intent if intent.getAction == AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT ⇒
-      logger.debug("Returning the AccountAuthenticator binder for intent '%s'." format intent)
+    case Intent(AndroidAccountManager.ACTION_AUTHENTICATOR_INTENT) ⇒
       authenticator.getIBinder
   }
 
@@ -25,7 +25,7 @@ class AuthenticationService extends RoboService
 
     def addAccount(response: AccountAuthenticatorResponse, accountType: String, authTokenType: String,
       requiredFeatures: Array[String], options: Bundle): Bundle = {
-      val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
+      val intent = Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
       intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
       intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
       val bundle = new Bundle
@@ -42,7 +42,7 @@ class AuthenticationService extends RoboService
           result.putBoolean(AndroidAccountManager.KEY_BOOLEAN_RESULT, verified)
           result
         case _ ⇒
-          val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
+          val intent = Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
           intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
           intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, true)
           intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
@@ -70,7 +70,7 @@ class AuthenticationService extends RoboService
           return result
         }
       }
-      val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
+      val intent = Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
       intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
       intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
       intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
@@ -91,7 +91,7 @@ class AuthenticationService extends RoboService
     }
 
     def updateCredentials(response: AccountAuthenticatorResponse, account: Account, authTokenType: String, loginOptions: Bundle): Bundle = {
-      val intent = new Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
+      val intent = Intent(AuthenticationService.this, classOf[AuthenticatorActivity])
       intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
       intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
       intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, false)

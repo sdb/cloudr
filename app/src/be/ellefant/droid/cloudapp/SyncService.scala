@@ -16,6 +16,7 @@ import android.content.ContentProvider
 import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
 import java.util.Date
+import scala.android._
 
 class SyncService extends RoboService
     with Base.Service
@@ -26,8 +27,7 @@ class SyncService extends RoboService
   protected[cloudapp] lazy val syncAdapter = new CloudAppSyncAdapter
 
   override def onBind = {
-    case intent if intent.getAction == "android.content.SyncAdapter" ⇒
-      logger.debug("Returning the CloudAppSyncAdapter binder for intent '%s'." format intent)
+    case Intent("android.content.SyncAdapter") ⇒
       syncAdapter.getSyncAdapterBinder
   }
 
