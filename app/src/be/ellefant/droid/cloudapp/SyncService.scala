@@ -18,6 +18,7 @@ import android.accounts.OperationCanceledException
 import java.util.Date
 import scalaandroid._
 
+// TODO: see http://developer.getcloudapp.com/list-items
 class SyncService extends RoboService
     with Base.CloudrService
     with Service
