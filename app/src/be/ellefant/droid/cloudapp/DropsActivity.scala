@@ -7,11 +7,20 @@ import android.view.View
 import DatabaseHelper._
 import CloudAppManager._
 import scalaandroid._
+import android.database.ContentObserver
+import android.os.Handler
+import android.widget.BaseAdapter
 
 class DropsActivity extends RoboListActivity
 		with Activity
     with Base.AccountRequired
     with Base.Default {
+  
+  private var contentObserver: DropsContentObserver = _
+  
+  private var handler: Handler = _
+  
+  private var adapter: BaseAdapter = _
 
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
@@ -30,11 +39,30 @@ class DropsActivity extends RoboListActivity
     }
     val displayFields = Array(ColName, ColUrl)
     val displayViews = Array(android.R.id.text1, android.R.id.text2)
-    val adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, displayFields, displayViews)
+    adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, displayFields, displayViews)
     setListAdapter(adapter)
     val lv = getListView
     lv setTextFilterEnabled true
     lv setOnItemClickListener (onItemClick _)
+    
+    handler = new Handler
+    registerObserver()
+  }
+  
+  private def registerObserver() = {
+    contentObserver = new DropsContentObserver(handler)
+    getContentResolver.registerContentObserver(CloudAppProvider.ContentUri, true, contentObserver)
+  }
+  
+  override protected def onStart = {
+    super.onStart()
+    registerObserver()
+  }
+  
+  override protected def onStop = {
+    getContentResolver.unregisterContentObserver(contentObserver)
+    contentObserver = null
+    super.onStop()
   }
 
   private def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
@@ -42,5 +70,11 @@ class DropsActivity extends RoboListActivity
     intent.putExtra(KeyId, id)
     intent.setClass(this, classOf[DropActivity])
     startActivity(intent)
+  }
+  
+  private class DropsContentObserver(handler: Handler) extends ContentObserver(handler) {
+    override def onChange(selfChange: Boolean) {
+      adapter.notifyDataSetChanged
+    }
   }
 }

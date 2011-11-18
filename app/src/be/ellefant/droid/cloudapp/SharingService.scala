@@ -6,6 +6,7 @@ import SharingService._
 import android.text.ClipboardManager
 import android.content.Context
 import android.preference.PreferenceManager
+import DatabaseHelper._
 
 class SharingService extends RoboIntentService(Name)
     with Base.CloudrService
@@ -27,6 +28,7 @@ class SharingService extends RoboIntentService(Name)
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
             clipboard.setText(bm.getUrl())
           }
+          getContentResolver().insert(CloudAppProvider.ContentUri, bm.toContentValues)
           logger.debug("New CloudAppItem created '%d'." format bm.getId())
         } catch {
           case e ⇒

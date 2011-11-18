@@ -20,7 +20,9 @@ class CloudAppProvider extends ContentProvider with Logging {
     builder.setTables("ITEMS")
     Matcher.`match`(uri) match {
       case 1 ⇒
-        builder.query(db.getWritableDatabase(), projection, selection, selectionArgs, null, null, sortOrder)
+        val c = builder query (db.getWritableDatabase(), projection, selection, selectionArgs, null, null, sortOrder)
+        c setNotificationUri (getContext.getContentResolver, uri)
+        c
       case _ ⇒ null
     }
   }
@@ -32,9 +34,13 @@ class CloudAppProvider extends ContentProvider with Logging {
     }
   }
 
+  // TODO: uri can include the ID
   def delete(uri: Uri, where: String, whereArgs: Array[String]): Int = {
     Matcher.`match`(uri) match {
-      case 1 ⇒ db.getWritableDatabase.delete(DatabaseHelper.TblItems, where, whereArgs)
+      case 1 ⇒
+      	val i = db.getWritableDatabase.delete(DatabaseHelper.TblItems, where, whereArgs)
+      	getContext.getContentResolver.notifyChange(uri, null)
+      	i
       case _ ⇒ 0
     }
   }
@@ -43,15 +49,19 @@ class CloudAppProvider extends ContentProvider with Logging {
     Matcher.`match`(uri) match {
       case 1 if initialValues != null ⇒
         val newID = db.getWritableDatabase().insert(DatabaseHelper.TblItems, DatabaseHelper.ColId, initialValues)
+      	getContext.getContentResolver.notifyChange(uri, null)
         Uri.withAppendedPath(uri, newID.toString)
       case _ ⇒ null
     }
   }
 
+  // TODO: uri can include the ID
   def update(uri: Uri, values: ContentValues, where: String, whereArgs: Array[String]): Int = {
     Matcher.`match`(uri) match {
       case 1 if values != null ⇒
-        db.getWritableDatabase().update(DatabaseHelper.TblItems, values, where, whereArgs)
+        val i = db.getWritableDatabase().update(DatabaseHelper.TblItems, values, where, whereArgs)
+      	getContext.getContentResolver.notifyChange(uri, null)
+      	i
       case _ ⇒ 0
     }
   }

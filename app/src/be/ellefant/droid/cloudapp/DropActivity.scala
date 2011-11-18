@@ -16,12 +16,14 @@ import scala.util.parsing.json.JSON
 import org.json.JSONObject
 import android.widget.Toast
 import scalaandroid._
+import ThreadUtils._
 
 class DropActivity extends RoboActivity
     with Activity
     with Base.AccountRequired
     with Base.Default
-    with Injection.ApiFactory {
+    with Injection.ApiFactory
+    with Injection.ThreadUtil {
 
   private var drop: Option[Drop] = None
 
@@ -41,13 +43,16 @@ class DropActivity extends RoboActivity
     	drop foreach { d => // TODO: send intent to service and process in the background ?
 		  	val acc = account()
 		  	val pwd = accountManager.getPassword(acc)
-		  	val api = apiFactory.create(acc.name, pwd)
-		  	val json = new JSONObject()
-		  	json.put("href", d.href)
-		  	val item = new CloudAppItemImpl(json)
-		  	api.delete(item)
 		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
 		  	toast.show()
+		  	threadUtil.performOnBackgroundThread { () =>
+			  	val api = apiFactory.create(acc.name, pwd)
+			  	val json = new JSONObject()
+			  	json.put("href", d.href)
+			  	val item = new CloudAppItemImpl(json)
+			  	api.delete(item)
+		  		getContentResolver().delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d.id), Array.empty) 
+		  	}
 		  	finish()
     	}
   }
