@@ -6,7 +6,7 @@ import com.typesafe.sbtscalariform.ScalariformPlugin._
 import de.element34.sbteclipsify.Eclipsify._
 
 object General {
-  lazy val buildOrganization = "be.ellefant"
+  lazy val buildOrganization = "com.github.sdb.cloudr"
   lazy val buildVersion      = "0.0.1-SNAPSHOT"
   lazy val buildScalaVersion = "2.9.1"
 
@@ -55,7 +55,7 @@ object Dependencies {
 
   lazy val Slf4jApi = "org.slf4j" % "slf4j-api" % Slf4jVer
   // lazy val Slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVer
-  lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.2-SNAPSHOT"
+  // lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.2-SNAPSHOT"
   lazy val RoboGuice = "org.roboguice" % "roboguice" % "2.0b2"
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
   lazy val Robolectric = "com.pivotallabs" % "robolectric" % "1.1-SNAPSHOT"
@@ -69,6 +69,9 @@ object Dependencies {
   lazy val Logback = "ch.qos.logback" % "logback-classic" % "0.9.30"
   lazy val AndroidSupport13 = "android.support" % "compatibility-v13" % "r4"
   lazy val ScalaAndroid = "com.github.sdb" %% "scala-android" % "0.1.0-SNAPSHOT"
+  lazy val HttpClient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
+  lazy val HttpMime = "org.apache.httpcomponents" % "httpmime" % "4.0.1"
+  lazy val Json = "org.json" % "json" % "20090211"
 }
 
 object AndroidBuild extends Build {
@@ -102,9 +105,23 @@ object AndroidBuild extends Build {
     )
   )
 
+  lazy val cloudapp = Project(
+    "cloudapp",
+    file("cloudapp"),
+    settings = General.settings ++ Seq(
+      name := "cloudapp",
+      javaSource in Compile <<= baseDirectory(_ / "src"),
+      libraryDependencies ++= Seq(
+        HttpClient % "provided",
+        HttpMime  % "provided",
+        Json  % "provided",
+        Slf4jApi
+      )
+    )
+  )
+
   lazy val mainDeps = Seq(
     libraryDependencies ++= Seq(
-      CloudApp intransitive(),
       Slf4jApi,
       Logback % "test",
       Slf4s,
@@ -118,7 +135,7 @@ object AndroidBuild extends Build {
     )
   )
 
-  lazy val main = Project(
+  lazy val app = Project(
     "cloudr",
     file("app"),
     settings = General.fullAndroidSettings ++ mainDeps ++ inConfig(Android)(Seq(
@@ -144,7 +161,7 @@ object AndroidBuild extends Build {
       scalaSource in Test <<= baseDirectory (_ /"test"),
       resourceDirectory in Test <<= baseDirectory (_ /"test-resources")
     )
-  ) dependsOn (slf4jAndroid, sdroid)
+  ) dependsOn (slf4jAndroid, sdroid, cloudapp)
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(
@@ -167,7 +184,7 @@ object AndroidBuild extends Build {
 -keep class org.easymock.**
 """
     )
-  ) dependsOn main
+  ) dependsOn app
 }
 
 object Proguard {
