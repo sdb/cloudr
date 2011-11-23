@@ -1,6 +1,8 @@
 package com.cloudapp.api;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 import com.cloudapp.api.model.CloudAppAccount;
@@ -58,7 +60,7 @@ public interface CloudApp {
       throws CloudAppException;
 
   /**
-   * Dispatch an email containing a link to reset the accountÕs password.
+   * Dispatch an email containing a link to reset the accountï¿½s password.
    * 
    * @see http://developer.getcloudapp.com/forgot-password
    * @param email
@@ -94,7 +96,7 @@ public interface CloudApp {
 
   /**
    * Add or change the domain used for all links. Optionally, a URL may be provided to
-   * redirect visitors to the custom domainÕs root. <b>Pro users only</b>
+   * redirect visitors to the custom domainï¿½s root. <b>Pro users only</b>
    * 
    * @see http://developer.getcloudapp.com/set-custom-domain
    * @param domain
@@ -206,8 +208,11 @@ public interface CloudApp {
    *          The file you wish to upload.
    * @throws CloudAppException
    * @return
+   * @throws FileNotFoundException 
    */
-  public CloudAppItem upload(File file) throws CloudAppException;
+  public CloudAppItem upload(File file) throws CloudAppException, FileNotFoundException;
+  
+  public CloudAppItem upload(InputStream is, String name, long length) throws CloudAppException;
 
   /**
    * Deletes an item

@@ -1,7 +1,10 @@
 package com.cloudapp.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -149,6 +152,10 @@ public class CloudAppItemsImpl extends CloudAppBase {
       throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
     }
   }
+  
+  public CloudAppItem upload(File file) throws CloudAppException, FileNotFoundException {
+  	return upload(new FileInputStream(file), file.getName(), file.length());
+  }
 
   /**
    * 
@@ -156,7 +163,7 @@ public class CloudAppItemsImpl extends CloudAppBase {
    * 
    * @see com.cloudapp.api.CloudAppItems#upload(java.io.File)
    */
-  public CloudAppItem upload(File file) throws CloudAppException {
+  public CloudAppItem upload(InputStream is, String name, long length) throws CloudAppException {
     try {
       // Do a GET request so we have the S3 endpoint
       HttpGet req = new HttpGet(NEW_ITEM_URL);
@@ -177,7 +184,7 @@ public class CloudAppItemsImpl extends CloudAppBase {
             null);
       }
 
-      return uploadToAmazon(json, file);
+      return uploadToAmazon(json, is, name, length);
 
     } catch (ClientProtocolException e) {
       LOGGER.error("Something went wrong trying to contact the CloudApp API.", e);
@@ -204,7 +211,7 @@ public class CloudAppItemsImpl extends CloudAppBase {
    * @throws ParseException
    * @throws IOException
    */
-  private CloudAppItem uploadToAmazon(JSONObject json, File file) throws JSONException,
+  private CloudAppItem uploadToAmazon(JSONObject json, InputStream is, String name, long length) throws JSONException,
       CloudAppException, ParseException, IOException {
     JSONObject params = json.getJSONObject("params");
     MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -218,7 +225,7 @@ public class CloudAppItemsImpl extends CloudAppBase {
 
     // Add the actual file.
     // We have to use the 'file' parameter for the S3 storage.
-    InputStreamBody stream = new CloudAppInputStream(file);
+    InputStreamBody stream = new CloudAppInputStream(is, name, length);
     entity.addPart("file", stream);
 
     HttpPost uploadRequest = new HttpPost(json.getString("url"));

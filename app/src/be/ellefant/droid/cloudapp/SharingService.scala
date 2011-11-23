@@ -7,35 +7,58 @@ import android.text.ClipboardManager
 import android.content.Context
 import android.preference.PreferenceManager
 import DatabaseHelper._
+import android.net.Uri
+import android.os.ParcelFileDescriptor.AutoCloseInputStream
+import Cloud._
+import android.widget.Toast
 
+/**
+ * Handles intents for sharing items (drops) to CloudApp.
+ */
 class SharingService extends RoboIntentService(Name)
     with Base.CloudrService
     with Injection.AccountManager
     with Injection.ApiFactory {
 
   def onHandleIntent(intent: Intent) = {
-    accountManager.getAccountsByType(AccountType).headOption match {
-      case Some(acc) ⇒
-        val url = intent.getStringExtra(Intent.EXTRA_TEXT) // TODO handle extras
-        val title = intent.getStringExtra(Intent.EXTRA_SUBJECT)
-        val pwd = accountManager.getPassword(acc)
-        try {
-          val api = apiFactory.create(acc.name, pwd)
-          val bm = api.createBookmark(title, url)
-          val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-          val copy = sharedPrefs.getBoolean("copy_url", true)
-          if (copy) {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
-            clipboard.setText(bm.getUrl())
-          }
-          getContentResolver().insert(CloudAppProvider.ContentUri, bm.toContentValues)
-          logger.debug("New CloudAppItem created '%d'." format bm.getId())
-        } catch {
-          case e ⇒
-            logger.warn("Failed to create new CloudAppItem for '%s'." format url, e) // TODO catch specific exceptions and show toast message
-        }
+    def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = {
+    	case "text/plain" =>
+    	  val url = intent getStringExtra (Intent.EXTRA_TEXT)
+    	  val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
+    	  api bookmark (title, url)
+    	case "image/jpeg" =>
+    	  val u = Uri parse((intent.getExtras get ("android.intent.extra.STREAM")).toString)
+    	  val fd = getContentResolver openFileDescriptor (u, "r")
+    	  api.upload("blabla", new AutoCloseInputStream(fd), fd.getStatSize)
+    	case mt => logger debug mt; Left(Error.Other)
+    }
+    
+    def sendFailure(error: Error.Error) = {
+      val msg = error match { // TODO error messages
+		    case Error.Auth => "Authorization failed!"
+		    case Error.Limit => "Upload limit reached!"
+		    case Error.Other => "Upload failed!"
+		  }
+      val toast = Toast makeText(getApplicationContext, msg, Toast.LENGTH_SHORT)
+      toast show()
+    }
+    
+    def sendSuccess(drop: Drop) = {
+      val sharedPrefs = PreferenceManager getDefaultSharedPreferences this
+      if (sharedPrefs getBoolean ("copy_url", true)) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
+        clipboard setText (drop.url)
+      }
+      getContentResolver insert (CloudAppProvider.ContentUri, drop.toContentValues)
+      logger debug ("New CloudAppItem created '%d'." format drop.id)
+    }
+    
+    (accountManager getAccountsByType(AccountType)) headOption match {
+      case Some(account) ⇒
+        val api = new Cloud(apiFactory create (account.name, accountManager getPassword account))
+      	Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure _, sendSuccess _))
       case _ ⇒
-        logger.warn("No CloudApp account found.")
+        logger.info("no CloudApp account available")
     }
   }
 

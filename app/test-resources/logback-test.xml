@@ -11,6 +11,6 @@
         </layout>
     </appender>
     <root level="debug">
-        <appender-ref ref="FILE"/> <!-- TODO: filter plugin to filter the appender value ? -->
+        <appender-ref ref="STDOUT"/> <!-- TODO: filter plugin to filter the appender value ? -->
     </root>
 </configuration>

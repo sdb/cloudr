@@ -7,59 +7,52 @@ import android.content.Context
 import android.text.ClipboardManager
 
 class SharingServiceSpec extends CloudrSpecs {
-
-  "SharingService" should {
-
-    "create a new bookmark and copy the URL to clipboard when there is an account available" in new context {
-      val acc = new Account("sdb", AccountType)
-      accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
-      accountManagerMock.getPassword(acc) returns "blabla"
-      val item = mock[CloudAppItem]
-      item.getUrl() returns "http://cl.ly/361w0L1b2r320T2u023V"
-      cloudAppMock.createBookmark(title, url) returns item
-      sendIntent()
-      val created = there was one(cloudAppMock).createBookmark(title, url)
-      val clipboard = service.getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
-      val clipped = clipboard.getText must be_==("http://cl.ly/361w0L1b2r320T2u023V")
-      created && clipped
-    }
-
-    "create a new bookmark when there is an account available" in pending
-
-    "do nothing when there is no account available" in new context {
-      accountManagerMock.getAccountsByType(AccountType) returns Array.empty
-      sendIntent()
-      there was no(cloudAppMock).createBookmark(title, url)
-    }
-
-    "do nothing when the title or url of the bookmark are blank" in {
-      pending
-    }
-
-    "show a toast message when authentication fails" in pending
-
-    "retry when an IO exception occurs" in pending
-
-    "show a toast message when more than 3 IO exceptions occur" in pending
+  
+  "when an intent is received and no account is available SharingService" should {
+    "do nothing" in pending
   }
 
-  trait context extends RoboContext
-      with Mocks.AccountManagerMock
-      with Mocks.CloudAppMock {
-
-    lazy val service = new SharingService
-
-    lazy val url = "http://google.com"
-    lazy val title = "Test"
-
-    def sendIntent() = {
-      val intent = new Intent
-      intent.putExtra(Intent.EXTRA_TEXT, url)
-      intent.putExtra(Intent.EXTRA_SUBJECT, title)
-
-      service.onCreate()
-      service.onHandleIntent(intent)
+  "when a bookmark intent is received SharingService" should {
+    "make a request to create a bookmark" in pending
+    "and when the request succeeds" in {
+      "display a toast" in pending
+      "save a drop description" in pending
     }
+    "and when the request fails" in {
+      "display a toast" in pending
+      "not save a drop description" in pending
+    }
+  }
+  
+  "when an upload intent is received SharingService" should {
+    "make a request to upload a file" in pending
+    "and when the request succeeds" in {
+      "display a toast" in pending
+      "save a drop description" in pending
+    }
+    "and when the request fails" in {
+      "display a toast" in pending
+      "not save a drop description" in pending
+    }
+  }
+  
+  "when an item is uploaded the SharingService" should {
+    "check the 'copy to clipboard' preference" in {
+      "copy the url to the clipboard" in pending
+      "not copy the url to the clipboard" in pending
+    }
+  }
+  
+  "when an authentication error occurs the SharingService" should {
+    "display a toast" in pending
+  }
+  
+  "when the upload limit is reached the SharingService" should {
+    "display a toast" in pending
+  }
+  
+  "when some other error occurs the SharingService" should {
+    "display a toast" in pending
   }
 
 }

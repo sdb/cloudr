@@ -1,6 +1,8 @@
 package com.cloudapp.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.http.auth.AuthScope;
@@ -183,11 +185,16 @@ public class CloudAppImpl implements CloudApp {
   /**
    * 
    * {@inheritDoc}
+   * @throws FileNotFoundException 
    * 
    * @see com.cloudapp.api.CloudAppItems#upload(java.io.File)
    */
-  public CloudAppItem upload(File file) throws CloudAppException {
+  public CloudAppItem upload(File file) throws CloudAppException, FileNotFoundException {
     return items.upload(file);
+  }
+  
+  public CloudAppItem upload(InputStream is, String name, long length) throws CloudAppException {
+  	return items.upload(is, name, length);
   }
 
   /**

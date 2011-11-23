@@ -5,6 +5,7 @@ import ThreadUtils._
 import android.app.Activity
 import android.accounts.Account
 
+// TODO: use functions => withAccount, noAccount
 trait AccountRequired extends Activity
     with Injection.AccountManager
     with Injection.ThreadUtil { self: Activity with Logging ⇒

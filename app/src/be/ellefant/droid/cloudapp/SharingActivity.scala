@@ -5,6 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import roboguice.activity.RoboActivity
 
+/**
+ * This activity handles <code>SEND</code> intents from various sources. The received intent is forwarded to the
+ * SharingService if a CloudApp account is registered with the Android account manager.
+ */
 class SharingActivity extends RoboActivity
     with Base.AccountRequired
     with Injection.CloudAppManager {
@@ -13,7 +17,7 @@ class SharingActivity extends RoboActivity
     super.onCreate(savedInstanceState)
     finish()
   }
-
+  
   protected[cloudapp] def onAccountSuccess(name: String) = {
     val intent = getIntent
     val url = intent.getStringExtra(Intent.EXTRA_TEXT)
