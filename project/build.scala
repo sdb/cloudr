@@ -139,8 +139,7 @@ object AndroidBuild extends Build {
     "cloudr",
     file("app"),
     settings = General.fullAndroidSettings ++ mainDeps ++ inConfig(Android)(Seq(
-      manifestPath <<= (baseDirectory, manifestName in Android) (_ / _),
-      manifestTemplatePath <<= (manifestPath in Android) (mp => mp),
+      manifestPath <<= (baseDirectory, manifestName in Android) map { (base, name) => Seq(base / name) },
       mainAssetsPath <<= baseDirectory (_ / "assets"),
       mainResPath <<= baseDirectory (_ / "res")
     )) ++ Seq(
