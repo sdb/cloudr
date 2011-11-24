@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor.AutoCloseInputStream
 import Cloud._
 import android.widget.Toast
+import ThreadUtils._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -18,7 +19,8 @@ import android.widget.Toast
 class SharingService extends RoboIntentService(Name)
     with Base.CloudrService
     with Injection.AccountManager
-    with Injection.ApiFactory {
+    with Injection.ApiFactory
+    with Injection.ThreadUtil {
 
   def onHandleIntent(intent: Intent) = {
     def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = {
@@ -26,21 +28,25 @@ class SharingService extends RoboIntentService(Name)
     	  val url = intent getStringExtra (Intent.EXTRA_TEXT)
     	  val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
     	  api bookmark (title, url)
-    	case "image/jpeg" =>
+    	case t if t.startsWith("image/") =>
     	  val u = Uri parse((intent.getExtras get ("android.intent.extra.STREAM")).toString)
     	  val fd = getContentResolver openFileDescriptor (u, "r")
-    	  api.upload("blabla", new AutoCloseInputStream(fd), fd.getStatSize)
-    	case mt => logger debug mt; Left(Error.Other)
+    	  api upload ("blabla", new AutoCloseInputStream(fd), fd.getStatSize)
+    	case mt =>
+    	  logger info ("mime type %s not supported" format mt)
+    	  Left(Error.Other)
     }
     
     def sendFailure(error: Error.Error) = {
       val msg = error match { // TODO error messages
-		    case Error.Auth => "Authorization failed!"
-		    case Error.Limit => "Upload limit reached!"
-		    case Error.Other => "Upload failed!"
-		  }
-      val toast = Toast makeText(getApplicationContext, msg, Toast.LENGTH_SHORT)
-      toast show()
+	    case Error.Auth => "Authorization failed!"
+	    case Error.Limit => "Upload limit reached!"
+	    case Error.Other => "Upload failed!"
+	  }
+      logger warn ("failure: " + msg)
+      // TODO: on UI thread
+      // val toast = Toast makeText(getApplicationContext, msg, Toast.LENGTH_SHORT)
+      // toast show()
     }
     
     def sendSuccess(drop: Drop) = {

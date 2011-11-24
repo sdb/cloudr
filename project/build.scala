@@ -245,6 +245,8 @@ object Proguard {
 -keep class com.google.inject.Key
 -keep class com.google.inject.matcher.Matcher
 -keep class com.google.inject.spi.*
+
+-keep class org.apache.http.entity.mime.MultipartEntity
 """
 }
 

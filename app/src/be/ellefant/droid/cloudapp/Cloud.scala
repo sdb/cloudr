@@ -4,6 +4,7 @@ import android.content.ContentValues
 import com.cloudapp.api.{ CloudApp, CloudAppException }
 import com.cloudapp.api.model.CloudAppItem
 import java.io.InputStream
+import android.util.Log
   
 class Cloud(api: CloudApp) {
 	import Cloud._
@@ -16,7 +17,9 @@ class Cloud(api: CloudApp) {
   } catch {
     case e: CloudAppException if e.getCode == 402 => Left(Error.Auth)
     case e: CloudAppException if e.getCode == 200 => Left(Error.Limit)
-    case e_ => Left(Error.Other)
+    case e =>
+      Log.w("CLOUDR", "failure", e)
+      Left(Error.Other)
   }  
 }
 
