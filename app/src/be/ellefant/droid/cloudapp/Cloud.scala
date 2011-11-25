@@ -5,6 +5,8 @@ import com.cloudapp.api.{ CloudApp, CloudAppException }
 import com.cloudapp.api.model.CloudAppItem
 import java.io.InputStream
 import android.util.Log
+import be.ellefant.droid.cloudapp.CloudAppManager.ItemType
+import java.util.Date
   
 class Cloud(api: CloudApp) {
 	import Cloud._
@@ -31,17 +33,65 @@ object Cloud {
     val Auth, Limit, Other = Value
   }
   
-  case class Drop(id: Long, url: String) {
+  case class Drop(
+      id: Long,
+      url: String,
+      href: String,
+      name: String,
+      priv: Boolean,
+      subscribed: Boolean,
+      contentUrl: String,
+      itemType: ItemType.ItemType,
+      viewCounter: Long,
+      iconUrl: String,
+      remoteUrl: Option[String],
+      redirectUrl: Option[String],
+      source: String,
+      createdAt: Date,
+      updatedAt: Date) {
+    
     def toContentValues = {
-      val values = new ContentValues
+      val values = new ContentValues()
       values.put(ColId, new java.lang.Long(id))
+      values.put(ColHref, href)
+      values.put(ColName, name)
+      values.put(ColPrivate, priv)
+      values.put(ColSubscribed, subscribed)
       values.put(ColUrl, url)
-      // TODO map to content values
+      values.put(ColContentUrl, contentUrl)
+      values.put(ColItemType, itemType.toString.toLowerCase)
+      values.put(ColViewCounter, new java.lang.Long(viewCounter))
+      values.put(ColIcon, iconUrl)
+      remoteUrl foreach { u =>
+        values.put(ColRemoteUrl, u)
+      }
+      redirectUrl foreach { u =>
+        values.put(ColRedirectUrl, u)
+      }
+      values.put(ColSource, source)
+      values.put(ColCreatedAt, DateFormat.format(createdAt))
+      values.put(ColUpdatedAt, DateFormat.format(updatedAt))
       values
     }
   }
   
   object Drop {
-    def apply(item: CloudAppItem): Drop = Drop(0, "") // TODO map drop
+    def apply(item: CloudAppItem): Drop = Drop(
+      id = item.getId,
+      url = item.getUrl,
+      href = item.getHref,
+      name = item.getName,
+      priv = item.isPrivate,
+      subscribed = item.isSubscribed,
+      contentUrl = item.getContentUrl,
+      itemType = ItemType.withName(item.getItemType.toString.toLowerCase.capitalize),
+      viewCounter = item.getViewCounter,
+      iconUrl = item.getIconUrl,
+      remoteUrl = Option(item.getRemoteUrl),
+      redirectUrl = Option(item.getRedirectUrl),
+      source = item.getSource,
+      createdAt = item.getCreatedAt,
+      updatedAt = item.getUpdatedAt
+    )
   }
 }

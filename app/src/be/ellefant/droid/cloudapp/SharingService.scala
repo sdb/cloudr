@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor.AutoCloseInputStream
 import Cloud._
 import android.widget.Toast
 import ThreadUtils._
+import FileType._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -28,10 +29,12 @@ class SharingService extends RoboIntentService(Name)
     	  val url = intent getStringExtra (Intent.EXTRA_TEXT)
     	  val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
     	  api bookmark (title, url)
-    	case t if t.startsWith("image/") =>
+    	case Extension(extension) =>
     	  val u = Uri parse((intent.getExtras get ("android.intent.extra.STREAM")).toString)
     	  val fd = getContentResolver openFileDescriptor (u, "r")
-    	  api upload ("blabla", new AutoCloseInputStream(fd), fd.getStatSize)
+    	  api upload ("blabla." + extension, new AutoCloseInputStream(fd), fd.getStatSize)
+    	  // TODO file name, check clouapp what it does when no name is supplied
+    	  // TODO generate file name, e.g. 'Uploaded 2011-11-03 at 12:24' -> use user's current time and zone
     	case mt =>
     	  logger info ("mime type %s not supported" format mt)
     	  Left(Error.Other)

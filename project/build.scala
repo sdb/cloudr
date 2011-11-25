@@ -113,7 +113,7 @@ object AndroidBuild extends Build {
       javaSource in Compile <<= baseDirectory(_ / "src"),
       libraryDependencies ++= Seq(
         HttpClient % "provided",
-        HttpMime  % "provided",
+        HttpMime,
         Json  % "provided",
         Slf4jApi
       )
@@ -247,6 +247,7 @@ object Proguard {
 -keep class com.google.inject.spi.*
 
 -keep class org.apache.http.entity.mime.MultipartEntity
+-keep class com.cloudapp.*
 """
 }
 

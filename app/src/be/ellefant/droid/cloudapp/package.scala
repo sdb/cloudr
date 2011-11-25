@@ -22,8 +22,9 @@ package be.ellefant.droid {
      * Creates a Logger with the simple class name
      */
     trait CloudrLogging {
+      def trim(s: String) = s substring (0, math min (s.length, 23))
       lazy val logger = Logger(loggerName)
-      lazy val loggerName = Option("Cloudr/" + this.getClass.getSimpleName) map (n ⇒ n substring (0, math min (n.length, 23))) get
+      lazy val loggerName = trim("Cloudr/" + this.getClass.getSimpleName)
     }
 
     trait Imports {
@@ -37,6 +38,21 @@ package be.ellefant.droid {
 
       lazy val KeyItemType = "%s.%s" format (Id, "ITEM_TYPE")
       lazy val KeyId = "%s.%s" format (Id, "ID")
+    }
+    
+    object FileType extends Enumeration {
+      val Jpg = Value("jpg", "image/jpeg")
+      val Gif = Value("gif", "image/gif")
+      val Png = Value("png", "image/png")
+      
+      class FileType(val extension: String, val mimeType: String) extends Val()
+      protected final def Value(extension: String, mimeType: String): FileType = new FileType(extension, mimeType)	
+      
+      object Extension {
+        def unapply(mimeType: String): Option[String] = values.collect {
+          case ft: FileType if ft.mimeType == mimeType => ft.extension
+        }.headOption
+      }
     }
   }
 }
