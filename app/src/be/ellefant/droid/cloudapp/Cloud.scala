@@ -4,23 +4,30 @@ import android.content.ContentValues
 import com.cloudapp.api.{ CloudApp, CloudAppException }
 import com.cloudapp.api.model.CloudAppItem
 import java.io.InputStream
-import android.util.Log
-import be.ellefant.droid.cloudapp.CloudAppManager.ItemType
 import java.util.Date
-  
-class Cloud(api: CloudApp) {
+import CloudAppManager.ItemType
+
+/**
+ * Small (temporary) wrapper for the CloudApp Java API.
+ */
+class Cloud(api: CloudApp) extends CloudrLogging {
 	import Cloud._
   
+	// TODO: add method to retrieve all items
   def bookmark(title: String, url: String) = trye(api.createBookmark(title, url))
   def upload(name: String, is: InputStream, length: Long) = trye(api.upload(is, name, length))
   
   def trye(f: => CloudAppItem): Either[Error.Error, Drop] = try {
     Right(Drop(f))
   } catch {
-    case e: CloudAppException if e.getCode == 402 => Left(Error.Auth)
-    case e: CloudAppException if e.getCode == 200 => Left(Error.Limit)
+    case e: CloudAppException if e.getCode == 402 =>
+      logger info("CloudApp authorization error", e)
+      Left(Error.Auth)
+    case e: CloudAppException if e.getCode == 200 =>
+      logger info("CloudApp API limit", e)
+      Left(Error.Limit)
     case e =>
-      Log.w("CLOUDR", "failure", e)
+      logger info("CloudApp API error", e)
       Left(Error.Other)
   }  
 }

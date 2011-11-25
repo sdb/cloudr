@@ -7,16 +7,13 @@ import android.widget.{ TextView, CheckBox }
 import roboguice.activity.RoboActivity
 import java.text.SimpleDateFormat
 import java.util.Date
-import DatabaseHelper._
-import DropActivity._
-import CloudAppManager._
 import android.view.View
 import com.cloudapp.impl.model.CloudAppItemImpl
 import scala.util.parsing.json.JSON
 import org.json.JSONObject
 import android.widget.Toast
 import scalaandroid._
-import ThreadUtils._
+import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._
 
 class DropActivity extends RoboActivity
     with Activity
@@ -28,7 +25,6 @@ class DropActivity extends RoboActivity
   private var drop: Option[Drop] = None
 
   optionsMenu { menu =>
-    // Seq(R.string.open, R.string.browse, R.string.delete) foreach (i => menu.add(Menu.NONE, ))
     val inflater = getMenuInflater()
     inflater.inflate(R.menu.drop_menu, menu)
     true
@@ -40,7 +36,7 @@ class DropActivity extends RoboActivity
     case MenuItem(R.id.browse) ⇒
     	openBrowser()
     case MenuItem(R.id.delete) ⇒
-    	drop foreach { d => // TODO: send intent to service and process in the background ?
+    	drop foreach { d => // TODO: send intent to service and process in a service instead of spawning a thread ?
 		  	val acc = account()
 		  	val pwd = accountManager.getPassword(acc)
 		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
@@ -50,7 +46,7 @@ class DropActivity extends RoboActivity
 			  	val json = new JSONObject()
 			  	json.put("href", d.href)
 			  	val item = new CloudAppItemImpl(json)
-			  	api.delete(item)
+			  	api.delete(item) // TODO use CloudApp wrapper
 		  		getContentResolver().delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d.id), Array.empty) 
 		  	}
 		  	finish()

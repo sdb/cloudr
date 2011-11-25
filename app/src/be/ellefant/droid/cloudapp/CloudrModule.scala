@@ -6,6 +6,9 @@ import com.google.inject.{ Inject, Provider, AbstractModule }
 import roboguice.inject.ContextScoped
 import CloudrModule._
 
+/**
+ * Guice module for Cloudr.
+ */
 class CloudrModule extends AbstractModule {
 
   def configure() = {

@@ -2,11 +2,11 @@ package be.ellefant.droid.cloudapp
 
 import android.net.Uri
 import android.database.Cursor
-import android.content.{ UriMatcher, ContentValues, ContentProvider }
 import android.database.sqlite.SQLiteQueryBuilder
-import CloudAppProvider._
+import android.content.{ UriMatcher, ContentValues, ContentProvider }
 
 class CloudAppProvider extends ContentProvider with Logging {
+	import CloudAppProvider._
 
   protected var db: DatabaseHelper = _ // TODO inject and mock ?
 
@@ -34,7 +34,7 @@ class CloudAppProvider extends ContentProvider with Logging {
     }
   }
 
-  // TODO: uri can include the ID
+  // TODO: uri can include the ID + update sync service
   def delete(uri: Uri, where: String, whereArgs: Array[String]): Int = {
     Matcher.`match`(uri) match {
       case 1 ⇒
@@ -55,7 +55,7 @@ class CloudAppProvider extends ContentProvider with Logging {
     }
   }
 
-  // TODO: uri can include the ID
+  // TODO: uri can include the ID + update sync service
   def update(uri: Uri, values: ContentValues, where: String, whereArgs: Array[String]): Int = {
     Matcher.`match`(uri) match {
       case 1 if values != null ⇒
@@ -68,7 +68,7 @@ class CloudAppProvider extends ContentProvider with Logging {
 }
 
 object CloudAppProvider {
-  val ContentUri = Uri.parse("content://cloudapp")
+  val ContentUri = Uri.parse("content://cloudapp")  // TODO: create and use constant
   val Matcher = new UriMatcher(UriMatcher.NO_MATCH) {
     addURI("cloudapp", null, 1)
   }
