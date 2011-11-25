@@ -14,7 +14,8 @@ import android.widget.BaseAdapter
 class DropsActivity extends RoboListActivity
 		with Activity
     with Base.AccountRequired
-    with Base.Default {
+    with Base.Default
+    with Injection.CloudAppManager {
   
   private var contentObserver: DropsContentObserver = _
   
@@ -25,7 +26,7 @@ class DropsActivity extends RoboListActivity
   protected def onAccountSuccess(name: String) = {
     val intent = getIntent
     val itemType = intent.getStringExtra(KeyItemType)
-    setTitle("Cloudr - %s" % itemType) // FIXME: should show label instead of id
+    setTitle(cloudAppManager.itemTypes(ItemType.withName(itemType).id))
     setContentView(R.layout.drops)
     val projection = Array(ColId, ColName, ColUrl)
     val order = "%s DESC" format ColId
