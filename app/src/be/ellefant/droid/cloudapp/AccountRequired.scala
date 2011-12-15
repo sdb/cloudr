@@ -3,7 +3,6 @@ package be.ellefant.droid.cloudapp
 import android.os.Bundle
 import ThreadUtils._
 import android.app.Activity
-import android.accounts.Account
 
 // TODO: use functions => withAccount, noAccount
 trait AccountRequired extends Activity
