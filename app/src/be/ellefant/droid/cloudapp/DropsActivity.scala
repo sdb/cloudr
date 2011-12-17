@@ -32,11 +32,13 @@ class DropsActivity extends RoboListActivity
     val order = "%s DESC" format ColId
     val cursor = ItemType.withName(itemType) match {
       case ItemType.All ⇒
-        managedQuery(CloudAppProvider.ContentUri, projection, null, null, order)
+        managedQuery(CloudAppProvider.ContentUri, projection, "deleted_at IS NULL", null, order)
       case ItemType.Popular ⇒
-        managedQuery(CloudAppProvider.ContentUri, projection, null, null, "%s DESC, %s" format (ColViewCounter, order))
+        managedQuery(CloudAppProvider.ContentUri, projection, "deleted_at IS NULL", null, "%s DESC, %s" format (ColViewCounter, order))
+      case ItemType.Trash ⇒
+        managedQuery(CloudAppProvider.ContentUri, projection, "deleted_at IS NOT NULL", null, order)
       case it ⇒
-        managedQuery(CloudAppProvider.ContentUri, projection, "item_type = ?", Array(it.toString.toLowerCase), order)
+        managedQuery(CloudAppProvider.ContentUri, projection, "item_type = ? AND deleted_at IS NULL", Array(it.toString.toLowerCase), order)
     }
     val displayFields = Array(ColName, ColUrl)
     val displayViews = Array(android.R.id.text1, android.R.id.text2)

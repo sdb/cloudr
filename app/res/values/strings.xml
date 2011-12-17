@@ -64,6 +64,7 @@
         <item>Audio</item>
         <item>Video</item>
         <item>Other</item>
+        <item>Trash</item>
     </string-array>
 
 </resources>
