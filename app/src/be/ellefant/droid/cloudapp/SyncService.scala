@@ -4,7 +4,6 @@ import collection.JavaConversions._
 import collection.mutable.ListBuffer
 import org.json.JSONException
 import com.cloudapp.api.model.CloudAppItem
-import com.cloudapp.api.CloudAppException
 import com.google.inject.Inject
 import DatabaseHelper._
 import android.accounts.Account
@@ -17,6 +16,7 @@ import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
 import java.util.Date
 import scalaandroid._
+import com.cloudapp.api.{CloudApp, CloudAppException}
 
 // TODO: see http://developer.getcloudapp.com/list-items
 class SyncService extends RoboService
@@ -89,39 +89,10 @@ class SyncService extends RoboService
       logger.debug("existing items: " + existing)
 
       val api = apiFactory.create(account.name, pwd)
-      val itemsPerPage = 20
-      var page = 1
-      var tried = 0
-      var finished = false
-      val it = Iterator.continually {
-        logger.debug("getting page " + page)
-        var items: List[CloudAppItem] = if (finished || tried > 2) List.empty else
-          try {
-            api.getItems(page, itemsPerPage, null, false, null).toList
-          } catch {
-            case e: CloudAppException if e.getCode() == 500 && e.getCause.isInstanceOf[JSONException] ⇒
-              logger.warn("error reading json", e)
-              syncResult.stats.numParseExceptions += 1
-              tried += 1
-              Nil
-            case e: CloudAppException if e.getCode() == 500 ⇒
-              logger.warn("error fetching data", e)
-              syncResult.stats.numIoExceptions += 1
-              tried += 1
-              Nil
-            case e: CloudAppException if e.getCode() == 401 ⇒
-              logger.warn("unauthenticated", e)
-              accountManager.invalidateAuthToken(AccountType, pwd)
-              syncResult.stats.numAuthExceptions += 1
-              tried = 3
-              Nil
-          }
-        page += 1
-        finished = items.size < itemsPerPage
-        items
-      } takeWhile (_.size > 0)
 
-      val items = it.flatten.toSeq
+
+      val items = retrieve(api, pwd, syncResult, true) ++ retrieve(api, pwd, syncResult, false)
+
       val ids = items map (_.getId)
 
       val deleted = existing.filterNot(e ⇒ ids.exists(_ == e._1))
@@ -148,6 +119,42 @@ class SyncService extends RoboService
       }
     }
 
+  }
+
+  def retrieve(api: CloudApp, pwd: String, syncResult: SyncResult, deleted: Boolean) = {
+    val itemsPerPage = 20
+    var page = 1
+    var tried = 0
+    var finished = false
+    val it = Iterator.continually {
+      logger.debug("getting page " + page)
+      var items: List[CloudAppItem] = if (finished || tried > 2) List.empty else
+        try {
+          api.getItems(page, itemsPerPage, null, deleted, null).toList
+        } catch {
+          case e: CloudAppException if e.getCode() == 500 && e.getCause.isInstanceOf[JSONException] ⇒
+            logger.warn("error reading json", e)
+            syncResult.stats.numParseExceptions += 1
+            tried += 1
+            Nil
+          case e: CloudAppException if e.getCode() == 500 ⇒
+            logger.warn("error fetching data", e)
+            syncResult.stats.numIoExceptions += 1
+            tried += 1
+            Nil
+          case e: CloudAppException if e.getCode() == 401 ⇒
+            logger.warn("unauthenticated", e)
+            accountManager.invalidateAuthToken(AccountType, pwd)
+            syncResult.stats.numAuthExceptions += 1
+            tried = 3
+            Nil
+        }
+      page += 1
+      finished = items.size < itemsPerPage
+      items
+    } takeWhile (_.size > 0)
+
+    it.flatten.toSeq
   }
 
 }

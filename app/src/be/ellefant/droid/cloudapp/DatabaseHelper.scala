@@ -6,7 +6,6 @@ import android.database.sqlite.{ SQLiteDatabase, SQLiteOpenHelper }
 import com.cloudapp.api.model.CloudAppItem
 import android.content.ContentValues
 import java.text.SimpleDateFormat
-import android.database.Cursor
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DbName, null, 2) {
 
@@ -103,6 +102,10 @@ object DatabaseHelper {
         values.putNull(ColRedirectUrl)
       else
         values.put(ColRedirectUrl, item.getRedirectUrl)
+      if (item.getDeletedAt == null)
+        values.putNull(ColDeletedAt)
+      else
+        values.put(ColDeletedAt, DateFormat.format(item.getDeletedAt))
       values
     }
   }
