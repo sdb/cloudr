@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +37,8 @@ import com.cloudapp.impl.model.CloudAppItemImpl;
 public class CloudAppItemsImpl extends CloudAppBase {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CloudAppItemsImpl.class);
-  private static final String ITEMS_URL = MY_CL_LY + "/items";
+  private static final String ITEMS_PATH = "/items";
+  private static final String ITEMS_URL = MY_CL_LY + ITEMS_PATH;
   private static final String NEW_ITEM_URL = ITEMS_URL + "/new";
 
   public CloudAppItemsImpl(DefaultHttpClient client) {
@@ -112,19 +115,31 @@ public class CloudAppItemsImpl extends CloudAppBase {
       if (page == 0)
         page = 1;
 
-      HttpGet req = new HttpGet(ITEMS_URL);
-      req.addHeader("Accept", "application/json");
-      HttpParams params = new BasicHttpParams();
-      params.setIntParameter("page", page);
-      params.setIntParameter("per_page", perPage);
-      params.setBooleanParameter("deleted", showDeleted);
+      StringBuilder query = new StringBuilder();
+      query.append("page=" + page);
+      query.append("&per_page=" + perPage);
+      query.append("&deleted=" + showDeleted);
       if (type != null) {
-        params.setParameter("type", type.toString().toLowerCase());
+        query.append("&type=" + type.toString().toLowerCase());
       }
       if (source != null) {
-        params.setParameter("source", source);
+          query.append("&source=" + source);
       }
-      req.setParams(params);
+
+      URI uri = new URI(MY_CL_LY_SCHEME, null, MY_CL_LY_HOST, 80, ITEMS_PATH, query.toString(), null);
+      HttpGet req = new HttpGet(uri);
+      req.addHeader("Accept", "application/json");
+//      HttpParams params = new BasicHttpParams();
+//      params.setIntParameter("page", page);
+//      params.setIntParameter("per_page", perPage);
+//      params.setBooleanParameter("deleted", showDeleted);
+//      if (type != null) {
+//        params.setParameter("type", type.toString().toLowerCase());
+//      }
+//      if (source != null) {
+//        params.setParameter("source", source);
+//      }
+//      req.setParams(params);
 
       HttpResponse response = client.execute(req);
       int status = response.getStatusLine().getStatusCode();
@@ -150,6 +165,10 @@ public class CloudAppItemsImpl extends CloudAppBase {
     } catch (JSONException e) {
       LOGGER.error("Something went wrong trying to handle JSON.", e);
       throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
+    } catch (URISyntaxException e) {
+        LOGGER.error("Something went wrong trying to contact the CloudApp API.", e);
+        throw new CloudAppException(500,
+                "Something went wrong trying to contact the CloudApp API", e);
     }
   }
   

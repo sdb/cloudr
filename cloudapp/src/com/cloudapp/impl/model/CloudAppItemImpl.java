@@ -105,7 +105,7 @@ public class CloudAppItemImpl extends CloudAppModel implements CloudAppItem {
   public Date getDeletedAt() throws CloudAppException {
     try {
       String d = getString("deleted_at");
-      return format.parse(d);
+      return (d == null || "".equals(d.trim()) || "null".equals(d)) ? null : format.parse(d);
     } catch (ParseException e) {
       throw new CloudAppException(500, "Could not parse the date.", e);
     }

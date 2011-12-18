@@ -7,6 +7,6 @@ class CloudAppManager extends Injection.Resources {
 object CloudAppManager {
   object ItemType extends Enumeration {
     type ItemType = Value
-    val All, Popular, Bookmark, Image, Text, Archive, Audio, Video, Unknown = Value
+    val All, Popular, Bookmark, Image, Text, Archive, Audio, Video, Unknown, Trash = Value
   }
 }

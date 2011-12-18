@@ -24,7 +24,9 @@ import com.cloudapp.api.CloudAppException;
 public class CloudAppBase {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CloudAppBase.class);
-  protected static final String MY_CL_LY = "http://my.cl.ly";
+  protected static final String MY_CL_LY_SCHEME = "http";
+  protected static final String MY_CL_LY_HOST = "my.cl.ly";
+  protected static final String MY_CL_LY = String.format("%s://%s", MY_CL_LY_SCHEME, MY_CL_LY_HOST);
 
   protected DefaultHttpClient client;
 

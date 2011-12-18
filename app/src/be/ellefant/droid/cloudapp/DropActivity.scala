@@ -1,6 +1,5 @@
 package be.ellefant.droid.cloudapp
 
-import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.widget.{ TextView, CheckBox }
@@ -14,6 +13,8 @@ import org.json.JSONObject
 import android.widget.Toast
 import scalaandroid._
 import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._
+import java.text.ParseException
+import android.content.{ContentValues, Intent}
 
 class DropActivity extends RoboActivity
     with Activity
@@ -27,6 +28,8 @@ class DropActivity extends RoboActivity
   optionsMenu { menu =>
     val inflater = getMenuInflater()
     inflater.inflate(R.menu.drop_menu, menu)
+    val visible = drop map(!_.deleted) getOrElse false
+    (2 to 4) foreach (i => menu getItem(i) setVisible(visible))
     true
   }
   
@@ -46,8 +49,8 @@ class DropActivity extends RoboActivity
 			  	val json = new JSONObject()
 			  	json.put("href", d.href)
 			  	val item = new CloudAppItemImpl(json)
-			  	api.delete(item) // TODO use CloudApp wrapper
-		  		getContentResolver().delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d.id), Array.empty) 
+			  	val deletedItem = api.delete(item) // TODO use CloudApp wrapper and catch exceptions
+          getContentResolver().update(CloudAppProvider.ContentUri, deletedItem.toContentValues, "%s = %d" format (ColId, deletedItem.getId), Array.empty)
 		  	}
 		  	finish()
     	}
@@ -60,7 +63,7 @@ class DropActivity extends RoboActivity
     setTitle("Cloudr")
     setContentView(R.layout.drop)
     val cursor = managedQuery(CloudAppProvider.ContentUri,
-      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType, ColContentUrl, ColHref),
+      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType, ColContentUrl, ColHref, ColDeletedAt),
       "%s = %d" format (ColId, id), null, null)
     // TODO: check if item is found
     drop = if (cursor.moveToFirst()) Some(Drop(cursor)) else Option.empty[Drop]
@@ -128,7 +131,21 @@ object DropActivity {
     priv: Boolean,
     source: String,
     createdAt: Date,
-    updatedAt: Date)
+    updatedAt: Date,
+    deletedAt: Option[Date]) {
+    
+    val deleted = deletedAt.isDefined
+  }
+
+  object Date {
+    def apply(s: String) = Option(s) flatMap { s =>
+      try {
+        Some(DateFormat.parse(s))
+      } catch {
+        case e: ParseException => None
+      }
+    }
+  }
 
   object Drop {
     def apply(cursor: Cursor): Drop = {
@@ -142,6 +159,7 @@ object DropActivity {
         priv = cursor.getInt(4) == 1,
         createdAt = DateFormat.parse(cursor.getString(5)),
         updatedAt = DateFormat.parse(cursor.getString(6)),
+        deletedAt = Date(cursor.getString(11)),
         source = cursor.getString(7))
     }
   }
