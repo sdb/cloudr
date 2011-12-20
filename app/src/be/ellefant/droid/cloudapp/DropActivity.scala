@@ -29,13 +29,13 @@ class DropActivity extends RoboActivity
     val inflater = getMenuInflater()
     inflater.inflate(R.menu.drop_menu, menu)
     val visible = drop map(!_.deleted) getOrElse false
-    (2 to 4) foreach (i => menu getItem(i) setVisible(visible))
+    (2 to 3) foreach (i => menu getItem(i) setVisible(visible))
     true
   }
   
   optionsItemSelected {
-    case MenuItem(R.id.open) ⇒
-      openApplication()
+//    case MenuItem(R.id.open) ⇒
+//      openApplication()
     case MenuItem(R.id.browse) ⇒
     	openBrowser()
     case MenuItem(R.id.delete) ⇒
