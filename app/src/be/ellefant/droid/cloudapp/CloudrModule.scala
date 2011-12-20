@@ -2,7 +2,7 @@ package be.ellefant.droid.cloudapp
 
 import android.accounts.AccountManager
 import android.content.Context
-import com.google.inject.{ Inject, Provider, AbstractModule }
+import com.google.inject._
 import roboguice.inject.ContextScoped
 import CloudrModule._
 
@@ -12,10 +12,12 @@ import CloudrModule._
 class CloudrModule extends AbstractModule {
 
   def configure() = {
+    val config = new Config
     bind(classOf[AccountManager]).toProvider(classOf[AccountManagerProvider])
     bind(classOf[ThreadUtil]).toInstance(new ThreadUtil)
-    bind(classOf[ApiFactory]).toInstance(new ApiFactory)
+    bind(classOf[ApiFactory]).toInstance(new ApiFactory(config))
     bind(classOf[CloudAppManager]).toInstance(new CloudAppManager)
+    bind(classOf[Config]).toInstance(config)
   }
 }
 

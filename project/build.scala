@@ -4,6 +4,7 @@ import Keys._
 import AndroidKeys._
 import com.typesafe.sbtscalariform.ScalariformPlugin._
 import de.element34.sbteclipsify.Eclipsify._
+import sbtfilter.Plugin._
 
 object General {
   lazy val buildOrganization = "com.github.sdb.cloudr"
@@ -138,10 +139,11 @@ object AndroidBuild extends Build {
   lazy val app = Project(
     "cloudr",
     file("app"),
-    settings = General.fullAndroidSettings ++ mainDeps ++ inConfig(Android)(Seq(
+    settings = General.fullAndroidSettings ++ mainDeps ++ filterSettings ++ inConfig(Android)(Seq(
       manifestPath <<= (baseDirectory, manifestName in Android) map { (base, name) => Seq(base / name) },
       mainAssetsPath <<= baseDirectory (_ / "assets"),
-      mainResPath <<= baseDirectory (_ / "res")
+      mainResPath <<= baseDirectory (_ / "res"),
+      resourceDirectory := new File("blabla") // resources directory doesn't need to be packaged, it's already contained in the minified JAR
     )) ++ Seq(
       name := "cloudr",
       parallelExecution in Test := false,
@@ -158,7 +160,9 @@ object AndroidBuild extends Build {
       scalaSource in Compile <<= baseDirectory (_ / "src"),
       resourceDirectory in Compile <<= baseDirectory (_ /"resources"),
       scalaSource in Test <<= baseDirectory (_ /"test"),
-      resourceDirectory in Test <<= baseDirectory (_ /"test-resources")
+      resourceDirectory in Test <<= baseDirectory (_ /"test-resources"),
+      FilterKeys.projectProps ~= { _ map (p => ("project." + p._1, p._2)) },
+      FilterKeys.extraProps += "app.name" -> "Cloudr"
     )
   ) dependsOn (slf4jAndroid, sdroid, cloudapp)
 

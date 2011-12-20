@@ -44,7 +44,7 @@ trait CloudrSpecs extends RoboSpecs with Mockito {
       lazy val cloudAppMock = mock[CloudApp]
       abstract override def configure() {
         super.configure()
-        module.bind(classOf[ApiFactory]).toInstance(new ApiFactory {
+        module.bind(classOf[ApiFactory]).toInstance(new ApiFactory(null) {
           override def create(name: String, password: String) = cloudAppMock
         })
       }
