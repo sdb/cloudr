@@ -3,8 +3,6 @@ package be.ellefant.droid.cloudapp
 import android.content.Context
 import DatabaseHelper._
 import android.database.sqlite.{ SQLiteDatabase, SQLiteOpenHelper }
-import com.cloudapp.api.model.CloudAppItem
-import android.content.ContentValues
 import java.text.SimpleDateFormat
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DbName, null, 2) {
@@ -72,43 +70,4 @@ object DatabaseHelper {
   val SqlDropIndex = "DROP INDEX IF EXISTS " + IndItemsHref
 
   val DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS") // ISO8601
-
-  // TODO remove
-  class RichCloudAppItem(item: CloudAppItem) {
-    def toContentValues = {
-      val values = new ContentValues()
-      values.put(ColId, item.getId)
-      values.put(ColHref, item.getHref)
-      values.put(ColName, item.getName)
-      values.put(ColPrivate, item.isPrivate)
-      values.put(ColSubscribed, item.isSubscribed)
-      values.put(ColUrl, item.getUrl)
-      values.put(ColContentUrl, item.getContentUrl)
-      values.put(ColItemType, item.getItemType.toString.toLowerCase)
-      values.put(ColViewCounter, new Integer(item.getViewCounter.toInt))
-      values.put(ColIcon, item.getIconUrl)
-      if (item.getRemoteUrl == null)
-        values.putNull(ColRemoteUrl)
-      else
-        values.put(ColRemoteUrl, item.getRemoteUrl)
-      if (item.getRedirectUrl == null)
-        values.putNull(ColRedirectUrl)
-      else
-        values.put(ColRedirectUrl, item.getRedirectUrl)
-      values.put(ColSource, item.getSource)
-      values.put(ColCreatedAt, DateFormat.format(item.getCreatedAt))
-      values.put(ColUpdatedAt, DateFormat.format(item.getUpdatedAt))
-      if (item.getRedirectUrl == null)
-        values.putNull(ColRedirectUrl)
-      else
-        values.put(ColRedirectUrl, item.getRedirectUrl)
-      if (item.getDeletedAt == null)
-        values.putNull(ColDeletedAt)
-      else
-        values.put(ColDeletedAt, DateFormat.format(item.getDeletedAt))
-      values
-    }
-  }
-
-  implicit def richCloudAppItem(item: CloudAppItem) = new RichCloudAppItem(item)
 }

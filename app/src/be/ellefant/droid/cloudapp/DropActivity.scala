@@ -49,8 +49,8 @@ class DropActivity extends RoboActivity
 			  	val json = new JSONObject()
 			  	json.put("href", d.href)
 			  	val item = new CloudAppItemImpl(json)
-			  	val deletedItem = api.delete(item) // TODO use CloudApp wrapper and catch exceptions
-          getContentResolver().update(CloudAppProvider.ContentUri, deletedItem.toContentValues, "%s = %d" format (ColId, deletedItem.getId), Array.empty)
+			  	val deletedItem = Cloud.Drop(api.delete(item)) // TODO use CloudApp wrapper and catch exceptions
+          getContentResolver().update(CloudAppProvider.ContentUri, deletedItem.toContentValues, "%s = %d" format (ColId, deletedItem.id), Array.empty)
 		  	}
 		  	finish()
     	}

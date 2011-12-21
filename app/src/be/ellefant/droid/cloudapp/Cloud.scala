@@ -6,6 +6,7 @@ import com.cloudapp.api.model.CloudAppItem
 import java.io.InputStream
 import java.util.Date
 import CloudAppManager.ItemType
+import DatabaseHelper._
 
 /**
  * Small (temporary) wrapper for the CloudApp Java API.
@@ -33,8 +34,6 @@ class Cloud(api: CloudApp) extends CloudrLogging {
 }
 
 object Cloud {
-  import DatabaseHelper._
-  
   object Error extends Enumeration {
     type Error = Value
     val Auth, Limit, Other = Value
@@ -55,7 +54,8 @@ object Cloud {
       redirectUrl: Option[String],
       source: String,
       createdAt: Date,
-      updatedAt: Date) {
+      updatedAt: Date,
+      deletedAt: Option[Date]) {
     
     def toContentValues = {
       val values = new ContentValues()
@@ -69,15 +69,21 @@ object Cloud {
       values.put(ColItemType, itemType.toString.toLowerCase)
       values.put(ColViewCounter, new java.lang.Long(viewCounter))
       values.put(ColIcon, iconUrl)
-      remoteUrl foreach { u =>
-        values.put(ColRemoteUrl, u)
-      }
-      redirectUrl foreach { u =>
-        values.put(ColRedirectUrl, u)
-      }
+      if (remoteUrl.isDefined)
+        values.putNull(ColRemoteUrl)
+      else
+        values.put(ColRemoteUrl, remoteUrl.get)
+      if (redirectUrl.isDefined)
+        values.putNull(ColRedirectUrl)
+      else
+        values.put(ColRedirectUrl, redirectUrl.get)
       values.put(ColSource, source)
       values.put(ColCreatedAt, DateFormat.format(createdAt))
       values.put(ColUpdatedAt, DateFormat.format(updatedAt))
+      if (deletedAt.isDefined)
+        values.putNull(ColDeletedAt)
+      else
+        values.put(ColDeletedAt, DateFormat.format(deletedAt.get))
       values
     }
   }
@@ -98,7 +104,8 @@ object Cloud {
       redirectUrl = Option(item.getRedirectUrl),
       source = item.getSource,
       createdAt = item.getCreatedAt,
-      updatedAt = item.getUpdatedAt
+      updatedAt = item.getUpdatedAt,
+      deletedAt = Option(item.getDeletedAt)
     )
   }
 }

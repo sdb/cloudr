@@ -100,7 +100,7 @@ class SyncService extends RoboService
       val updated = items filter { item =>
         existing find (_._1 == item.getId) map (e => item.getUpdatedAt.after(e._2)) getOrElse (false)
       }
-      val toInsert = items filter (i ⇒ inserted exists (_ == i.getId)) map (_.toContentValues)
+      val toInsert = items filter (i ⇒ inserted exists (_ == i.getId)) map (Cloud.Drop(_).toContentValues)
 
       if (syncResult.hasError()) return
 
@@ -110,7 +110,7 @@ class SyncService extends RoboService
         }
         provider.bulkInsert(CloudAppProvider.ContentUri, toInsert.toArray)
         updated foreach { u =>
-          provider.update(CloudAppProvider.ContentUri, u.toContentValues, "%s = %d" format (ColId, u.getId), Array.empty)
+          provider.update(CloudAppProvider.ContentUri, Cloud.Drop(u).toContentValues, "%s = %d" format (ColId, u.getId), Array.empty)
         }
       } catch {
         case e ⇒
