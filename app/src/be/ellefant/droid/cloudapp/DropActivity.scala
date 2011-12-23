@@ -7,14 +7,11 @@ import roboguice.activity.RoboActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import android.view.View
-import com.cloudapp.impl.model.CloudAppItemImpl
-import scala.util.parsing.json.JSON
-import org.json.JSONObject
 import android.widget.Toast
 import scalaandroid._
 import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._
 import java.text.ParseException
-import android.content.{ContentValues, Intent}
+import android.content.Intent
 
 class DropActivity extends RoboActivity
     with Activity
@@ -46,11 +43,11 @@ class DropActivity extends RoboActivity
 		  	toast.show()
 		  	threadUtil.performOnBackgroundThread { () =>
 			  	val api = apiFactory.create(acc.name, pwd)
-			  	val json = new JSONObject()
-			  	json.put("href", d.href)
-			  	val item = new CloudAppItemImpl(json)
-			  	val deletedItem = api.delete(item) // TODO use CloudApp wrapper and catch exceptions
-          getContentResolver().update(CloudAppProvider.ContentUri, deletedItem.toContentValues, "%s = %d" format (ColId, deletedItem.getId), Array.empty)
+			  	api.delete(d.href) match {
+            case Right(drop) =>
+              getContentResolver().update(CloudAppProvider.ContentUri, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
+              case Left(error) => // TODO api error
+          }
 		  	}
 		  	finish()
     	}
@@ -120,6 +117,7 @@ object DropActivity {
 
   val ShortDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm a")
 
+  // TODO use generic Drop case class here + add DAO-like class for retrieval
   case class Drop(
     id: Long,
     itemType: ItemType.ItemType,

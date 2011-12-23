@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import roboguice.RoboGuice
-import com.cloudapp.api.CloudAppException
 import com.xtremelabs.robolectric.Robolectric
 import DatabaseHelper._
 
@@ -31,7 +30,7 @@ class SyncServiceSpec extends CloudrSpecs {
 
   def invalidPassword = new context {
     accountManagerMock.getPassword(account) returns "sdb"
-    cloudAppMock.getItems(1, 20, null, false, null) throws new CloudAppException(401, "", null)
+    cloudAppMock.items(1, 20, false) returns (Left(Cloud.Error.Auth))
     syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)
     hasError && noMods
   }
@@ -40,6 +39,9 @@ class SyncServiceSpec extends CloudrSpecs {
     val cursor = mock[Cursor]
     contentProvider.query(CloudAppProvider.ContentUri, Array(ColId, ColUpdatedAt), null, Array.empty, null) returns cursor
     cursor.moveToFirst returns false
+    val drop = mock[Cloud.Drop]
+    cloudAppMock.items(1, 20,  false) returns (Right(Nil))
+    cloudAppMock.items(1, 20,  true) returns (Right(Nil))
     syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)
     val inserted = there was one(contentProvider).bulkInsert(CloudAppProvider.ContentUri, Array())
     noError && inserted
