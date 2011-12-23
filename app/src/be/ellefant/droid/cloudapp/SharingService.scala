@@ -64,7 +64,7 @@ class SharingService extends RoboIntentService(Name)
     
     (accountManager getAccountsByType(AccountType)) headOption match {
       case Some(account) ⇒
-        val api = new Cloud(apiFactory create (account.name, accountManager getPassword account))
+        val api = apiFactory create (account.name, accountManager getPassword account)
       	Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure _, sendSuccess _))
       case _ ⇒
         logger.info("no CloudApp account available")

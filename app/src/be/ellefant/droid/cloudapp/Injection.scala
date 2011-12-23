@@ -1,8 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import com.google.inject.Inject
-import android.accounts.AbstractAccountAuthenticator
-import android.content.AbstractThreadedSyncAdapter
 
 object Injection {
 

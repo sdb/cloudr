@@ -100,14 +100,6 @@ class AuthenticationService extends RoboService
       bundle
     }
 
-    protected def authenticate(username: String, password: String) = {
-      try {
-        (apiFactory create (username, password)).getAccountDetails
-        true
-      } catch {
-        case e ⇒ false
-      }
-    }
-
+    protected def authenticate(username: String, password: String) = (apiFactory create (username, password)).accountDetails().isRight
   }
 }

@@ -7,7 +7,6 @@ import roboguice.RoboGuice
 import com.xtremelabs.robolectric.{ Robolectric, RobolectricConfig }
 import com.google.inject.AbstractModule
 import com.google.inject.util.Modules
-import com.cloudapp.api.CloudApp
 import android.accounts.AccountManager
 
 trait CloudrSpecs extends RoboSpecs with Mockito {
@@ -41,7 +40,7 @@ trait CloudrSpecs extends RoboSpecs with Mockito {
     }
 
     trait CloudAppMock extends RoboContext {
-      lazy val cloudAppMock = mock[CloudApp]
+      lazy val cloudAppMock = mock[Cloud]
       abstract override def configure() {
         super.configure()
         module.bind(classOf[ApiFactory]).toInstance(new ApiFactory(null) {

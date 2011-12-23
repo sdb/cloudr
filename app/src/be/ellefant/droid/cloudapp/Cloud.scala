@@ -1,5 +1,6 @@
 package be.ellefant.droid.cloudapp
 
+import collection.JavaConversions._
 import android.content.ContentValues
 import com.cloudapp.api.{ CloudApp, CloudAppException }
 import com.cloudapp.api.model.CloudAppItem
@@ -7,19 +8,32 @@ import java.io.InputStream
 import java.util.Date
 import CloudAppManager.ItemType
 import DatabaseHelper._
+import com.cloudapp.impl.model.CloudAppItemImpl
+import org.json.{JSONException, JSONObject}
 
 /**
  * Small (temporary) wrapper for the CloudApp Java API.
+ *
+ * <p>All requests to CloudApp should go via this wrapper.</p>
  */
 class Cloud(api: CloudApp) extends CloudrLogging {
 	import Cloud._
+
+  def bookmark(title: String, url: String) = trye(Drop(api.createBookmark(title, url)))
+  def upload(name: String, is: InputStream, length: Long) = trye(Drop(api.upload(is, name, length)))
+  def accountDetails() = trye(api.getAccountDetails)
+  def delete(href: String) = trye {
+    val json = new JSONObject()
+    json.put("href", href)
+    val item = new CloudAppItemImpl(json)
+    Drop(api.delete(item))
+  }
+  def items(page: Int, itemsPerPage: Int, deleted: Boolean) = trye {
+    api.getItems(page, itemsPerPage, null, deleted, null).toList map (Drop(_))
+  }
   
-	// TODO: add method to retrieve all items
-  def bookmark(title: String, url: String) = trye(api.createBookmark(title, url))
-  def upload(name: String, is: InputStream, length: Long) = trye(api.upload(is, name, length))
-  
-  def trye(f: => CloudAppItem): Either[Error.Error, Drop] = try {
-    Right(Drop(f))
+  def trye[T](f: => T): Either[Error.Error, T] = try {
+    Right(f)
   } catch {
     case e: CloudAppException if e.getCode == 402 =>
       logger info("CloudApp authorization error", e)
@@ -27,6 +41,9 @@ class Cloud(api: CloudApp) extends CloudrLogging {
     case e: CloudAppException if e.getCode == 200 =>
       logger info("CloudApp API limit", e)
       Left(Error.Limit)
+    case e: CloudAppException if e.getCode == 500 && e.getCause.isInstanceOf[JSONException] =>
+      logger info("CloudApp JSON error", e)
+      Left(Error.Json)
     case e =>
       logger info("CloudApp API error", e)
       Left(Error.Other)
@@ -34,9 +51,11 @@ class Cloud(api: CloudApp) extends CloudrLogging {
 }
 
 object Cloud {
+
+  /** Types of errors we are interested in ATM */
   object Error extends Enumeration {
     type Error = Value
-    val Auth, Limit, Other = Value
+    val Auth, Limit, Json, Other = Value
   }
   
   case class Drop(
@@ -69,18 +88,18 @@ object Cloud {
       values.put(ColItemType, itemType.toString.toLowerCase)
       values.put(ColViewCounter, new java.lang.Long(viewCounter))
       values.put(ColIcon, iconUrl)
-      if (remoteUrl.isDefined)
+      if (remoteUrl.isEmpty)
         values.putNull(ColRemoteUrl)
       else
         values.put(ColRemoteUrl, remoteUrl.get)
-      if (redirectUrl.isDefined)
+      if (redirectUrl.isEmpty)
         values.putNull(ColRedirectUrl)
       else
         values.put(ColRedirectUrl, redirectUrl.get)
       values.put(ColSource, source)
       values.put(ColCreatedAt, DateFormat.format(createdAt))
       values.put(ColUpdatedAt, DateFormat.format(updatedAt))
-      if (deletedAt.isDefined)
+      if (deletedAt.isEmpty)
         values.putNull(ColDeletedAt)
       else
         values.put(ColDeletedAt, DateFormat.format(deletedAt.get))

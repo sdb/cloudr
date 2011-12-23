@@ -1,11 +1,10 @@
 package be.ellefant.droid.cloudapp
 
-import com.cloudapp.api.CloudApp
 import org.apache.http.params.CoreProtocolPNames
 import ApiFactory._
 
 class ApiFactory(config: Config) {
-  def create(name: String, password: String): CloudApp = new CloudAppImpl(config, name, password)
+  def create(name: String, password: String): Cloud = new Cloud(new CloudAppImpl(config, name, password))
 }
 
 object ApiFactory {

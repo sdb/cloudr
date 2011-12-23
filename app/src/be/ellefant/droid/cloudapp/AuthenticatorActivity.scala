@@ -161,13 +161,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
         }
         result
       }
-    try {
-      (apiFactory create (username, password)).getAccountDetails
-      sendResult(true, handler, context)
-    } catch {
-      case e ⇒
-        sendResult(false, handler, context)
-    }
+    sendResult((apiFactory create (username, password)).accountDetails().isRight, handler, context)
   }
 
   protected def attemptAuth(username: String, password: String, handler: Handler, context: Context) = {

@@ -1,13 +1,12 @@
 package be.ellefant.droid.cloudapp
 
-import collection.JavaConversions._
 import collection.mutable.ListBuffer
 import org.json.JSONException
 import com.cloudapp.api.model.CloudAppItem
 import com.google.inject.Inject
 import DatabaseHelper._
 import android.accounts.Account
-import android.content.{ SyncResult, Context, ContentProviderClient, AbstractThreadedSyncAdapter }
+import android.content.{ SyncResult, ContentProviderClient, AbstractThreadedSyncAdapter }
 import android.database.Cursor
 import android.os.Bundle
 import roboguice.service.RoboService
@@ -16,7 +15,6 @@ import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
 import java.util.Date
 import scalaandroid._
-import com.cloudapp.api.{CloudApp, CloudAppException}
 
 // TODO: see http://developer.getcloudapp.com/list-items
 class SyncService extends RoboService
@@ -90,17 +88,16 @@ class SyncService extends RoboService
 
       val api = apiFactory.create(account.name, pwd)
 
-
       val items = retrieve(api, pwd, syncResult, true) ++ retrieve(api, pwd, syncResult, false)
 
-      val ids = items map (_.getId)
+      val ids = items map (_.id)
 
       val deleted = existing.filterNot(e ⇒ ids.exists(_ == e._1))
       val inserted = ids.filterNot(i ⇒ existing.exists(e => e._1 == i))
       val updated = items filter { item =>
-        existing find (_._1 == item.getId) map (e => item.getUpdatedAt.after(e._2)) getOrElse (false)
+        existing find (_._1 == item.id) map (e => item.updatedAt.after(e._2)) getOrElse (false)
       }
-      val toInsert = items filter (i ⇒ inserted exists (_ == i.getId)) map (Cloud.Drop(_).toContentValues)
+      val toInsert = items filter (i ⇒ inserted exists (_ == i.id)) map (_.toContentValues)
 
       if (syncResult.hasError()) return
 
@@ -110,7 +107,7 @@ class SyncService extends RoboService
         }
         provider.bulkInsert(CloudAppProvider.ContentUri, toInsert.toArray)
         updated foreach { u =>
-          provider.update(CloudAppProvider.ContentUri, Cloud.Drop(u).toContentValues, "%s = %d" format (ColId, u.getId), Array.empty)
+          provider.update(CloudAppProvider.ContentUri, u.toContentValues, "%s = %d" format (ColId, u.id), Array.empty)
         }
       } catch {
         case e ⇒
@@ -121,34 +118,31 @@ class SyncService extends RoboService
 
   }
 
-  def retrieve(api: CloudApp, pwd: String, syncResult: SyncResult, deleted: Boolean) = {
+  def retrieve(api: Cloud, pwd: String, syncResult: SyncResult, deleted: Boolean) = {
     val itemsPerPage = 20
     var page = 1
     var tried = 0
     var finished = false
     val it = Iterator.continually {
       logger.debug("getting page " + page)
-      var items: List[CloudAppItem] = if (finished || tried > 2) List.empty else
-        try {
-          api.getItems(page, itemsPerPage, null, deleted, null).toList
-        } catch {
-          case e: CloudAppException if e.getCode() == 500 && e.getCause.isInstanceOf[JSONException] ⇒
-            logger.warn("error reading json", e)
+      val items: List[Cloud.Drop] = if (finished || tried > 2) List.empty else {
+        api items(page, itemsPerPage, deleted) match {
+          case Left(Cloud.Error.Json) =>
             syncResult.stats.numParseExceptions += 1
             tried += 1
             Nil
-          case e: CloudAppException if e.getCode() == 500 ⇒
-            logger.warn("error fetching data", e)
-            syncResult.stats.numIoExceptions += 1
-            tried += 1
-            Nil
-          case e: CloudAppException if e.getCode() == 401 ⇒
-            logger.warn("unauthenticated", e)
+          case Left(Cloud.Error.Auth) =>
             accountManager.invalidateAuthToken(AccountType, pwd)
             syncResult.stats.numAuthExceptions += 1
             tried = 3
             Nil
+          case Left(_) =>
+            syncResult.stats.numIoExceptions += 1
+            tried += 1
+            Nil
+          case Right(items) => items
         }
+      }
       page += 1
       finished = items.size < itemsPerPage
       items

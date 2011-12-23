@@ -14,11 +14,11 @@ class OldSharingServiceSpec extends CloudrSpecs {
       val acc = new Account("sdb", AccountType)
       accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
       accountManagerMock.getPassword(acc) returns "blabla"
-      val item = mock[CloudAppItem]
-      item.getUrl() returns "http://cl.ly/361w0L1b2r320T2u023V"
-      cloudAppMock.createBookmark(title, url) returns item
+      val item = mock[Cloud.Drop]
+      item.url returns "http://cl.ly/361w0L1b2r320T2u023V"
+      cloudAppMock.bookmark(title, url) returns Right(item)
       sendIntent()
-      val created = there was one(cloudAppMock).createBookmark(title, url)
+      val created = there was one(cloudAppMock).bookmark(title, url)
       val clipboard = service.getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
       val clipped = clipboard.getText must be_==("http://cl.ly/361w0L1b2r320T2u023V")
       created && clipped
@@ -29,7 +29,7 @@ class OldSharingServiceSpec extends CloudrSpecs {
     "do nothing when there is no account available" in new context {
       accountManagerMock.getAccountsByType(AccountType) returns Array.empty
       sendIntent()
-      there was no(cloudAppMock).createBookmark(title, url)
+      there was no(cloudAppMock).bookmark(title, url)
     }
 
     "do nothing when the title or url of the bookmark are blank" in {
