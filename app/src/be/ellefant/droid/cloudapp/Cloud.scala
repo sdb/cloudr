@@ -10,6 +10,8 @@ import CloudAppManager.ItemType
 import DatabaseHelper._
 import com.cloudapp.impl.model.CloudAppItemImpl
 import org.json.{JSONException, JSONObject}
+import android.database.Cursor
+import java.text.ParseException
 
 /**
  * Small (temporary) wrapper for the CloudApp Java API.
@@ -75,6 +77,8 @@ object Cloud {
       createdAt: Date,
       updatedAt: Date,
       deletedAt: Option[Date]) {
+
+    val deleted = deletedAt.isDefined
     
     def toContentValues = {
       val values = new ContentValues()
@@ -108,6 +112,7 @@ object Cloud {
   }
   
   object Drop {
+
     def apply(item: CloudAppItem): Drop = Drop(
       id = item.getId,
       url = item.getUrl,
@@ -126,5 +131,34 @@ object Cloud {
       updatedAt = item.getUpdatedAt,
       deletedAt = Option(item.getDeletedAt)
     )
+
+    def apply(cursor: Cursor): Drop = Drop(
+      id = cursor.getLong(0),
+      itemType = ItemType.withName(cursor.getString(8).capitalize),
+      name = cursor.getString(1),
+      viewCounter = cursor.getInt(2),
+      url = cursor.getString(3),
+      contentUrl = cursor.getString(9),
+      href = cursor.getString(10),
+      priv = cursor.getInt(4) == 1,
+      createdAt = DateFormat.parse(cursor.getString(5)),
+      updatedAt = DateFormat.parse(cursor.getString(6)),
+      deletedAt = Date(cursor.getString(11)),
+      source = cursor.getString(7),
+      subscribed = cursor.getInt(12) == 1,
+      iconUrl = cursor.getString(13),
+      remoteUrl = if (cursor.isNull(14)) None else Some(cursor.getString(14)),
+      redirectUrl = if (cursor.isNull(15)) None else Some(cursor.getString(15))
+    )
+
+    object Date {
+      def apply(s: String) = Option(s) flatMap { s =>
+        try {
+          Some(DateFormat.parse(s))
+        } catch {
+          case e: ParseException => None
+        }
+      }
+    }
   }
 }

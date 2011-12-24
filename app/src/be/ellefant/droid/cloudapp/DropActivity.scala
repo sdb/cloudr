@@ -1,17 +1,14 @@
 package be.ellefant.droid.cloudapp
 
-import android.database.Cursor
 import android.net.Uri
 import android.widget.{ TextView, CheckBox }
 import roboguice.activity.RoboActivity
 import java.text.SimpleDateFormat
-import java.util.Date
 import android.view.View
 import android.widget.Toast
 import scalaandroid._
-import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._
-import java.text.ParseException
 import android.content.Intent
+import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._, Cloud._
 
 class DropActivity extends RoboActivity
     with Activity
@@ -60,8 +57,8 @@ class DropActivity extends RoboActivity
     setTitle("Cloudr")
     setContentView(R.layout.drop)
     val cursor = managedQuery(CloudAppProvider.ContentUri,
-      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType, ColContentUrl, ColHref, ColDeletedAt),
-      "%s = %d" format (ColId, id), null, null)
+      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType,
+        ColContentUrl, ColHref, ColDeletedAt, ColSubscribed, ColIcon, ColRemoteUrl, ColRedirectUrl), "%s = %d" format (ColId, id), null, null)
     // TODO: check if item is found
     drop = if (cursor.moveToFirst()) Some(Drop(cursor)) else Option.empty[Drop]
 
@@ -114,51 +111,5 @@ class DropActivity extends RoboActivity
 }
 
 object DropActivity {
-
   val ShortDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm a")
-
-  // TODO use generic Drop case class here + add DAO-like class for retrieval
-  case class Drop(
-    id: Long,
-    itemType: ItemType.ItemType,
-    name: String,
-    viewCounter: Int,
-    url: String,
-    contentUrl: String,
-    href: String,
-    priv: Boolean,
-    source: String,
-    createdAt: Date,
-    updatedAt: Date,
-    deletedAt: Option[Date]) {
-    
-    val deleted = deletedAt.isDefined
-  }
-
-  object Date {
-    def apply(s: String) = Option(s) flatMap { s =>
-      try {
-        Some(DateFormat.parse(s))
-      } catch {
-        case e: ParseException => None
-      }
-    }
-  }
-
-  object Drop {
-    def apply(cursor: Cursor): Drop = {
-      Drop(id = cursor.getLong(0),
-        itemType = ItemType.withName(cursor.getString(8).capitalize),
-        name = cursor.getString(1),
-        viewCounter = cursor.getInt(2),
-        url = cursor.getString(3),
-        contentUrl = cursor.getString(9),
-        href = cursor.getString(10),
-        priv = cursor.getInt(4) == 1,
-        createdAt = DateFormat.parse(cursor.getString(5)),
-        updatedAt = DateFormat.parse(cursor.getString(6)),
-        deletedAt = Date(cursor.getString(11)),
-        source = cursor.getString(7))
-    }
-  }
 }
