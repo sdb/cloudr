@@ -125,7 +125,7 @@ class SyncService extends RoboService
     var finished = false
     val it = Iterator.continually {
       logger.debug("getting page " + page)
-      val items: List[Cloud.Drop] = if (finished || tried > 2) List.empty else {
+      val items: List[Drop] = if (finished || tried > 2) List.empty else {
         api items(page, itemsPerPage, deleted) match {
           case Left(Cloud.Error.Json) =>
             syncResult.stats.numParseExceptions += 1

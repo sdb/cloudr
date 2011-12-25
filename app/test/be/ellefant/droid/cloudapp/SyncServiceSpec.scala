@@ -39,7 +39,7 @@ class SyncServiceSpec extends CloudrSpecs {
     val cursor = mock[Cursor]
     contentProvider.query(CloudAppProvider.ContentUri, Array(ColId, ColUpdatedAt), null, Array.empty, null) returns cursor
     cursor.moveToFirst returns false
-    val drop = mock[Cloud.Drop]
+    val drop = mock[Drop]
     cloudAppMock.items(1, 20,  false) returns (Right(Nil))
     cloudAppMock.items(1, 20,  true) returns (Right(Nil))
     syncAdapter.onPerformSync(account, new Bundle, "cloudapp", contentProviderClient, syncResult)

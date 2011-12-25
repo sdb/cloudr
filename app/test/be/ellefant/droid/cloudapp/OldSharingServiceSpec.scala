@@ -14,7 +14,7 @@ class OldSharingServiceSpec extends CloudrSpecs {
       val acc = new Account("sdb", AccountType)
       accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
       accountManagerMock.getPassword(acc) returns "blabla"
-      val item = mock[Cloud.Drop]
+      val item = mock[Drop]
       item.url returns "http://cl.ly/361w0L1b2r320T2u023V"
       cloudAppMock.bookmark(title, url) returns Right(item)
       sendIntent()
