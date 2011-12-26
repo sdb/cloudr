@@ -38,7 +38,7 @@ class OldSharingActivitySpec extends CloudrSpecs {
       val intent = new Intent
       intent.putExtra(Intent.EXTRA_TEXT, "http://google.com")
       activity.setIntent(intent)
-      testToast("URL will be saved to CloudApp")
+      testToast("Item will be uploaded to CloudApp.")
     }
 
     def testToast(msg: String) = {

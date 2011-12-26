@@ -12,7 +12,6 @@ import Cloud._
 import FileType._
 import java.text.SimpleDateFormat
 import java.util.Date
-import android.app.{PendingIntent, Notification, NotificationManager}
 import android.widget.Toast
 import android.os.{Handler, Looper}
 import ThreadUtils._
