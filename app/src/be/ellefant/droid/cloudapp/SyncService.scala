@@ -1,8 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import collection.mutable.ListBuffer
-import org.json.JSONException
-import com.cloudapp.api.model.CloudAppItem
 import com.google.inject.Inject
 import DatabaseHelper._
 import android.accounts.Account
@@ -10,11 +8,11 @@ import android.content.{ SyncResult, ContentProviderClient, AbstractThreadedSync
 import android.database.Cursor
 import android.os.Bundle
 import roboguice.service.RoboService
-import android.content.ContentProvider
 import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
 import java.util.Date
 import scalaandroid._
+import android.database.sqlite.SQLiteQueryBuilder
 
 // TODO: see http://developer.getcloudapp.com/list-items
 class SyncService extends RoboService
@@ -39,7 +37,7 @@ class SyncService extends RoboService
         extras match {
           case b ⇒
             logger.debug("Processing sync with extras " + extras)
-            val p = provider.getLocalContentProvider
+            val p = provider.getLocalContentProvider.asInstanceOf[CloudAppProvider]
             Option(accountManager.blockingGetAuthToken(account, AuthTokenType, true)) match {
               case Some(pwd) ⇒
                 processRequest(p, account, pwd, syncResult)
@@ -60,59 +58,68 @@ class SyncService extends RoboService
       }
     }
 
-    protected def processRequest(provider: ContentProvider, account: Account, pwd: String, syncResult: SyncResult) {
-      // provider.delete(CloudAppProvider.ContentUri, null, null)
-      var existingCursor: Cursor = null
-      var existing: Seq[(Long, Date)] = null
-      try {
-        existingCursor = provider.query(CloudAppProvider.ContentUri, Array(ColId, ColUpdatedAt), null, Array.empty, null)
-        existing = if (!existingCursor.moveToFirst()) Seq.empty else {
-          val l = new ListBuffer[(Long, Date)]
-          while (!existingCursor.isAfterLast()) {
-            val id = existingCursor.getLong(0)
-            val updated = DateFormat.parse(existingCursor.getString(1))
-            existingCursor.moveToNext()
-            l += (id -> updated)
-          }
-          l.toSeq
-        }
-      } catch {
-        case e ⇒
-          syncResult.databaseError = true
-          logger.warn("error retrieving existing items", e)
-          return
-      } finally {
-        if (existingCursor != null) existingCursor.close()
-      }
-      logger.debug("existing items: " + existing)
-
+    protected def processRequest(provider: CloudAppProvider, account: Account, pwd: String, syncResult: SyncResult) {
       val api = apiFactory.create(account.name, pwd)
 
-      val items = retrieve(api, pwd, syncResult, true) ++ retrieve(api, pwd, syncResult, false)
-
-      val ids = items map (_.id)
-
-      val deleted = existing.filterNot(e ⇒ ids.exists(_ == e._1))
-      val inserted = ids.filterNot(i ⇒ existing.exists(e => e._1 == i))
-      val updated = items filter { item =>
-        existing find (_._1 == item.id) map (e => item.updatedAt.after(e._2)) getOrElse (false)
-      }
-      val toInsert = items filter (i ⇒ inserted exists (_ == i.id)) map (_.toContentValues)
-
+      var items = retrieve(api, pwd, syncResult, true)
       if (syncResult.hasError()) return
 
+      items = items ++ retrieve(api, pwd, syncResult, false)
+      if (syncResult.hasError()) return
+
+      val db = provider.database.getWritableDatabase
+      db beginTransaction()
+
       try {
+        var existingCursor: Cursor = null
+        var existing: Seq[(Long, Date)] = null
+        try {
+          val builder = new SQLiteQueryBuilder
+          builder.setTables("ITEMS")
+          existingCursor = builder query (db, Array(ColId, ColUpdatedAt), null, Array.empty, null, null, null)
+          existing = if (!existingCursor.moveToFirst()) Seq.empty else {
+            val l = new ListBuffer[(Long, Date)]
+            while (!existingCursor.isAfterLast()) {
+              val id = existingCursor.getLong(0)
+              val updated = DateFormat.parse(existingCursor.getString(1))
+              existingCursor.moveToNext()
+              l += (id -> updated)
+            }
+            l.toSeq
+          }
+        } finally {
+          if (existingCursor != null) existingCursor.close()
+        }
+        logger.debug("existing items: " + existing)
+
+        val ids = items map (_.id)
+
+        val deleted = existing.filterNot(e ⇒ ids.exists(_ == e._1))
+        val inserted = ids.filterNot(i ⇒ existing.exists(e => e._1 == i))
+        val updated = items filter { item =>
+          existing find (_._1 == item.id) map (e => item.updatedAt.after(e._2)) getOrElse (false)
+        }
+        val toInsert = items filter (i ⇒ inserted exists (_ == i.id)) map (_.toContentValues)
+
         deleted foreach { d ⇒
-          provider.delete(CloudAppProvider.ContentUri, "%s = %d" format (ColId, d._1), Array.empty)
+          db.delete(DatabaseHelper.TblItems, "%s = %d" format (ColId, d._1), Array.empty)
         }
-        provider.bulkInsert(CloudAppProvider.ContentUri, toInsert.toArray)
+        toInsert foreach { d =>
+          db.insert(DatabaseHelper.TblItems, DatabaseHelper.ColId, d)
+        }
         updated foreach { u =>
-          provider.update(CloudAppProvider.ContentUri, u.toContentValues, "%s = %d" format (ColId, u.id), Array.empty)
+          db.update(DatabaseHelper.TblItems, u.toContentValues, "%s = %d" format (ColId, u.id), Array.empty)
         }
+
+        db setTransactionSuccessful()
+
+        provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
       } catch {
         case e ⇒
           logger.warn("update failed", e)
           syncResult.databaseError = true
+      } finally {
+        db endTransaction()
       }
     }
 

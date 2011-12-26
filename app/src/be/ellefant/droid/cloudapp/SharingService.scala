@@ -1,17 +1,14 @@
 package be.ellefant.droid.cloudapp
 
 import android.content.Intent
-import roboguice.service.RoboIntentService
-import SharingService._
 import android.text.ClipboardManager
 import android.content.Context
 import android.preference.PreferenceManager
-import DatabaseHelper._
 import android.net.Uri
 import android.os.ParcelFileDescriptor.AutoCloseInputStream
+import roboguice.service.RoboIntentService
+import SharingService._
 import Cloud._
-import android.widget.Toast
-import ThreadUtils._
 import FileType._
 
 /**
@@ -58,14 +55,24 @@ class SharingService extends RoboIntentService(Name)
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
         clipboard setText (drop.url)
       }
-      getContentResolver insert (CloudAppProvider.ContentUri, drop.toContentValues)
-      logger debug ("New CloudAppItem created '%d'." format drop.id)
+      val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
+      val db = provider.database.getWritableDatabase
+      db beginTransaction()
+      try {
+        db insert(DatabaseHelper.TblItems, DatabaseHelper.ColId, drop.toContentValues) // TODO check first
+        provider.context.getContentResolver notifyChange(CloudAppProvider.ContentUri, null)
+        db setTransactionSuccessful()
+      } catch {
+        case e => // TODO
+      }
+      db endTransaction()
+      logger debug("New CloudAppItem created '%d'." format drop.id)
     }
     
     (accountManager getAccountsByType(AccountType)) headOption match {
       case Some(account) ⇒
         val api = apiFactory create (account.name, accountManager getPassword account)
-      	Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure _, sendSuccess _))
+        Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure _, sendSuccess _))
       case _ ⇒
         logger.info("no CloudApp account available")
     }

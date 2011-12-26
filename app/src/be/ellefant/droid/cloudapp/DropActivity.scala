@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.Toast
 import scalaandroid._
 import android.content.Intent
-import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._, Cloud._
+import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._
 
 class DropActivity extends RoboActivity
     with Activity
@@ -39,11 +39,21 @@ class DropActivity extends RoboActivity
 		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
 		  	toast.show()
 		  	threadUtil.performOnBackgroundThread { () =>
-			  	val api = apiFactory.create(acc.name, pwd)
-			  	api.delete(d.href) match {
+          val api = apiFactory.create(acc.name, pwd)
+          api.delete(d.href) match {
             case Right(drop) =>
-              getContentResolver().update(CloudAppProvider.ContentUri, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
-              case Left(error) => // TODO api error
+              val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
+              val db = provider.database.getWritableDatabase
+              db beginTransaction()
+              try {
+                db update(DatabaseHelper.TblItems, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
+                provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
+                db setTransactionSuccessful()
+              } catch {
+                case e => // TODO
+              }
+              db endTransaction()
+            case Left(error) => // TODO api error
           }
 		  	}
 		  	finish()

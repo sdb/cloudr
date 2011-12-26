@@ -9,22 +9,22 @@ import CloudAppManager.ItemType
 import DatabaseHelper._
 
 case class Drop(
-                 id: Long,
-                 url: String,
-                 href: String,
-                 name: String,
-                 priv: Boolean,
-                 subscribed: Boolean,
-                 contentUrl: String,
-                 itemType: ItemType.ItemType,
-                 viewCounter: Long,
-                 iconUrl: String,
-                 remoteUrl: Option[String],
-                 redirectUrl: Option[String],
-                 source: String,
-                 createdAt: Date,
-                 updatedAt: Date,
-                 deletedAt: Option[Date]) {
+   id: Long,
+   url: String,
+   href: String,
+   name: String,
+   priv: Boolean,
+   subscribed: Boolean,
+   contentUrl: String,
+   itemType: ItemType.ItemType,
+   viewCounter: Long,
+   iconUrl: String,
+   remoteUrl: Option[String],
+   redirectUrl: Option[String],
+   source: String,
+   createdAt: Date,
+   updatedAt: Date,
+   deletedAt: Option[Date]) {
 
   val deleted = deletedAt.isDefined
 

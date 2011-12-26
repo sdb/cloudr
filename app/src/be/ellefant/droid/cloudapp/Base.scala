@@ -1,6 +1,5 @@
 package be.ellefant.droid.cloudapp
 
-import android.app.{ Activity => AActivity }
 import android.content.{ Intent, ContentResolver }
 import android.os.Bundle
 import scalaandroid._

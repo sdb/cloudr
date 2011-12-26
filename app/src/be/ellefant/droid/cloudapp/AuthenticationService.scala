@@ -1,8 +1,6 @@
 package be.ellefant.droid.cloudapp
 
 import roboguice.service.RoboService
-import android.accounts.{ AccountManager ⇒ AndroidAccountManager }
-import android.content.Context 
 import android.accounts.{ Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager ⇒ AndroidAccountManager }
 import com.google.inject.Inject
 import android.os.Bundle
