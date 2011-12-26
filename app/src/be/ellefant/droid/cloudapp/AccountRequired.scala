@@ -28,7 +28,7 @@ trait AccountRequired extends Activity
             onAccountSuccess(name)
           }
         } catch {
-          case e ⇒ // TODO handle other cases then wrong login/password: server unavailable, ...
+          case e ⇒ // TODO handle other cases than wrong login/password: server unavailable, ...
             self.runOnUiThread { () ⇒
               onAccountFailure()
             }

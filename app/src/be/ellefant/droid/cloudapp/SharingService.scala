@@ -12,6 +12,10 @@ import Cloud._
 import FileType._
 import java.text.SimpleDateFormat
 import java.util.Date
+import android.app.{PendingIntent, Notification, NotificationManager}
+import android.widget.Toast
+import android.os.{Handler, Looper}
+import ThreadUtils._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -21,6 +25,13 @@ class SharingService extends RoboIntentService(Name)
     with Injection.AccountManager
     with Injection.ApiFactory
     with Injection.ThreadUtil {
+
+  private var handler: Handler = _
+
+  override def onCreate() {
+    super.onCreate()
+    handler = new Handler(Looper.getMainLooper())
+  }
 
   def onHandleIntent(intent: Intent) = {
     def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = {
@@ -40,19 +51,22 @@ class SharingService extends RoboIntentService(Name)
     
     def sendFailure(error: Error.Error) = {
       val msg = error match { // TODO error messages
-	    case Error.Auth => "Authorization failed!"
-	    case Error.Limit => "Upload limit reached!"
-	    case Error.Other => "Upload failed!"
+	    case Error.Auth => "CloudApp authorization failed."
+	    case Error.Limit => "CloudApp upload limit reached."
+	    case Error.Other => "CloudApp upload failed."
 	  }
       logger warn ("failure: " + msg)
-      // TODO: on UI thread
-      // val toast = Toast makeText(getApplicationContext, msg, Toast.LENGTH_SHORT)
-      // toast show()
+
+      handler post  { () =>
+        val toast = Toast makeText(getApplicationContext, msg, Toast.LENGTH_SHORT)
+        toast show()
+      }
     }
     
     def sendSuccess(drop: Drop) = {
       val sharedPrefs = PreferenceManager getDefaultSharedPreferences this
-      if (sharedPrefs getBoolean ("copy_url", true)) {
+      val copyUrl = sharedPrefs getBoolean ("copy_url", true)
+      if (copyUrl) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
         clipboard setText (drop.url)
       }
@@ -67,6 +81,13 @@ class SharingService extends RoboIntentService(Name)
         case e => // TODO
       }
       db endTransaction()
+
+      handler post  { () =>
+        val msg = "Item uploaded successfully to CloudApp." + (if (copyUrl) " The URL is copied to the clipboard." else "")
+        val toast = Toast makeText(getApplicationContext, msg, Toast.LENGTH_SHORT)
+        toast show()
+      }
+
       logger debug("New CloudAppItem created '%d'." format drop.id)
     }
     
@@ -82,6 +103,6 @@ class SharingService extends RoboIntentService(Name)
 }
 
 object SharingService {
-  val UploadDateFormat = new SimpleDateFormat("'Uploaded' yyyy-MM-dd 'at' HH:mm:ss")
+  val UploadDateFormat = new SimpleDateFormat("'Uploaded' yyyy-MM-dd 'at' HH.mm.ss")
   private lazy val Name = classOf[SharingService].getSimpleName
 }

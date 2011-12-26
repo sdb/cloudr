@@ -22,7 +22,7 @@ class SharingActivity extends RoboActivity
     val intent = getIntent
     val url = intent.getStringExtra(Intent.EXTRA_TEXT)
     logger.debug("Sharing link '%s' for '%s'." format (url, name))
-    val toast = Toast.makeText(getApplicationContext, "URL will be saved to CloudApp", Toast.LENGTH_SHORT)
+    val toast = Toast.makeText(getApplicationContext, "Item will be uploaded to CloudApp.", Toast.LENGTH_SHORT)
     toast.show()
     val int = new Intent(intent)
     int.setClass(this, classOf[SharingService])
