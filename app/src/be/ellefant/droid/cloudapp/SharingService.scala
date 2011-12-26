@@ -10,6 +10,8 @@ import roboguice.service.RoboIntentService
 import SharingService._
 import Cloud._
 import FileType._
+import java.text.SimpleDateFormat
+import java.util.Date
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -29,9 +31,8 @@ class SharingService extends RoboIntentService(Name)
     	case Extension(extension) =>
     	  val u = Uri parse((intent.getExtras get ("android.intent.extra.STREAM")).toString)
     	  val fd = getContentResolver openFileDescriptor (u, "r")
-    	  api upload ("blabla." + extension, new AutoCloseInputStream(fd), fd.getStatSize)
-    	  // TODO file name, check clouapp what it does when no name is supplied
-    	  // TODO generate file name, e.g. 'Uploaded 2011-11-03 at 12:24' -> use user's current time and zone
+        val name = UploadDateFormat.format(new Date())
+    	  api upload ("%s.%s" format(name, extension), new AutoCloseInputStream(fd), fd.getStatSize)
     	case mt =>
     	  logger info ("mime type %s not supported" format mt)
     	  Left(Error.Other)
@@ -81,5 +82,6 @@ class SharingService extends RoboIntentService(Name)
 }
 
 object SharingService {
+  val UploadDateFormat = new SimpleDateFormat("'Uploaded' yyyy-MM-dd 'at' HH:mm:ss")
   private lazy val Name = classOf[SharingService].getSimpleName
 }
