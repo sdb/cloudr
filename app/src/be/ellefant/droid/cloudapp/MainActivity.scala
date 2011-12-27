@@ -13,7 +13,7 @@ class MainActivity extends RoboListActivity
     with Injection.CloudAppManager
     with Injection.AccountManager {
 
-  protected def onAccountSuccess(name: String) = {
+  protected def onAccountSuccess() = {
     setContentView(R.layout.main) // using custom view, mainly to be able to test with Robolectric
     val adapter = new ArrayAdapter[String](this, android.R.layout.simple_list_item_1, cloudAppManager.itemTypes)
     setListAdapter(adapter)

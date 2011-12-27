@@ -1,6 +1,6 @@
 <configuration>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>target/cloudr-test.log</file> <!-- TODO: filter plugin ? -->
+        <file>target/cloudr-test.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</Pattern>
         </layout>
@@ -11,6 +11,6 @@
         </layout>
     </appender>
     <root level="debug">
-        <appender-ref ref="STDOUT"/> <!-- TODO: filter plugin to filter the appender value ? -->
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

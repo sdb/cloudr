@@ -18,10 +18,10 @@ class SharingActivity extends RoboActivity
     finish()
   }
   
-  protected[cloudapp] def onAccountSuccess(name: String) = {
+  protected[cloudapp] def onAccountSuccess() = {
     val intent = getIntent
     val url = intent.getStringExtra(Intent.EXTRA_TEXT)
-    logger.debug("Sharing link '%s' for '%s'." format (url, name))
+    logger.debug("Sharing link '%s' for '%s'." format (url, account().name))
     val toast = Toast.makeText(getApplicationContext, "Item will be uploaded to CloudApp.", Toast.LENGTH_SHORT)
     toast.show()
     val int = new Intent(intent)

@@ -23,7 +23,7 @@ class DropsActivity extends RoboListActivity
   
   private var adapter: BaseAdapter = _
 
-  protected def onAccountSuccess(name: String) = {
+  protected def onAccountSuccess() = {
     val intent = getIntent
     val itemType = intent.getStringExtra(KeyItemType)
     setTitle(cloudAppManager.itemTypes(ItemType.withName(itemType).id))

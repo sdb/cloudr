@@ -60,7 +60,7 @@ class DropActivity extends RoboActivity
     	}
   }
 
-  protected def onAccountSuccess(name: String) = {
+  protected def onAccountSuccess() = {
     val intent = getIntent
     val id = intent.getLongExtra(KeyId, -1) // TODO: check valid id
     // setTitle("Cloudr - Drop %d" % id)

@@ -35,7 +35,7 @@ class AccountRequiredSpec extends CloudrSpecs {
     def testAccountAvailable = {
       accountManagerMock.getAccountsByType(AccountType) returns Array(mock[Account])
       activity.onCreate(null)
-      there was one(activity).onAccountSuccess(null)
+      there was one(activity).onAccountSuccess()
     }
 
     def testAccountAdded = {
@@ -46,7 +46,7 @@ class AccountRequiredSpec extends CloudrSpecs {
       amf.getResult returns b
       accountManagerMock.addAccount(AccountType, AuthTokenType, null, null, activity, null, null) returns amf
       activity.onCreate(null)
-      there was one(activity).onAccountSuccess("sdb")
+      there was one(activity).onAccountSuccess()
     }
 
     def testException(e: Throwable) = {
@@ -60,7 +60,7 @@ class AccountRequiredSpec extends CloudrSpecs {
   }
 
   class AccountRequiredSpy extends RoboActivity with Logging with AccountRequired {
-    def onAccountSuccess(name: String) = {}
+    def onAccountSuccess() = {}
     def onAccountFailure() = {}
   }
 

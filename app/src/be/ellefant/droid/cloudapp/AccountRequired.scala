@@ -11,7 +11,7 @@ trait AccountRequired extends Activity
 
   protected def account() = accountManager.getAccountsByType(AccountType).head
 
-  protected def onAccountSuccess(name: String): Any // TODO: remove param name
+  protected def onAccountSuccess(): Any
   protected def onAccountFailure(): Any
 
   abstract override def onCreate(savedInstanceState: Bundle) {
@@ -25,7 +25,7 @@ trait AccountRequired extends Activity
           val b = amf.getResult // TODO: use timeout
           val name = b.getString(android.accounts.AccountManager.KEY_ACCOUNT_NAME)
           self.runOnUiThread { () ⇒
-            onAccountSuccess(name)
+            onAccountSuccess()
           }
         } catch {
           case e ⇒ // TODO handle other cases than wrong login/password: server unavailable, ...
@@ -37,7 +37,7 @@ trait AccountRequired extends Activity
     } else {
       val name = accounts.head.name
       logger.debug("Account found: '%s'." format name)
-      onAccountSuccess(name)
+      onAccountSuccess()
     }
   }
 
