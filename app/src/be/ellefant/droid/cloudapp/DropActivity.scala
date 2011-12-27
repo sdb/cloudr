@@ -35,7 +35,7 @@ class DropActivity extends RoboActivity
     case MenuItem(R.id.delete) ⇒
     	drop foreach { d => // TODO: send intent to service and process in a service instead of spawning a thread ?
 		  	val acc = account()
-		  	val pwd = accountManager.getPassword(acc)
+		  	val pwd = accountManager blockingGetAuthToken(account, AuthTokenType, true)
 		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
 		  	toast.show()
 		  	threadUtil.performOnBackgroundThread { () =>
