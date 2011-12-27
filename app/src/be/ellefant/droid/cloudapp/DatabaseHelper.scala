@@ -5,7 +5,7 @@ import DatabaseHelper._
 import android.database.sqlite.{ SQLiteDatabase, SQLiteOpenHelper }
 import java.text.SimpleDateFormat
 
-class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DbName, null, 2) {
+class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DbName, null, 1) {
 
   def onCreate(db: SQLiteDatabase) = {
     db.execSQL(SqlCreate)
