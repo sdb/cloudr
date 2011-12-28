@@ -1,5 +1,5 @@
 <manifest 
-android:versionName="0.1" android:versionCode="1" package="be.ellefant.droid.cloudapp" xmlns:android="http://schemas.android.com/apk/res/android">
+android:versionName="0.1" android:versionCode="1" package="be.ellefant.cloudr" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
@@ -16,7 +16,7 @@ android:versionName="0.1" android:versionCode="1" package="be.ellefant.droid.clo
     <application android:icon="@drawable/ic_cloudr" android:label="@string/app_name">
         <provider
                 android:name=".CloudAppProvider"
-                android:authorities="cloudapp"
+                android:authorities="cloudr"
                 android:syncable="true"/>
 
         <activity android:label="@string/app_name" android:name=".MainActivity">

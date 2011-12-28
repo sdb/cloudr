@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="roboguice_modules">
-        <item>be.ellefant.droid.cloudapp.CloudrModule</item>
+        <item>be.ellefant.cloudr.CloudrModule</item>
     </string-array>
 </resources>

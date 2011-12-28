@@ -6,10 +6,10 @@
     <PreferenceScreen
         android:key="account_settings"
         android:title="@string/account_settings"
-        android:summary="Sync frequency, notifications, etc.">
+        android:summary="General account settings">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="be.ellefant.droid.cloudapp"
-            android:targetClass="be.ellefant.droid.cloudapp.AccountPreferencesActivity" />
+            android:targetPackage="be.ellefant.cloudr"
+            android:targetClass="be.ellefant.cloudr.AccountPreferencesActivity" />
     </PreferenceScreen>
 </PreferenceScreen>

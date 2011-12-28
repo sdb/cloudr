@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-                       android:accountType="be.ellefant.droid.cloudapp"
+                       android:accountType="be.ellefant.cloudr"
                        android:icon="@drawable/ic_cloudr"
                        android:label="@string/cloudapp_label"
                        android:accountPreferences="@xml/account_preferences" />

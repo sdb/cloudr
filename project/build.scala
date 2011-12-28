@@ -7,7 +7,7 @@ import de.element34.sbteclipsify.Eclipsify._
 import sbtfilter.Plugin._
 
 object General {
-  lazy val buildOrganization = "com.github.sdb.cloudr"
+  lazy val buildOrganization = "be.ellefant.cloudr"
   lazy val buildVersion      = "0.0.1-SNAPSHOT"
   lazy val buildScalaVersion = "2.9.1"
 
