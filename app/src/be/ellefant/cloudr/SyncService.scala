@@ -14,7 +14,6 @@ import java.util.Date
 import scalaandroid._
 import android.database.sqlite.SQLiteQueryBuilder
 
-// TODO: see http://developer.getcloudapp.com/list-items
 class SyncService extends RoboService
     with Base.CloudrService
     with Service
