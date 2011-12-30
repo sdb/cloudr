@@ -17,7 +17,7 @@ object Base extends sdroid.Types {
   trait Default extends Activity {
     self: Activity with Logging with AccountRequired ⇒
 
-    optionsMenu { menu =>
+    optionsMenu { menu ⇒
       val inflater = getMenuInflater()
       inflater.inflate(R.menu.main_menu, menu)
     }

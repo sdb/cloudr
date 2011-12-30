@@ -12,7 +12,7 @@ object ApiFactory {
     override protected def createClient = {
       val c = super.createClient
       val p = c.getParams
-      val appId = "%s/%s" format(config.name, config.version)
+      val appId = "%s/%s" format (config.name, config.version)
       val ua = appId + (Option(p.getParameter(CoreProtocolPNames.USER_AGENT)) flatMap (_.toString.toBlankOption) map (" " + _.toString) getOrElse (""))
       p.setParameter(CoreProtocolPNames.USER_AGENT, ua)
       c.setParams(p)

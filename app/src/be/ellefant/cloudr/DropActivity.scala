@@ -19,48 +19,48 @@ class DropActivity extends RoboActivity
 
   private var drop: Option[Drop] = None
 
-  optionsMenu { menu =>
+  optionsMenu { menu ⇒
     val inflater = getMenuInflater()
     inflater.inflate(R.menu.drop_menu, menu)
-    val visible = drop map(!_.deleted) getOrElse false
-    (2 to 3) foreach (i => menu getItem(i) setVisible(visible))
+    val visible = drop map (!_.deleted) getOrElse false
+    (2 to 3) foreach (i ⇒ menu getItem (i) setVisible (visible))
     true
   }
 
   optionsItemSelected {
-//    case MenuItem(R.id.open) ⇒
-//      openApplication()
+    //    case MenuItem(R.id.open) ⇒
+    //      openApplication()
     case MenuItem(R.id.browse) ⇒
-    	openBrowser()
+      openBrowser()
     case MenuItem(R.id.delete) ⇒
-    	drop foreach { d => // TODO: send intent to service and process in a service instead of spawning a thread ?
-		  	val acc = account()
-		  	val pwd = accountManager blockingGetAuthToken(account, AuthTokenType, true)
-		  	val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
-		  	toast.show()
-		  	threadUtil.performOnBackgroundThread { () =>
+      drop foreach { d ⇒ // TODO: send intent to service and process in a service instead of spawning a thread ?
+        val acc = account()
+        val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
+        val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
+        toast.show()
+        threadUtil.performOnBackgroundThread { () ⇒
           val api = apiFactory.create(acc.name, pwd)
           api.delete(d.href) match {
-            case Right(drop) =>
+            case Right(drop) ⇒
               val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
               val db = provider.database.getWritableDatabase
-              db beginTransaction()
+              db beginTransaction ()
               try {
-                db update(DatabaseHelper.TblItems, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
+                db update (DatabaseHelper.TblItems, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
                 provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
-                db setTransactionSuccessful()
+                db setTransactionSuccessful ()
               } catch {
-                case e => // TODO
+                case e ⇒ // TODO
               }
-              db endTransaction()
-            case Left(error) =>
+              db endTransaction ()
+            case Left(error) ⇒
               accountManager.clearPassword(acc)
               accountManager.invalidateAuthToken(AccountType, pwd)
-              // TODO api error
+            // TODO api error
           }
-		  	}
-		  	finish()
-    	}
+        }
+        finish()
+      }
   }
 
   protected def onAccountSuccess() = {

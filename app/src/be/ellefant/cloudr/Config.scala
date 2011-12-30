@@ -14,8 +14,8 @@ class Config {
 
   def getInt(key: String, default: Int) = try {
     props.getProperty(key, default.toString).toInt
-  }  catch {
-    case e => default
+  } catch {
+    case e ⇒ default
   }
 
   def version = props.getProperty("version", "UNKNOWN")
@@ -26,8 +26,7 @@ class Config {
     props.getProperty("cloudapp.host", "my.cl.ly"),
     getInt("cloudapp.port", 80),
     props.getProperty("cloudapp.auth", "digest").toLowerCase match {
-      case "basic" => AuthPolicy.BASIC
-      case _ => AuthPolicy.DIGEST
-    }
-  )
+      case "basic" ⇒ AuthPolicy.BASIC
+      case _       ⇒ AuthPolicy.DIGEST
+    })
 }

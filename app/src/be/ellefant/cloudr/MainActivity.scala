@@ -7,7 +7,7 @@ import roboguice.activity.RoboListActivity
 import scalaandroid._
 
 class MainActivity extends RoboListActivity
-		with Activity
+    with Activity
     with Base.AccountRequired
     with Base.Default
     with Injection.CloudAppManager

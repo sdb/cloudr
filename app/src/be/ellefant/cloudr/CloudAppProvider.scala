@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteQueryBuilder
 import android.content.{ UriMatcher, ContentValues, ContentProvider }
 
 class CloudAppProvider extends ContentProvider with Logging {
-	import CloudAppProvider._
+  import CloudAppProvider._
 
   protected var db: DatabaseHelper = _ // TODO inject and mock ?
 

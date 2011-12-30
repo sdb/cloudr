@@ -67,7 +67,7 @@ class SyncService extends RoboService
       if (syncResult.hasError()) return
 
       val db = provider.database.getWritableDatabase
-      db beginTransaction()
+      db beginTransaction ()
 
       try {
         var existingCursor: Cursor = null
@@ -94,23 +94,23 @@ class SyncService extends RoboService
         val ids = items map (_.id)
 
         val deleted = existing.filterNot(e ⇒ ids.exists(_ == e._1))
-        val inserted = ids.filterNot(i ⇒ existing.exists(e => e._1 == i))
-        val updated = items filter { item =>
-          existing find (_._1 == item.id) map (e => item.updatedAt.after(e._2)) getOrElse (false)
+        val inserted = ids.filterNot(i ⇒ existing.exists(e ⇒ e._1 == i))
+        val updated = items filter { item ⇒
+          existing find (_._1 == item.id) map (e ⇒ item.updatedAt.after(e._2)) getOrElse (false)
         }
         val toInsert = items filter (i ⇒ inserted exists (_ == i.id)) map (_.toContentValues)
 
         deleted foreach { d ⇒
           db.delete(DatabaseHelper.TblItems, "%s = %d" format (ColId, d._1), Array.empty)
         }
-        toInsert foreach { d =>
+        toInsert foreach { d ⇒
           db.insert(DatabaseHelper.TblItems, DatabaseHelper.ColId, d)
         }
-        updated foreach { u =>
+        updated foreach { u ⇒
           db.update(DatabaseHelper.TblItems, u.toContentValues, "%s = %d" format (ColId, u.id), Array.empty)
         }
 
-        db setTransactionSuccessful()
+        db setTransactionSuccessful ()
 
         provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
       } catch {
@@ -118,7 +118,7 @@ class SyncService extends RoboService
           logger.warn("update failed", e)
           syncResult.databaseError = true
       } finally {
-        db endTransaction()
+        db endTransaction ()
       }
     }
 
@@ -132,22 +132,22 @@ class SyncService extends RoboService
     val it = Iterator.continually {
       logger.debug("getting page " + page)
       val items: List[Drop] = if (finished || tried > 2) List.empty else {
-        api items(page, itemsPerPage, deleted) match {
-          case Left(Cloud.Error.Json) =>
+        api items (page, itemsPerPage, deleted) match {
+          case Left(Cloud.Error.Json) ⇒
             syncResult.stats.numParseExceptions += 1
             tried += 1
             Nil
-          case Left(Cloud.Error.Auth) =>
+          case Left(Cloud.Error.Auth) ⇒
             accountManager.clearPassword(acc)
             accountManager.invalidateAuthToken(AccountType, pwd)
             syncResult.stats.numAuthExceptions += 1
             tried = 3
             Nil
-          case Left(_) =>
+          case Left(_) ⇒
             syncResult.stats.numIoExceptions += 1
             tried += 1
             Nil
-          case Right(items) => items
+          case Right(items) ⇒ items
         }
       }
       page += 1

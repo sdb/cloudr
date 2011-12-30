@@ -9,22 +9,22 @@ import CloudAppManager.ItemType
 import DatabaseHelper._
 
 case class Drop(
-   id: Long,
-   url: String,
-   href: String,
-   name: String,
-   priv: Boolean,
-   subscribed: Boolean,
-   contentUrl: String,
-   itemType: ItemType.ItemType,
-   viewCounter: Long,
-   iconUrl: String,
-   remoteUrl: Option[String],
-   redirectUrl: Option[String],
-   source: String,
-   createdAt: Date,
-   updatedAt: Date,
-   deletedAt: Option[Date]) {
+    id: Long,
+    url: String,
+    href: String,
+    name: String,
+    priv: Boolean,
+    subscribed: Boolean,
+    contentUrl: String,
+    itemType: ItemType.ItemType,
+    viewCounter: Long,
+    iconUrl: String,
+    remoteUrl: Option[String],
+    redirectUrl: Option[String],
+    source: String,
+    createdAt: Date,
+    updatedAt: Date,
+    deletedAt: Option[Date]) {
 
   val deleted = deletedAt.isDefined
 
@@ -77,8 +77,7 @@ object Drop {
     subscribed = cursor.getInt(12) == 1,
     iconUrl = cursor.getString(13),
     remoteUrl = if (cursor.isNull(14)) None else Some(cursor.getString(14)),
-    redirectUrl = if (cursor.isNull(15)) None else Some(cursor.getString(15))
-  )
+    redirectUrl = if (cursor.isNull(15)) None else Some(cursor.getString(15)))
 
   def apply(item: CloudAppItem): Drop = Drop(
     id = item.getId,
@@ -96,15 +95,14 @@ object Drop {
     source = item.getSource,
     createdAt = item.getCreatedAt,
     updatedAt = item.getUpdatedAt,
-    deletedAt = Option(item.getDeletedAt)
-  )
+    deletedAt = Option(item.getDeletedAt))
 
   object Date {
-    def apply(s: String) = Option(s) flatMap { s =>
+    def apply(s: String) = Option(s) flatMap { s ⇒
       try {
         Some(DateFormat.parse(s))
       } catch {
-        case e: ParseException => None
+        case e: ParseException ⇒ None
       }
     }
   }

@@ -4,7 +4,7 @@ import java.io.InputStream
 import collection.JavaConversions._
 import com.cloudapp.api.{ CloudApp, CloudAppException }
 import com.cloudapp.impl.model.CloudAppItemImpl
-import org.json.{JSONException, JSONObject}
+import org.json.{ JSONException, JSONObject }
 
 /**
  * Small (temporary) wrapper for the CloudApp Java API.
@@ -12,7 +12,7 @@ import org.json.{JSONException, JSONObject}
  * <p>All requests to CloudApp should go via this wrapper.</p>
  */
 class Cloud(api: CloudApp) extends CloudrLogging {
-	import Cloud._
+  import Cloud._
 
   def bookmark(title: String, url: String) = trye(Drop(api.createBookmark(title, url)))
   def upload(name: String, is: InputStream, length: Long) = trye(Drop(api.upload(is, name, length)))
@@ -27,20 +27,20 @@ class Cloud(api: CloudApp) extends CloudrLogging {
     api.getItems(page, itemsPerPage, null, deleted, null).toList map (Drop(_))
   }
 
-  def trye[T](f: => T): Either[Error.Error, T] = try {
+  def trye[T](f: ⇒ T): Either[Error.Error, T] = try {
     Right(f)
   } catch {
-    case e: CloudAppException if e.getCode == 401 =>
-      logger info("CloudApp authorization error", e)
+    case e: CloudAppException if e.getCode == 401 ⇒
+      logger info ("CloudApp authorization error", e)
       Left(Error.Auth)
-    case e: CloudAppException if e.getCode == 200 =>
-      logger info("CloudApp API limit", e)
+    case e: CloudAppException if e.getCode == 200 ⇒
+      logger info ("CloudApp API limit", e)
       Left(Error.Limit)
-    case e: CloudAppException if e.getCode == 500 && e.getCause.isInstanceOf[JSONException] =>
-      logger info("CloudApp JSON error", e)
+    case e: CloudAppException if e.getCode == 500 && e.getCause.isInstanceOf[JSONException] ⇒
+      logger info ("CloudApp JSON error", e)
       Left(Error.Json)
-    case e =>
-      logger info("CloudApp API error", e)
+    case e ⇒
+      logger info ("CloudApp API error", e)
       Left(Error.Other)
   }
 }

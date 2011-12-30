@@ -12,7 +12,7 @@ import android.os.Handler
 import android.widget.BaseAdapter
 
 class DropsActivity extends RoboListActivity
-		with Activity
+    with Activity
     with Base.AccountRequired
     with Base.Default
     with Injection.CloudAppManager {
