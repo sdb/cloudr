@@ -33,7 +33,9 @@ class AccountRequiredSpec extends CloudrSpecs {
     lazy val activity = spy(new AccountRequiredSpy)
 
     def testAccountAvailable = {
-      accountManagerMock.getAccountsByType(AccountType) returns Array(mock[Account])
+      val acc = mock[Account]
+      accountManagerMock.getPassword(acc) returns "blabla"
+      accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
       activity.onCreate(null)
       there was one(activity).onAccountSuccess()
     }

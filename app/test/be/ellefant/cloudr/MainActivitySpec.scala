@@ -35,7 +35,9 @@ class MainActivitySpec extends CloudrSpecs {
   }
 
   trait success extends Base {
-    accountManagerMock.getAccountsByType(AccountType) returns Array(new Account("sdb", AccountType))
+    val acc = new Account("sdb", "blabla")
+    accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
+    accountManagerMock.getPassword(acc) returns "blabla"
     activity.onCreate(null)
   }
 
