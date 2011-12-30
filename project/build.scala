@@ -164,9 +164,9 @@ object AndroidBuild extends Build {
       FilterKeys.projectProps ~= { _ map (p => ("project." + p._1, p._2)) },
       FilterKeys.extraProps ++= Seq(
         "app.name" -> "Cloudr",
-        "cloudapp.host" -> "10.0.2.2",
-        "cloudapp.port" -> "8082",
-        "cloudapp.auth" -> "basic")
+        "cloudapp.host" -> "my.cl.ly",
+        "cloudapp.port" -> "80",
+        "cloudapp.auth" -> "digest")
     )
   ) dependsOn (slf4jAndroid, sdroid, cloudapp)
 
