@@ -1,18 +1,6 @@
-[CloudApp](http://getcloudapp.com/) application for [Android](http://www.android.com/).
+[CloudApp](http://getcloudapp.com/) client application for the [Android](http://www.android.com/) platform.
 
 ## Features
 
-* add CloudApp account to the account settings
-* share bookmark to CloudApp from a browser via the 'Share With' menu
-
-## Development
-
-### Resources
-
-#### Running
-
-* http://developer.android.com/guide/developing/device.html
-
-#### Design
-
-* http://developer.android.com/guide/topics/ui/themes.html
+* CloudApp account synchronization
+* share bookmark to CloudApp from a browser and other apps

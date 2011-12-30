@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   android:orderingFromXml="true">
+   
+   <PreferenceCategory 
+        android:title="Upload"
+        android:key="upload">
+        
+        <CheckBoxPreference 
+            android:key="copy_url"
+            android:summary="Enable or disable copying the cl.ly URL to the clipboard after a successful upload"
+            android:title="Copy URL to clipboard" 
+            android:defaultValue="true"
+        />    
+            
+    </PreferenceCategory>
+    
+</PreferenceScreen>

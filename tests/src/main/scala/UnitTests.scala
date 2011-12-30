@@ -1,10 +1,12 @@
-package be.ellefant.droid.cloudapp.tests
+package be.ellefant.cloudr
+package tests
 
 import junit.framework.Assert._
-import _root_.android.test.AndroidTestCase
+import android.test.AndroidTestCase
 
 class UnitTests extends AndroidTestCase {
+
   def testPackageIsCorrect {
-    assertEquals("be.ellefant.droid.cloudapp", getContext.getPackageName)
+    assertEquals("be.ellefant.cloudr", getContext.getPackageName)
   }
 }
