@@ -30,7 +30,7 @@ class Cloud(api: CloudApp) extends CloudrLogging {
   def trye[T](f: => T): Either[Error.Error, T] = try {
     Right(f)
   } catch {
-    case e: CloudAppException if e.getCode == 402 =>
+    case e: CloudAppException if e.getCode == 401 =>
       logger info("CloudApp authorization error", e)
       Left(Error.Auth)
     case e: CloudAppException if e.getCode == 200 =>

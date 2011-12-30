@@ -61,10 +61,10 @@ class SyncService extends RoboService
     protected def processRequest(provider: CloudAppProvider, account: Account, pwd: String, syncResult: SyncResult) {
       val api = apiFactory.create(account.name, pwd)
 
-      var items = retrieve(api, pwd, syncResult, true)
+      var items = retrieve(api, account, pwd, syncResult, true)
       if (syncResult.hasError()) return
 
-      items = items ++ retrieve(api, pwd, syncResult, false)
+      items = items ++ retrieve(api, account, pwd, syncResult, false)
       if (syncResult.hasError()) return
 
       val db = provider.database.getWritableDatabase
@@ -125,7 +125,7 @@ class SyncService extends RoboService
 
   }
 
-  def retrieve(api: Cloud, pwd: String, syncResult: SyncResult, deleted: Boolean) = {
+  def retrieve(api: Cloud, acc: Account, pwd: String, syncResult: SyncResult, deleted: Boolean) = {
     val itemsPerPage = 20
     var page = 1
     var tried = 0
@@ -139,6 +139,7 @@ class SyncService extends RoboService
             tried += 1
             Nil
           case Left(Cloud.Error.Auth) =>
+            accountManager.clearPassword(acc)
             accountManager.invalidateAuthToken(AccountType, pwd)
             syncResult.stats.numAuthExceptions += 1
             tried = 3

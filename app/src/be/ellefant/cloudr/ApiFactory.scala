@@ -8,7 +8,7 @@ class ApiFactory(config: Config) {
 }
 
 object ApiFactory {
-  class CloudAppImpl(config: Config, mail: String, pw: String) extends com.cloudapp.impl.CloudAppImpl(mail, pw) {
+  class CloudAppImpl(config: Config, mail: String, pw: String) extends com.cloudapp.impl.CloudAppImpl(mail, pw, config.cloudAppHost) {
     override protected def createClient = {
       val c = super.createClient
       val p = c.getParams

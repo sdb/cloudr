@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -26,12 +27,13 @@ public class CloudAppBase {
   private static final Logger LOGGER = LoggerFactory.getLogger(CloudAppBase.class);
   protected static final String MY_CL_LY_SCHEME = "http";
   protected static final String MY_CL_LY_HOST = "my.cl.ly";
-  protected static final String MY_CL_LY = String.format("%s://%s", MY_CL_LY_SCHEME, MY_CL_LY_HOST);
 
   protected DefaultHttpClient client;
+  protected Host host;
 
-  public CloudAppBase(DefaultHttpClient client) {
+  public CloudAppBase(DefaultHttpClient client, Host host) {
     this.client = client;
+    this.host = host;
   }
 
   /**
@@ -41,8 +43,8 @@ public class CloudAppBase {
    * @return
    * @throws CloudAppException
    */
-  protected Object executeGet(String url) throws CloudAppException {
-    HttpGet req = new HttpGet(url);
+  protected Object executeGet(String path) throws CloudAppException {
+    HttpGet req = new HttpGet(host.createUri(path));
     return executeRequest(req, 200);
   }
   
@@ -53,8 +55,8 @@ public class CloudAppBase {
    * @return
    * @throws CloudAppException
    */
-  protected Object executeDelete(String url) throws CloudAppException {
-    HttpDelete req = new HttpDelete(url);
+  protected Object executeDelete(String path) throws CloudAppException {
+    HttpDelete req = new HttpDelete(host.createUri(path));
     return executeRequest(req, 200);
   }
 
@@ -67,9 +69,9 @@ public class CloudAppBase {
    * @return
    * @throws CloudAppException
    */
-  protected Object executePost(String url, String body, int expectedCode)
+  protected Object executePost(String path, String body, int expectedCode)
       throws CloudAppException {
-    HttpPost req = new HttpPost(url);
+    HttpPost req = new HttpPost(host.createUri(path));
     if (body != null) {
       req.setEntity(transformJSONtoEntity(body));
     }
@@ -87,9 +89,9 @@ public class CloudAppBase {
    *         response.
    * @throws CloudAppException
    */
-  protected Object executePut(String url, String body, int expectedCode)
+  protected Object executePut(String path, String body, int expectedCode)
       throws CloudAppException {
-    HttpPut req = new HttpPut(url);
+    HttpPut req = new HttpPut(host.createUri(path));
     if (body != null) {
       req.setEntity(transformJSONtoEntity(body));
     }
@@ -154,6 +156,40 @@ public class CloudAppBase {
       LOGGER.error("Could not encode json to string.", e);
       throw new CloudAppException(500, "Could not encode json to string.", e);
     }
+  }
+    
+  public static class Host {
+      private String scheme;
+      private String host;
+      private String auth;
+      private int port;
+
+      public Host(String scheme, String host, int port, String auth) {
+          this.scheme = scheme;
+          this.host = host;
+          this.port = port;
+          this.auth = auth;
+      }
+
+      public String getAuth() {
+          return auth;
+      }
+
+      public String getScheme() {
+          return scheme;
+      }
+
+      public String getHost() {
+          return host;
+      }
+
+      public int getPort() {
+          return port;
+      }
+      
+      public String createUri(String path) {
+          return String.format("%s://%s:%d%s", scheme, host, port, path);
+      }
   }
 
 }

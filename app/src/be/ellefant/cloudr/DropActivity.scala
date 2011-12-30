@@ -53,7 +53,10 @@ class DropActivity extends RoboActivity
                 case e => // TODO
               }
               db endTransaction()
-            case Left(error) => // TODO api error
+            case Left(error) =>
+              accountManager.clearPassword(acc)
+              accountManager.invalidateAuthToken(AccountType, pwd)
+              // TODO api error
           }
 		  	}
 		  	finish()

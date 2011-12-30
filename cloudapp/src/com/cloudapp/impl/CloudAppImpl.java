@@ -3,10 +3,13 @@ package com.cloudapp.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.auth.params.AuthPNames;
+import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
@@ -26,23 +29,31 @@ public class CloudAppImpl implements CloudApp {
   private AccountImpl account;
   private CloudAppItemsImpl items;
 
-  public CloudAppImpl(String mail, String pw) {
+  public CloudAppImpl(String mail, String pw, CloudAppBase.Host host) {
     DefaultHttpClient client = createClient();
     // Try to authenticate.
-    AuthScope scope = new AuthScope("my.cl.ly", 80);
+    AuthScope scope = new AuthScope(host.getHost(), host.getPort(), AuthScope.ANY_REALM, host.getAuth());
     client.getCredentialsProvider().setCredentials(scope,
-        new UsernamePasswordCredentials(mail, pw));
+                new UsernamePasswordCredentials(mail, pw));
     LOGGER.debug("Authentication set.");
 
-    account = new AccountImpl(client);
-    items = new CloudAppItemsImpl(client);
+    account = new AccountImpl(client, host);
+    items = new CloudAppItemsImpl(client, host);
+  }
+
+  public CloudAppImpl(String mail, String pw) {
+    this(mail, pw, new CloudAppBase.Host(CloudAppBase.MY_CL_LY_SCHEME, CloudAppBase.MY_CL_LY_HOST, 80, AuthPolicy.DIGEST));
+  }
+
+  public CloudAppImpl(CloudAppBase.Host host) {
+    DefaultHttpClient client = createClient();
+    client.setReuseStrategy(new DefaultConnectionReuseStrategy());
+    account = new AccountImpl(client, host);
+    items = new CloudAppItemsImpl(client, host);
   }
 
   public CloudAppImpl() {
-    DefaultHttpClient client = new DefaultHttpClient();
-    client.setReuseStrategy(new DefaultConnectionReuseStrategy());
-    account = new AccountImpl(client);
-    items = new CloudAppItemsImpl(client);
+      this(new CloudAppBase.Host(CloudAppBase.MY_CL_LY_SCHEME, CloudAppBase.MY_CL_LY_HOST, 80, AuthPolicy.DIGEST));
   }
 
   protected DefaultHttpClient createClient() {

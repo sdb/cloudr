@@ -22,8 +22,7 @@ trait AccountRequired extends Activity
       val amf = accountManager.addAccount(AccountType, AuthTokenType, null, null, this, null, null)
       threadUtil.performOnBackgroundThread { () ⇒
         try {
-          val b = amf.getResult // TODO: use timeout
-          val name = b.getString(android.accounts.AccountManager.KEY_ACCOUNT_NAME)
+          amf.getResult // TODO: use timeout
           self.runOnUiThread { () ⇒
             onAccountSuccess()
           }
@@ -36,9 +35,28 @@ trait AccountRequired extends Activity
         }
       }
     } else {
-      val name = accounts.head.name
-      logger.debug("Account found: '%s'." format name)
-      onAccountSuccess()
+      val acc = accounts.head
+      if (accountManager.getPassword(acc) == null) { // check if the account password needs to be updated
+        val amf = accountManager.updateCredentials(acc, AuthTokenType, null, this, null, null)
+        threadUtil.performOnBackgroundThread { () ⇒
+          try {
+            amf.getResult // TODO: use timeout
+            self.runOnUiThread { () ⇒
+              onAccountSuccess()
+            }
+          } catch {
+            case e ⇒ // TODO handle other cases than wrong login/password: server unavailable, ...
+              logger error ("error while authenticating", e)
+              self.runOnUiThread { () ⇒
+                onAccountFailure()
+              }
+          }
+        }
+      } else {
+        val name = acc.name
+        logger.debug("Account found: '%s'." format name)
+        onAccountSuccess()
+      }
     }
   }
 

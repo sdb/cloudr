@@ -15,6 +15,7 @@ import java.util.Date
 import android.widget.Toast
 import android.os.{Handler, Looper}
 import ThreadUtils._
+import android.accounts.Account
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -48,9 +49,12 @@ class SharingService extends RoboIntentService(Name)
     	  Left(Error.Other)
     }
 
-    def sendFailure(error: Error.Error) = {
+    def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {
       val msg = error match { // TODO error messages
-	    case Error.Auth => "CloudApp authorization failed."
+	    case Error.Auth =>
+        accountManager.clearPassword(acc)
+        accountManager.invalidateAuthToken(AccountType, pwd)
+        "CloudApp authorization failed."
 	    case Error.Limit => "CloudApp upload limit reached."
 	    case Error.Other => "CloudApp upload failed."
 	  }
@@ -94,7 +98,7 @@ class SharingService extends RoboIntentService(Name)
       case Some(account) ⇒
         val pwd = accountManager blockingGetAuthToken(account, AuthTokenType, true)
         val api = apiFactory create(account.name, pwd)
-        Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure _, sendSuccess _))
+        Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure(account, pwd) _, sendSuccess _))
       case _ ⇒
         logger.info("no CloudApp account available")
     }

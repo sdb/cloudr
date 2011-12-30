@@ -93,6 +93,7 @@ class AuthenticationService extends RoboService
       intent.putExtra(AuthenticatorActivity.ParamUsername, account.name)
       intent.putExtra(AuthenticatorActivity.ParamAuthTokenType, authTokenType)
       intent.putExtra(AuthenticatorActivity.ParamConfirmCredentials, false)
+      intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
       val bundle = new Bundle
       bundle.putParcelable(AndroidAccountManager.KEY_INTENT, intent)
       bundle

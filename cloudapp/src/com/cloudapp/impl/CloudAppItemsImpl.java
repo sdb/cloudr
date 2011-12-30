@@ -38,11 +38,11 @@ public class CloudAppItemsImpl extends CloudAppBase {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CloudAppItemsImpl.class);
   private static final String ITEMS_PATH = "/items";
-  private static final String ITEMS_URL = MY_CL_LY + ITEMS_PATH;
+  private static final String ITEMS_URL = ITEMS_PATH;
   private static final String NEW_ITEM_URL = ITEMS_URL + "/new";
 
-  public CloudAppItemsImpl(DefaultHttpClient client) {
-    super(client);
+  protected CloudAppItemsImpl(DefaultHttpClient client, Host host) {
+    super(client, host);
   }
 
   /**
@@ -126,7 +126,7 @@ public class CloudAppItemsImpl extends CloudAppBase {
           query.append("&source=" + source);
       }
 
-      URI uri = new URI(MY_CL_LY_SCHEME, null, MY_CL_LY_HOST, 80, ITEMS_PATH, query.toString(), null);
+      URI uri = new URI(host.getScheme(), null, host.getHost(), host.getPort(), ITEMS_PATH, query.toString(), null);
       HttpGet req = new HttpGet(uri);
       req.addHeader("Accept", "application/json");
 //      HttpParams params = new BasicHttpParams();

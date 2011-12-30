@@ -33,12 +33,12 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
 
   override def onCreate(bundle: Bundle) {
     super.onCreate(bundle)
+    val intent = getIntent
+    username = intent.getStringExtra(ParamUsername)
+    authtokenType = intent.getStringExtra(ParamAuthTokenType)
+    requestNewAccount = username == null
     val accounts = accountManager.getAccountsByType(AccountType)
-    if (accounts.size == 0) {
-      val intent = getIntent
-      username = intent.getStringExtra(ParamUsername)
-      authtokenType = intent.getStringExtra(ParamAuthTokenType)
-      requestNewAccount = username == null
+    if (!requestNewAccount || accounts.size == 0) {
       confirmCredentials = intent.getBooleanExtra(ParamConfirmCredentials, false)
       requestWindowFeature(Window.FEATURE_LEFT_ICON)
       setContentView(R.layout.login_activity)
