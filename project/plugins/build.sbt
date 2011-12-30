@@ -1,7 +1,10 @@
 resolvers ++= Seq(
   Classpaths.typesafeResolver,
-  "sdb@github" at "http://sdb.github.com/maven"
+  "sdb@github" at "http://sdb.github.com/maven",
+  "gseitz@github" at "http://gseitz.github.com/maven/"
 )
+
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.4")
 
 addSbtPlugin("org.scala-tools.sbt" % "sbt-android-plugin" % "0.6.0")
 
