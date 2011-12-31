@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.Toast
 import scalaandroid._
 import android.content.Intent
-import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._
+import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._, Cloud._
 
 class DropActivity extends RoboActivity
     with Activity
@@ -53,10 +53,11 @@ class DropActivity extends RoboActivity
                 case e ⇒ // TODO
               }
               db endTransaction ()
-            case Left(error) ⇒
+            case Left(Error.Auth) ⇒
               accountManager.clearPassword(acc)
               accountManager.invalidateAuthToken(AccountType, pwd)
-            // TODO api error
+            case Left(error) ⇒
+              // TODO api error
           }
         }
         finish()

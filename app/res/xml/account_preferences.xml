@@ -6,7 +6,7 @@
     <PreferenceScreen
         android:key="account_settings"
         android:title="@string/account_settings"
-        android:summary="General account settings">
+        android:summary="General application settings">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="be.ellefant.cloudr"

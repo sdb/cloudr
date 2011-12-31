@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dip"
-        android:text="ULTRA RIDICILOUS LONG LONG LONG LONG LONG NAME"
+        android:text="LONG LONG LONG LONG LONG NAME"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
