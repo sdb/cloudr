@@ -1,0 +1,11 @@
+Cloudr is an Android unofficial client for CloudApp (http://www.getcloudapp.com).
+
+Features:
+- upload images from a file maneger or the Gallery
+- share bookmarks
+- navigate and browse your drops collection
+- delete drops
+
+More features coming soon!
+
+Note that this application requires a CloudApp account.
