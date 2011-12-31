@@ -185,7 +185,7 @@ public class CloudAppItemsImpl extends CloudAppBase {
   public CloudAppItem upload(InputStream is, String name, long length) throws CloudAppException {
     try {
       // Do a GET request so we have the S3 endpoint
-      HttpGet req = new HttpGet(NEW_ITEM_URL);
+      HttpGet req = new HttpGet(host.createUri(NEW_ITEM_URL));
       req.addHeader("Accept", "application/json");
       HttpResponse response = client.execute(req);
       int status = response.getStatusLine().getStatusCode();

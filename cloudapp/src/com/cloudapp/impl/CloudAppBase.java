@@ -56,7 +56,7 @@ public class CloudAppBase {
    * @throws CloudAppException
    */
   protected Object executeDelete(String path) throws CloudAppException {
-    HttpDelete req = new HttpDelete(host.createUri(path));
+    HttpDelete req = new HttpDelete(path);
     return executeRequest(req, 200);
   }
 

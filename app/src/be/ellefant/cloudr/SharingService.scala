@@ -39,14 +39,11 @@ class SharingService extends RoboIntentService(Name)
           val url = intent getStringExtra (Intent.EXTRA_TEXT)
           val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
           api bookmark (title, url)
-        case Extension(extension) ⇒
+        case MimeType("image", Extension(extension)) ⇒
           val u = Uri parse ((intent.getExtras get ("android.intent.extra.STREAM")).toString)
           val fd = getContentResolver openFileDescriptor (u, "r")
           val name = UploadDateFormat.format(new Date())
           api upload ("%s.%s" format (name, extension), new AutoCloseInputStream(fd), fd.getStatSize)
-        case mt ⇒
-          logger info ("mime type %s not supported" format mt)
-          Left(Error.Other)
       }
 
       def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {

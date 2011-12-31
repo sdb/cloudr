@@ -42,10 +42,18 @@ package be.ellefant {
       lazy val KeyId = "%s.%s" format (Id, "ID")
     }
 
+    object MimeType {
+      lazy val R = """(.+)/(.+)""".r
+      def unapply(mt: String): Option[(String, String)] = mt.trim() match {
+        case R(x, y) => Some((x, y))
+        case _ => None
+      }
+    }
+
     object FileType extends Enumeration {
-      val Jpg = Value("jpg", "image/jpeg")
-      val Gif = Value("gif", "image/gif")
-      val Png = Value("png", "image/png")
+      val Jpg = Value("jpg", "jpeg")
+      val Gif = Value("gif", "gif")
+      val Png = Value("png", "png")
 
       class FileType(val extension: String, val mimeType: String) extends Val()
       protected final def Value(extension: String, mimeType: String): FileType = new FileType(extension, mimeType)

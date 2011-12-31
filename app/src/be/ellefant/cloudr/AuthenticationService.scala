@@ -78,7 +78,7 @@ class AuthenticationService extends RoboService
     }
 
     def getAuthTokenLabel(authTokenType: String): String = authTokenType match {
-      case AuthTokenType ⇒ AuthenticationService.this.getString(R.string.cloudapp_label)
+      case AuthTokenType ⇒ AuthenticationService.this.getString(R.string.app_name)
       case _             ⇒ null
     }
 
