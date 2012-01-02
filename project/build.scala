@@ -154,6 +154,10 @@ object AndroidBuild extends Build {
       },
       proguardOption in Android := Proguard.options,
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize"),
+      proguardInJars in Android <<= (fullClasspath in Android, proguardExclude in Android) map {
+        (cp, proguardExclude) =>
+          (((cp filterNot (d => (d.data.getName startsWith "httpcore") || (d.data.getName startsWith "httpclient"))) map (_.data))  --- proguardExclude) get
+      },
       internalDependencyClasspath in Test <<= (internalDependencyClasspath in Test) map { (cp) =>
         (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
       },
@@ -201,7 +205,12 @@ object Proguard {
     public java.lang.String bytes();
 }
 -keep public class scala.Function0
+-keep public class scala.Function1
+-keep public class scala.PartialFunction
 -keep public class scala.ScalaObject
+-keep public class scala.Option
+
+-keep class scalaandroid.*
 
 -keepclassmembers enum * {
     public static **[] values();
