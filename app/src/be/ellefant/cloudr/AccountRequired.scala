@@ -39,7 +39,7 @@ trait AccountRequired extends Activity
   def handleAccountManagerResult(amf: AccountManagerFuture[_]) = {
     threadUtil.performOnBackgroundThread { () ⇒
       try {
-        amf.getResult // TODO: use timeout
+        amf.getResult // TODO: use timeout ?
         self.runOnUiThread { () ⇒
           onAccountSuccess()
         }

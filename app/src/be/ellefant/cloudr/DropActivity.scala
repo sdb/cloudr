@@ -50,7 +50,8 @@ class DropActivity extends RoboActivity
                 provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
                 db setTransactionSuccessful ()
               } catch {
-                case e ⇒ // TODO
+                case e ⇒
+                  // TODO
               }
               db endTransaction ()
             case Left(Error.Auth) ⇒

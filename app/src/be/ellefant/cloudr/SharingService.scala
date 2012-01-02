@@ -44,7 +44,7 @@ class SharingService extends RoboIntentService(Name)
       }
 
       def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {
-        val msg = error match { // TODO error messages
+        val msg = error match {
           case Error.Auth ⇒
             accountManager.clearPassword(acc)
             accountManager.invalidateAuthToken(AccountType, pwd)
