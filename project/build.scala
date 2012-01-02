@@ -206,9 +206,18 @@ object Proguard {
 }
 -keep public class scala.Function0
 -keep public class scala.Function1
+-keep public class scala.Function4
+-keep public class scala.Tuple2
 -keep public class scala.PartialFunction
 -keep public class scala.ScalaObject
 -keep public class scala.Option
+-keep public class scala.Either
+-keep public class scala.collection.Seq
+-keep public class scala.collection.immutable.List
+-keep public class scala.Enumeration$Value
+-keep public class scala.runtime.IntRef
+-keep public class scala.runtime.BooleanRef
+-keep public class scala.runtime.ObjectRef
 
 -keep class scalaandroid.*
 
@@ -265,6 +274,11 @@ object Proguard {
 
 -keep class org.apache.http.entity.mime.MultipartEntity
 -keep class com.cloudapp.*
+-keep class com.cloudapp.api.CloudApp
+-keep class com.cloudapp.api.model.CloudAppItem
+-keep class com.cloudapp.api.model.CloudAppItem$Type
+-keep class com.cloudapp.impl.CloudAppBase$Host
+-keep class com.cloudapp.api.model.CloudAppAccount$DefaultSecurity
 """
 }
 
