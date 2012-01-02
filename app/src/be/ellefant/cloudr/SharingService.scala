@@ -6,16 +6,13 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.net.Uri
 import android.os.ParcelFileDescriptor.AutoCloseInputStream
-import roboguice.service.RoboIntentService
-import SharingService._
-import Cloud._
-import FileType._
-import java.text.SimpleDateFormat
-import java.util.Date
+import android.accounts.Account
 import android.widget.Toast
 import android.os.{ Handler, Looper }
-import ThreadUtils._
-import android.accounts.Account
+import roboguice.service.RoboIntentService
+import java.text.SimpleDateFormat
+import java.util.Date
+import SharingService._, Cloud._, FileType._, ThreadUtils._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.

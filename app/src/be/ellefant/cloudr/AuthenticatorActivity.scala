@@ -5,11 +5,10 @@ import android.os.{ Bundle, Handler }
 import android.text.TextUtils
 import android.view.{ View, Window }
 import android.app.{ Activity, ProgressDialog }
-import AuthenticatorActivity._
 import android.widget.{ Toast, EditText, TextView }
-import roboguice.activity.RoboAccountAuthenticatorActivity
-import ThreadUtils._
 import android.content.{ ContentResolver, Context, DialogInterface, Intent }
+import roboguice.activity.RoboAccountAuthenticatorActivity
+import AuthenticatorActivity._, ThreadUtils._
 
 /**
  * Activity which displays login screen to the user.
@@ -20,8 +19,8 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     with Injection.ApiFactory {
 
   private var authThread: Thread = null
-  private var authtoken: String = null
-  private var authtokenType: String = null
+  private var authToken: String = null
+  private var authTokenType: String = null
   private var confirmCredentials: Boolean = false
   private var message: TextView = null
   private var password: String = null
@@ -35,7 +34,7 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
     super.onCreate(bundle)
     val intent = getIntent
     username = intent.getStringExtra(ParamUsername)
-    authtokenType = intent.getStringExtra(ParamAuthTokenType)
+    authTokenType = intent.getStringExtra(ParamAuthTokenType)
     requestNewAccount = username == null
     val accounts = accountManager.getAccountsByType(AccountType)
     if (!requestNewAccount || accounts.size == 0) {
@@ -103,11 +102,11 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
       accountManager.setPassword(account, password)
     }
     val intent = new Intent
-    authtoken = password
+    authToken = password
     intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_NAME, username)
     intent.putExtra(AndroidAccountManager.KEY_ACCOUNT_TYPE, AccountType)
-    if (authtokenType != null && (authtokenType == AuthTokenType)) {
-      intent.putExtra(AndroidAccountManager.KEY_AUTHTOKEN, authtoken)
+    if (authTokenType != null && (authTokenType == AuthTokenType)) {
+      intent.putExtra(AndroidAccountManager.KEY_AUTHTOKEN, authToken)
     }
     setAccountAuthenticatorResult(intent.getExtras)
     setResult(Activity.RESULT_OK, intent)

@@ -2,12 +2,12 @@ package be.ellefant.cloudr
 
 import android.net.Uri
 import android.widget.{ TextView, CheckBox }
-import roboguice.activity.RoboActivity
-import java.text.SimpleDateFormat
 import android.view.View
 import android.widget.Toast
-import scalaandroid._
 import android.content.Intent
+import roboguice.activity.RoboActivity
+import java.text.SimpleDateFormat
+import scalaandroid._
 import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._, Cloud._
 
 class DropActivity extends RoboActivity

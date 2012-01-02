@@ -1,9 +1,9 @@
 package be.ellefant.cloudr
 
-import roboguice.service.RoboService
+import android.os.Bundle
 import android.accounts.{ Account, AccountAuthenticatorResponse, AbstractAccountAuthenticator, AccountManager ⇒ AndroidAccountManager }
 import com.google.inject.Inject
-import android.os.Bundle
+import roboguice.service.RoboService
 import scalaandroid._
 
 class AuthenticationService extends RoboService
