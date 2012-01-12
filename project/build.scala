@@ -150,7 +150,7 @@ object AndroidBuild extends Build {
       name := "cloudr",
       parallelExecution in Test := false,
       testOptions in Test += Tests.Argument("junitxml", "console"),
-      /* commands ++= Seq(Idea.command, Eclipse.command), */
+      commands ++= Seq(Idea.command/*, Eclipse.command */),
       libraryDependencies <+= (sdkPath in Android) apply { (sp) =>
         AndroidSupport13 from (sp / "extras" / "android" / "support" / "v13" / "android-support-v13.jar").toURI.toString
       },
