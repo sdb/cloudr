@@ -3,7 +3,7 @@ import sbt._
 import Keys._
 import AndroidKeys._
 import com.typesafe.sbtscalariform.ScalariformPlugin._
-import de.element34.sbteclipsify.Eclipsify._
+// import de.element34.sbteclipsify.Eclipsify._
 import sbtfilter.Plugin._
 
 object General {
@@ -17,13 +17,14 @@ object General {
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt(buildVersion),
     platformName in Android := "android-10",
+    javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
     resolvers ++= Seq(
       DefaultMavenRepository,
       ScalaToolsReleases,
       "Local Maven" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-    ),
-    projectNature := de.element34.sbteclipsify.ProjectType.Scala
+    )/*,
+    projectNature := de.element34.sbteclipsify.ProjectType.Scala*/
   )
 
   lazy val formattingSettings = (inConfig(Compile)(baseScalariformSettings) ++ inConfig(Test)(baseScalariformSettings)) ++ Seq(
@@ -46,9 +47,9 @@ object General {
     TypedResources.settings ++
     AndroidMarketPublish.settings ++ Seq (
       keyalias in Android := "cloudr" // TODO
-    ) ++ Seq(
+    ) /*++ Seq(
       projectNature := de.element34.sbteclipsify.ProjectType.ScalaAndroid
-    )
+    ) */
 }
 
 object Dependencies {
@@ -86,6 +87,7 @@ object AndroidBuild extends Build {
       organization := "org.slf4j",
       version      := "1.6.3",
       javaSource in Compile <<= baseDirectory(_ / "src"),
+      javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
       libraryDependencies += Slf4jApi,
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
@@ -148,7 +150,7 @@ object AndroidBuild extends Build {
       name := "cloudr",
       parallelExecution in Test := false,
       testOptions in Test += Tests.Argument("junitxml", "console"),
-      commands ++= Seq(Idea.command, Eclipse.command),
+      /* commands ++= Seq(Idea.command, Eclipse.command), */
       libraryDependencies <+= (sdkPath in Android) apply { (sp) =>
         AndroidSupport13 from (sp / "extras" / "android" / "support" / "v13" / "android-support-v13.jar").toURI.toString
       },
@@ -305,7 +307,7 @@ object ShellPrompt {
   }
 }
 
-object Eclipse {
+/* object Eclipse {
   val command: Command = Command.command("eclipse-android") { state =>
     val base = Project.extract (state).currentProject.base
     IO.write(base /"proguard.cfg", Proguard.options)
@@ -314,7 +316,7 @@ object Eclipse {
     IO.write(props, null, base /"project.properties")
     state
   }
-}
+} */
 
 object Idea {
   // quick 'n dirty way to add Android Facet to IDEA projects

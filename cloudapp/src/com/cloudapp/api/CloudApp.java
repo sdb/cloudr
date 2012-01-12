@@ -60,7 +60,7 @@ public interface CloudApp {
       throws CloudAppException;
 
   /**
-   * Dispatch an email containing a link to reset the account�s password.
+   * Dispatch an email containing a link to reset the account's password.
    * 
    * @see http://developer.getcloudapp.com/forgot-password
    * @param email
@@ -96,7 +96,7 @@ public interface CloudApp {
 
   /**
    * Add or change the domain used for all links. Optionally, a URL may be provided to
-   * redirect visitors to the custom domain�s root. <b>Pro users only</b>
+   * redirect visitors to the custom domains root. <b>Pro users only</b>
    * 
    * @see http://developer.getcloudapp.com/set-custom-domain
    * @param domain
