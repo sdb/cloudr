@@ -1,0 +1,80 @@
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+-keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
+-keep public class scala.reflect.ScalaSignature {
+    public java.lang.String bytes();
+}
+-keep public class scala.Function0
+-keep public class scala.Function1
+-keep public class scala.Function4
+-keep public class scala.Tuple2
+-keep public class scala.PartialFunction
+-keep public class scala.ScalaObject
+-keep public class scala.Option
+-keep public class scala.Either
+-keep public class scala.collection.Seq
+-keep public class scala.collection.immutable.List
+-keep public class scala.Enumeration$Value
+-keep public class scala.runtime.IntRef
+-keep public class scala.runtime.BooleanRef
+-keep public class scala.runtime.ObjectRef
+
+-keep class scalaandroid.*
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class com.android.vending.licensing.ILicensingService
+
+-keep class com.google.inject.Binder
+-keepclassmembers class * {
+    @com.google.inject.Inject <init>(...);
+}
+-keepclassmembers class * {
+    void *(**On*Event);
+}
+-keepclassmembers class * {
+    @com.google.inject.Inject <init>(...);
+    @com.google.inject.Inject <fields>;
+}
+-keepclassmembers class * extends android.app.Activity {
+    public void *(android.view.View);
+}
+-keepclasseswithmembers class * { native <methods>; }
+-keepclasseswithmembers class * {
+    public <init> (android.content.Context, android.util.AttributeSet);
+}
+-keepclasseswithmembers class * {
+    public <init> (android.content.Context, android.util.AttributeSet, int);
+}
+-keepclassmembers class * implements android.os.Parcelable { static android.os.Parcelable$Creator *; }
+-keepclassmembers class **.R$* { public static <fields>; }
+-keepclasseswithmembernames class * { native <methods>; }
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(...);
+}
+-keepclassmembers class com.google.inject.util.Modules$OverriddenModuleBuilder { <methods>; }
+-keepclassmembers public class com.google.inject.internal.util.$Finalizer { public static <methods>; }
+-keepclassmembers public class com.google.inject.util.Modules { public static <methods>; }
+-keep public class roboguice.**
+-keep class com.google.inject.Binder
+-keep class com.google.inject.Module
+-keep class com.google.inject.Scope
+-keep class com.google.inject.TypeLiteral
+-keep class com.google.inject.Key
+-keep class com.google.inject.matcher.Matcher
+-keep class com.google.inject.spi.*
+
+-keep class org.apache.http.entity.mime.MultipartEntity
+-keep class com.cloudapp.*
+-keep class com.cloudapp.api.CloudApp
+-keep class com.cloudapp.api.model.CloudAppItem
+-keep class com.cloudapp.api.model.CloudAppItem$Type
+-keep class com.cloudapp.impl.CloudAppBase$Host
+-keep class com.cloudapp.api.model.CloudAppAccount$DefaultSecurity
