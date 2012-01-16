@@ -15,8 +15,8 @@ class SharingTest extends ActivityInstrumentationTestCase2(classOf[MainActivity]
     am.addAccountExplicitly(account, "blabla", new Bundle())
   }
 
-  def testShareBookmark {
-
-  }
+//  def testShareBookmark {
+//
+//  }
 
 }
