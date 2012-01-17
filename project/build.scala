@@ -92,7 +92,7 @@ object AndroidBuild extends Build {
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
       },
-      shellPrompt := ShellPrompt.buildShellPrompt(buildVersion)
+      shellPrompt <<= version apply (ShellPrompt.buildShellPrompt(_))
     )
   )
 
