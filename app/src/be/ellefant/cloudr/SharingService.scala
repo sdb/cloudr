@@ -6,16 +6,13 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.net.Uri
 import android.os.ParcelFileDescriptor.AutoCloseInputStream
-import roboguice.service.RoboIntentService
-import SharingService._
-import Cloud._
-import FileType._
-import java.text.SimpleDateFormat
-import java.util.Date
+import android.accounts.Account
 import android.widget.Toast
 import android.os.{ Handler, Looper }
-import ThreadUtils._
-import android.accounts.Account
+import roboguice.service.RoboIntentService
+import java.text.SimpleDateFormat
+import java.util.Date
+import SharingService._, Cloud._, FileType._, ThreadUtils._, CloudAppManager._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -47,7 +44,7 @@ class SharingService extends RoboIntentService(Name)
       }
 
       def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {
-        val msg = error match { // TODO error messages
+        val msg = error match {
           case Error.Auth ⇒
             accountManager.clearPassword(acc)
             accountManager.invalidateAuthToken(AccountType, pwd)
@@ -82,11 +79,12 @@ class SharingService extends RoboIntentService(Name)
         }
         db endTransaction ()
 
-        handler post { () ⇒
-          val msg = "Item uploaded successfully to CloudApp." + (if (copyUrl) " The URL is copied to the clipboard." else "")
-          val toast = Toast makeText (getApplicationContext, msg, Toast.LENGTH_SHORT)
-          toast show ()
-        }
+        if (drop.itemType != ItemType.Bookmark)
+          handler post { () ⇒
+            val msg = "Item uploaded successfully to CloudApp." + (if (copyUrl) " The URL is copied to the clipboard." else "")
+            val toast = Toast makeText (getApplicationContext, msg, Toast.LENGTH_SHORT)
+            toast show ()
+          }
 
         logger debug ("New CloudAppItem created '%d'." format drop.id)
       }

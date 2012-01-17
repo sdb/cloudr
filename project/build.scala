@@ -1,14 +1,14 @@
-
 import sbt._
 import Keys._
 import AndroidKeys._
 import com.typesafe.sbtscalariform.ScalariformPlugin._
-import de.element34.sbteclipsify.Eclipsify._
+// import de.element34.sbteclipsify.Eclipsify._
 import sbtfilter.Plugin._
+import org.apache.commons.io.FileUtils
 
 object General {
   lazy val buildOrganization = "be.ellefant.cloudr"
-  lazy val buildVersion      = "0.1.1"
+  lazy val buildVersion      = "0.2"
   lazy val buildScalaVersion = "2.9.1"
 
   lazy val settings = Defaults.defaultSettings ++ formattingSettings ++ Seq (
@@ -17,13 +17,14 @@ object General {
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt(buildVersion),
     platformName in Android := "android-10",
+    javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
     resolvers ++= Seq(
       DefaultMavenRepository,
       ScalaToolsReleases,
       "Local Maven" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-    ),
-    projectNature := de.element34.sbteclipsify.ProjectType.Scala
+    )/*,
+    projectNature := de.element34.sbteclipsify.ProjectType.Scala*/
   )
 
   lazy val formattingSettings = (inConfig(Compile)(baseScalariformSettings) ++ inConfig(Test)(baseScalariformSettings)) ++ Seq(
@@ -40,15 +41,34 @@ object General {
       .setPreference(RewriteArrowSymbols, true)
   }
 
-  lazy val fullAndroidSettings =
+  private def signReleaseTask: Project.Initialize[Task[File]] =
+    (keystorePath, packageApkPath, streams) map { (ksPath, pPath,s ) =>
+      val jarsigner = Seq(
+        "jarsigner",
+        "-verbose",
+        "-keystore", ksPath.absolutePath,
+        "-storepass", getPassword,
+        pPath.absolutePath,
+        "cloudr")
+      s.log.debug("Signing "+jarsigner.mkString(" "))
+      s.log.debug(jarsigner !!)
+      s.log.info("Signed "+pPath)
+      pPath
+    }
+
+  private def getPassword = System.getProperty("cloudr.keystore_password")
+
+  lazy val fullAndroidSettings = AndroidMarketPublish.settings ++ inConfig(Android)(Seq(
+      signRelease <<= signReleaseTask,
+      signRelease <<= signRelease dependsOn packageRelease
+    )) ++
     General.settings ++
     AndroidProject.androidSettings ++
-    TypedResources.settings ++
-    AndroidMarketPublish.settings ++ Seq (
-      keyalias in Android := "cloudr" // TODO
-    ) ++ Seq(
+    TypedResources.settings
+
+    /*++ Seq(
       projectNature := de.element34.sbteclipsify.ProjectType.ScalaAndroid
-    )
+    ) */
 }
 
 object Dependencies {
@@ -86,10 +106,12 @@ object AndroidBuild extends Build {
       organization := "org.slf4j",
       version      := "1.6.3",
       javaSource in Compile <<= baseDirectory(_ / "src"),
+      javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
       libraryDependencies += Slf4jApi,
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
-      }
+      },
+      shellPrompt <<= version apply (ShellPrompt.buildShellPrompt(_))
     )
   )
 
@@ -148,12 +170,16 @@ object AndroidBuild extends Build {
       name := "cloudr",
       parallelExecution in Test := false,
       testOptions in Test += Tests.Argument("junitxml", "console"),
-      commands ++= Seq(Idea.command, Eclipse.command),
+      commands ++= Seq(Idea.command/*, Eclipse.command */),
       libraryDependencies <+= (sdkPath in Android) apply { (sp) =>
         AndroidSupport13 from (sp / "extras" / "android" / "support" / "v13" / "android-support-v13.jar").toURI.toString
       },
       proguardOption in Android := Proguard.options,
       proguardOptimizations in Android := List("-dontobfuscate", "-dontoptimize"),
+      proguardInJars in Android <<= (fullClasspath in Android, proguardExclude in Android) map {
+        (cp, proguardExclude) =>
+          (((cp filterNot (d => (d.data.getName startsWith "httpcore") || (d.data.getName startsWith "httpclient"))) map (_.data))  --- proguardExclude) get
+      },
       internalDependencyClasspath in Test <<= (internalDependencyClasspath in Test) map { (cp) =>
         (cp filterNot (_.data.absolutePath.contains("slf4j"))) // HACK exclude slf4j-android in test
       },
@@ -195,94 +221,10 @@ object AndroidBuild extends Build {
 }
 
 object Proguard {
-  lazy val options = """-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
--keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
--keep public class scala.reflect.ScalaSignature {
-    public java.lang.String bytes();
-}
--keep public class scala.Function0
--keep public class scala.ScalaObject
-
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
+  lazy val options = FileUtils.readFileToString(new File("project/proguard_options.txt"))
 }
 
--keep public class * extends android.app.backup.BackupAgentHelper
--keep public class * extends android.preference.Preference
--keep public class com.android.vending.licensing.ILicensingService
-
--keep class com.google.inject.Binder
--keepclassmembers class * {
-    @com.google.inject.Inject <init>(...);
-}
--keepclassmembers class * {
-    void *(**On*Event);
-}
--keepclassmembers class * {
-    @com.google.inject.Inject <init>(...);
-    @com.google.inject.Inject <fields>;
-}
--keepclassmembers class * extends android.app.Activity {
-    public void *(android.view.View);
-}
--keepclasseswithmembers class * { native <methods>; }
--keepclasseswithmembers class * {
-    public <init> (android.content.Context, android.util.AttributeSet);
-}
--keepclasseswithmembers class * {
-    public <init> (android.content.Context, android.util.AttributeSet, int);
-}
--keepclassmembers class * implements android.os.Parcelable { static android.os.Parcelable$Creator *; }
--keepclassmembers class **.R$* { public static <fields>; }
--keepclasseswithmembernames class * { native <methods>; }
--keep public class * extends android.view.View {
-    public <init>(android.content.Context);
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>(android.content.Context, android.util.AttributeSet, int);
-    public void set*(...);
-}
--keepclassmembers class com.google.inject.util.Modules$OverriddenModuleBuilder { <methods>; }
--keepclassmembers public class com.google.inject.internal.util.$Finalizer { public static <methods>; }
--keepclassmembers public class com.google.inject.util.Modules { public static <methods>; }
--keep public class roboguice.**
--keep class com.google.inject.Binder
--keep class com.google.inject.Module
--keep class com.google.inject.Scope
--keep class com.google.inject.TypeLiteral
--keep class com.google.inject.Key
--keep class com.google.inject.matcher.Matcher
--keep class com.google.inject.spi.*
-
--keep class org.apache.http.entity.mime.MultipartEntity
--keep class com.cloudapp.*
-"""
-}
-
-// Shell prompt which shows the current project,
-// git branch and build version
-object ShellPrompt {
-  object devnull extends ProcessLogger {
-    def info (s: => String) {}
-    def error (s: => String) { }
-    def buffer[T] (f: => T): T = f
-  }
-  def currBranch = (
-    ("git branch" lines_! devnull filter (_ startsWith "*") headOption)
-      getOrElse "-" stripPrefix "* "
-  )
-
-  def buildShellPrompt(buildVersion: String) = {
-    (state: State) => {
-      val currProject = Project.extract (state).currentProject.id
-      "%s:%s:%s> ".format (
-        currProject, currBranch, buildVersion
-      )
-    }
-  }
-}
-
-object Eclipse {
+/* object Eclipse {
   val command: Command = Command.command("eclipse-android") { state =>
     val base = Project.extract (state).currentProject.base
     IO.write(base /"proguard.cfg", Proguard.options)
@@ -291,68 +233,4 @@ object Eclipse {
     IO.write(props, null, base /"project.properties")
     state
   }
-}
-
-object Idea {
-  // quick 'n dirty way to add Android Facet to IDEA projects
-  val command: Command = Command.command("gen-idea-android") { state =>
-    val base = Project.extract (state).currentProject.base
-    transform(base / ".." / ".idea_modules" / "cloudr.iml", "app")
-    transform(base / ".." / ".idea_modules" / "tests.iml", "tests")
-    state
-  }
-
-  import xml._
-  import xml.transform._
-
-  object ReplaceJdk extends RewriteRule {
-    override def transform(n: Node): Seq[Node] = n match {
-      case e @ Elem(prefix, "orderEntry", attribs, scope, children @ _*) if (e \ "@type").text == "inheritedJdk" =>
-        <orderEntry type="jdk" jdkName="Android 3.2 Platform" jdkType="Android SDK" />
-      case other => other
-    }
-  }
-
-  object ReplaceJdkTransformer extends RuleTransformer(ReplaceJdk)
-
-  case class AddFacet(module: String) extends RewriteRule {
-    def path(p: String) = "/../" + module + "/" + p
-    override def transform(n: Node): Seq[Node] = n match {
-      case e @ Elem(prefix, "component", attribs, scope, children @ _*) if (e \ "@name").text == "FacetManager" =>
-        <component name="FacetManager">
-          { children }
-          <facet type="android" name="Android">
-            <configuration>
-              <option name="GEN_FOLDER_RELATIVE_PATH_APT" value={path("gen")} />
-              <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value={path("gen")} />
-              <option name="MANIFEST_FILE_RELATIVE_PATH" value={path("AndroidManifest.xml")} />
-              <option name="RES_FOLDER_RELATIVE_PATH" value={path("res")} />
-              <option name="ASSETS_FOLDER_RELATIVE_PATH" value={path("assets")} />
-              <option name="LIBS_FOLDER_RELATIVE_PATH" value={path("libs")} />
-              <option name="REGENERATE_R_JAVA" value="true" />
-              <option name="REGENERATE_JAVA_BY_AIDL" value="true" />
-              <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
-              <option name="CUSTOM_APK_RESOURCE_FOLDER" value="" />
-              <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
-              <option name="CUSTOM_COMPILER_MANIFEST" value="" />
-              <option name="APK_PATH" value="" />
-              <option name="LIBRARY_PROJECT" value="false" />
-              <option name="RUN_PROCESS_RESOURCES_MAVEN_TASK" value="true" />
-              <option name="GENERATE_UNSIGNED_APK" value="false" />
-            </configuration>
-          </facet>
-        </component>
-      case e @ Elem(prefix, "component", attribs, scope, children @ _*) if (e \ "@name").text == "NewModuleRootManager" =>
-        ReplaceJdkTransformer(e)
-      case other => other
-    }
-  }
-
-  case class AddFacetTransformer(module: String) extends RuleTransformer(AddFacet(module))
-
-  def transform(f: java.io.File, module: String) = {
-    val x = XML.loadFile(f)
-    val t = AddFacetTransformer(module)(x)
-    XML.save(f.getAbsolutePath, t)
-  }
-}
+} */

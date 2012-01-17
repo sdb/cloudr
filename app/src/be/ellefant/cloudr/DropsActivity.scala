@@ -1,15 +1,13 @@
 package be.ellefant.cloudr
 
-import roboguice.activity.RoboListActivity
-import android.widget.{ AdapterView, SimpleCursorAdapter, ArrayAdapter, TextView }
+import android.widget.{ AdapterView, SimpleCursorAdapter, BaseAdapter }
 import android.content.Intent
 import android.view.View
-import DatabaseHelper._
-import CloudAppManager._
-import scalaandroid._
 import android.database.ContentObserver
 import android.os.Handler
-import android.widget.BaseAdapter
+import roboguice.activity.RoboListActivity
+import scalaandroid._
+import DatabaseHelper._, CloudAppManager._
 
 class DropsActivity extends RoboListActivity
     with Activity

@@ -1,18 +1,18 @@
 package be.ellefant.cloudr
 
-import collection.mutable.ListBuffer
-import com.google.inject.Inject
-import DatabaseHelper._
 import android.accounts.Account
 import android.content.{ SyncResult, ContentProviderClient, AbstractThreadedSyncAdapter }
 import android.database.Cursor
 import android.os.Bundle
-import roboguice.service.RoboService
 import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
-import java.util.Date
-import scalaandroid._
 import android.database.sqlite.SQLiteQueryBuilder
+import roboguice.service.RoboService
+import collection.mutable.ListBuffer
+import com.google.inject.Inject
+import java.util.Date
+import DatabaseHelper._
+import scalaandroid._
 
 class SyncService extends RoboService
     with Base.CloudrService

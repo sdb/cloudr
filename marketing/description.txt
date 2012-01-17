@@ -6,8 +6,8 @@ Features:
 - navigate and browse your drops collection
 - delete drops
 
-Stay tuned, more features are on the way.
+The application is still in early development stages, so stay tuned because more features are on the way.
 
-Cloudr is comletetely free of charge, as will future versions of Cloudr. 
+Cloudr is completely free of charge, as will future versions of Cloudr. 
 
 Note that this application requires a (free) CloudApp account.
