@@ -15,7 +15,7 @@ class SharingServiceSpec extends CloudrSpecs {
   "when a bookmark intent is received SharingService" should {
     "make a request to create a bookmark" in pending
     "and when the request succeeds" in {
-      "display a toast" in pending
+      "do not display a toast" in pending
       "save a drop description" in pending
     }
     "and when the request fails" in {

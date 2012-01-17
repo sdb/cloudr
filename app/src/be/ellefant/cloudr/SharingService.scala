@@ -12,7 +12,7 @@ import android.os.{ Handler, Looper }
 import roboguice.service.RoboIntentService
 import java.text.SimpleDateFormat
 import java.util.Date
-import SharingService._, Cloud._, FileType._, ThreadUtils._
+import SharingService._, Cloud._, FileType._, ThreadUtils._, CloudAppManager._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -79,11 +79,12 @@ class SharingService extends RoboIntentService(Name)
         }
         db endTransaction ()
 
-        handler post { () ⇒
-          val msg = "Item uploaded successfully to CloudApp." + (if (copyUrl) " The URL is copied to the clipboard." else "")
-          val toast = Toast makeText (getApplicationContext, msg, Toast.LENGTH_SHORT)
-          toast show ()
-        }
+        if (drop.itemType != ItemType.Bookmark)
+          handler post { () ⇒
+            val msg = "Item uploaded successfully to CloudApp." + (if (copyUrl) " The URL is copied to the clipboard." else "")
+            val toast = Toast makeText (getApplicationContext, msg, Toast.LENGTH_SHORT)
+            toast show ()
+          }
 
         logger debug ("New CloudAppItem created '%d'." format drop.id)
       }
