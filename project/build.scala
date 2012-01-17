@@ -41,13 +41,26 @@ object General {
       .setPreference(RewriteArrowSymbols, true)
   }
 
-  lazy val fullAndroidSettings =
+  private def signReleaseTask: Project.Initialize[Task[File]] =
+    (keystorePath, keyalias, packageApkPath, streams) map { (ksPath, ka, pPath,s ) =>
+      s.log.debug(Process(
+        <x> jarsigner -verbose -keystore {ksPath} -storepass {getPassword} {pPath} {ka} </x>).!!)
+      s.log.info("Signed "+pPath)
+      pPath
+    }
+
+  private def getPassword = System.getProperty("cloudr.keystore_password")
+
+  lazy val fullAndroidSettings = inConfig(Android)(Seq(
+      keyalias in Android := "cloudr",
+      signRelease <<= signReleaseTask,
+      signRelease <<= signRelease dependsOn packageRelease
+    )) ++
     General.settings ++
     AndroidProject.androidSettings ++
     TypedResources.settings ++
-    AndroidMarketPublish.settings ++ Seq (
-      keyalias in Android := "cloudr" // TODO
-    ) /*++ Seq(
+    AndroidMarketPublish.settings
+    /*++ Seq(
       projectNature := de.element34.sbteclipsify.ProjectType.ScalaAndroid
     ) */
 }
