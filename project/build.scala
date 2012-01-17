@@ -42,24 +42,30 @@ object General {
   }
 
   private def signReleaseTask: Project.Initialize[Task[File]] =
-    (keystorePath, keyalias, packageApkPath, streams) map { (ksPath, ka, pPath,s ) =>
-      s.log.debug(Process(
-        <x> jarsigner -verbose -keystore {ksPath} -storepass {getPassword} {pPath} {ka} </x>).!!)
+    (keystorePath, packageApkPath, streams) map { (ksPath, pPath,s ) =>
+      val jarsigner = Seq(
+        "jarsigner",
+        "-verbose",
+        "-keystore", ksPath.absolutePath,
+        "-storepass", getPassword,
+        pPath.absolutePath,
+        "cloudr")
+      s.log.debug("Signing "+jarsigner.mkString(" "))
+      s.log.debug(jarsigner !!)
       s.log.info("Signed "+pPath)
       pPath
     }
 
   private def getPassword = System.getProperty("cloudr.keystore_password")
 
-  lazy val fullAndroidSettings = inConfig(Android)(Seq(
-      keyalias in Android := "cloudr",
+  lazy val fullAndroidSettings = AndroidMarketPublish.settings ++ inConfig(Android)(Seq(
       signRelease <<= signReleaseTask,
       signRelease <<= signRelease dependsOn packageRelease
     )) ++
     General.settings ++
     AndroidProject.androidSettings ++
-    TypedResources.settings ++
-    AndroidMarketPublish.settings
+    TypedResources.settings
+
     /*++ Seq(
       projectNature := de.element34.sbteclipsify.ProjectType.ScalaAndroid
     ) */
