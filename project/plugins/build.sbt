@@ -13,3 +13,5 @@ addSbtPlugin("org.scala-tools.sbt" % "sbt-android-plugin" % "0.6.0")
 addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.2.0")
 
 addSbtPlugin("com.github.sdb" % "xsbt-filter" % "0.1")
+
+libraryDependencies += "commons-io" % "commons-io" % "2.0.1"
