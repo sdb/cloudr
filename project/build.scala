@@ -91,7 +91,8 @@ object AndroidBuild extends Build {
       libraryDependencies += Slf4jApi,
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
-      }
+      },
+      shellPrompt <<= version apply (ShellPrompt.buildShellPrompt(_))
     )
   )
 
