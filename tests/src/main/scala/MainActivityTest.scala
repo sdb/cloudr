@@ -20,6 +20,7 @@ class MainActivityTest extends ActivityInstrumentationTestCase2(classOf[MainActi
     val activity = getActivity
     val view = activity.findViewById(android.R.id.list).asInstanceOf[ListView]
     assertNotNull(view)
+    assertEquals(10, view.getAdapter.getCount)
   }
 
 }
