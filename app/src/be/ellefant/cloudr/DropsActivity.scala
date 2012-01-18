@@ -11,13 +11,10 @@ import DatabaseHelper._, CloudAppManager._
 
 class DropsActivity extends RoboListActivity
     with Activity
+    with DropsContentObservingActivity
     with Base.AccountRequired
     with Base.Default
     with Injection.CloudAppManager {
-
-  private var contentObserver: DropsContentObserver = _
-
-  private var handler: Handler = _
 
   private var adapter: BaseAdapter = _
 
@@ -46,24 +43,7 @@ class DropsActivity extends RoboListActivity
     lv setTextFilterEnabled true
     lv setOnItemClickListener (onItemClick _)
 
-    handler = new Handler
-    registerObserver()
-  }
-
-  private def registerObserver() = {
-    contentObserver = new DropsContentObserver(handler)
-    getContentResolver.registerContentObserver(CloudAppProvider.ContentUri, true, contentObserver)
-  }
-
-  override protected def onStart = {
-    super.onStart()
-    registerObserver()
-  }
-
-  override protected def onStop = {
-    getContentResolver.unregisterContentObserver(contentObserver)
-    contentObserver = null
-    super.onStop()
+    initObserver
   }
 
   private def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
@@ -73,9 +53,5 @@ class DropsActivity extends RoboListActivity
     startActivity(intent)
   }
 
-  private class DropsContentObserver(handler: Handler) extends ContentObserver(handler) {
-    override def onChange(selfChange: Boolean) {
-      adapter.notifyDataSetChanged
-    }
-  }
+  protected def onDropsChanges = adapter.notifyDataSetChanged
 }
