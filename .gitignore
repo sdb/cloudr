@@ -10,6 +10,7 @@ gen
 .project
 .cache
 .target
+.settings
 bin
 proguard.cfg
 project.properties

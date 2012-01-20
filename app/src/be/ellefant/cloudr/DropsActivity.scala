@@ -23,7 +23,7 @@ class DropsActivity extends RoboListActivity
     val itemType = intent.getStringExtra(KeyItemType)
     setTitle(cloudAppManager.itemTypes(ItemType.withName(itemType).id))
     setContentView(R.layout.drops)
-    val projection = Array(ColId, ColName, ColUrl)
+    val projection = Array(ColId, ColName, ColViewCounter)
     val order = "%s DESC" format ColId
     val cursor = ItemType.withName(itemType) match {
       case ItemType.All ⇒
@@ -35,9 +35,9 @@ class DropsActivity extends RoboListActivity
       case it ⇒
         managedQuery(CloudAppProvider.ContentUri, projection, "item_type = ? AND deleted_at IS NULL", Array(it.toString.toLowerCase), order)
     }
-    val displayFields = Array(ColName, ColUrl)
-    val displayViews = Array(android.R.id.text1, android.R.id.text2)
-    adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, displayFields, displayViews)
+    val displayFields = Array(ColName, ColViewCounter)
+    val displayViews = Array(R.id.title_entry, R.id.count_entry)
+    adapter = new SimpleCursorAdapter(this, R.layout.drops_entry, cursor, displayFields, displayViews)
     setListAdapter(adapter)
     val lv = getListView
     lv setTextFilterEnabled true
