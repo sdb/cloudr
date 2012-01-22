@@ -12,6 +12,7 @@ import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._, Cloud
 
 class DropActivity extends RoboActivity
     with Activity
+    with DropsContentObservingActivity
     with Base.AccountRequired
     with Base.Default
     with Injection.ApiFactory
@@ -68,9 +69,13 @@ class DropActivity extends RoboActivity
   protected def onAccountSuccess() = {
     val intent = getIntent
     val id = intent.getLongExtra(KeyId, -1) // TODO: check valid id
-    // setTitle("Cloudr - Drop %d" % id)
     setTitle("Cloudr")
     setContentView(R.layout.drop)
+    initView(id)
+    initObserver
+  }
+  
+  private def initView(id: Long) = {
     val cursor = managedQuery(CloudAppProvider.ContentUri,
       Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType,
         ColContentUrl, ColHref, ColDeletedAt, ColSubscribed, ColIcon, ColRemoteUrl, ColRedirectUrl), "%s = %d" format (ColId, id), null, null)
@@ -123,6 +128,8 @@ class DropActivity extends RoboActivity
       }
     }
   }
+
+  protected def onDropsChanges = drop foreach (d => initView(d.id))
 }
 
 object DropActivity {

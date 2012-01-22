@@ -11,13 +11,10 @@ import DatabaseHelper._, CloudAppManager._
 
 class DropsActivity extends RoboListActivity
     with Activity
+    with DropsContentObservingActivity
     with Base.AccountRequired
     with Base.Default
     with Injection.CloudAppManager {
-
-  private var contentObserver: DropsContentObserver = _
-
-  private var handler: Handler = _
 
   private var adapter: BaseAdapter = _
 
@@ -26,7 +23,7 @@ class DropsActivity extends RoboListActivity
     val itemType = intent.getStringExtra(KeyItemType)
     setTitle(cloudAppManager.itemTypes(ItemType.withName(itemType).id))
     setContentView(R.layout.drops)
-    val projection = Array(ColId, ColName, ColUrl)
+    val projection = Array(ColId, ColName, ColViewCounter)
     val order = "%s DESC" format ColId
     val cursor = ItemType.withName(itemType) match {
       case ItemType.All ⇒
@@ -38,32 +35,15 @@ class DropsActivity extends RoboListActivity
       case it ⇒
         managedQuery(CloudAppProvider.ContentUri, projection, "item_type = ? AND deleted_at IS NULL", Array(it.toString.toLowerCase), order)
     }
-    val displayFields = Array(ColName, ColUrl)
-    val displayViews = Array(android.R.id.text1, android.R.id.text2)
-    adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, displayFields, displayViews)
+    val displayFields = Array(ColName, ColViewCounter)
+    val displayViews = Array(R.id.title_entry, R.id.count_entry)
+    adapter = new SimpleCursorAdapter(this, R.layout.drops_entry, cursor, displayFields, displayViews)
     setListAdapter(adapter)
     val lv = getListView
     lv setTextFilterEnabled true
     lv setOnItemClickListener (onItemClick _)
 
-    handler = new Handler
-    registerObserver()
-  }
-
-  private def registerObserver() = {
-    contentObserver = new DropsContentObserver(handler)
-    getContentResolver.registerContentObserver(CloudAppProvider.ContentUri, true, contentObserver)
-  }
-
-  override protected def onStart = {
-    super.onStart()
-    registerObserver()
-  }
-
-  override protected def onStop = {
-    getContentResolver.unregisterContentObserver(contentObserver)
-    contentObserver = null
-    super.onStop()
+    initObserver
   }
 
   private def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
@@ -73,9 +53,5 @@ class DropsActivity extends RoboListActivity
     startActivity(intent)
   }
 
-  private class DropsContentObserver(handler: Handler) extends ContentObserver(handler) {
-    override def onChange(selfChange: Boolean) {
-      adapter.notifyDataSetChanged
-    }
-  }
+  protected def onDropsChanges = adapter.notifyDataSetChanged
 }

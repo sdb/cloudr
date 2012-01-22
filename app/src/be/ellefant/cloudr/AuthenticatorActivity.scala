@@ -30,6 +30,12 @@ class AuthenticatorActivity extends RoboAccountAuthenticatorActivity
   private var usernameEdit: EditText = null
   private val handler: Handler = new Handler
 
+  override def onPause = {
+    super.onPause
+    logger debug ("closing activity on pause")
+    finish()
+  }
+
   override def onCreate(bundle: Bundle) {
     super.onCreate(bundle)
     val intent = getIntent

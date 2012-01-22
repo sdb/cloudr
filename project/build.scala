@@ -2,13 +2,13 @@ import sbt._
 import Keys._
 import AndroidKeys._
 import com.typesafe.sbtscalariform.ScalariformPlugin._
-// import de.element34.sbteclipsify.Eclipsify._
+import de.element34.sbteclipsify.Eclipsify._
 import sbtfilter.Plugin._
 import org.apache.commons.io.FileUtils
 
 object General {
   lazy val buildOrganization = "be.ellefant.cloudr"
-  lazy val buildVersion      = "0.2"
+  lazy val buildVersion      = "0.2.1"
   lazy val buildScalaVersion = "2.9.1"
 
   lazy val settings = Defaults.defaultSettings ++ formattingSettings ++ Seq (
@@ -23,8 +23,8 @@ object General {
       ScalaToolsReleases,
       "Local Maven" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-    )/*,
-    projectNature := de.element34.sbteclipsify.ProjectType.Scala*/
+    ),
+    projectNature := de.element34.sbteclipsify.ProjectType.Scala
   )
 
   lazy val formattingSettings = (inConfig(Compile)(baseScalariformSettings) ++ inConfig(Test)(baseScalariformSettings)) ++ Seq(
@@ -64,11 +64,9 @@ object General {
     )) ++
     General.settings ++
     AndroidProject.androidSettings ++
-    TypedResources.settings
-
-    /*++ Seq(
+    TypedResources.settings ++ Seq(
       projectNature := de.element34.sbteclipsify.ProjectType.ScalaAndroid
-    ) */
+    )
 }
 
 object Dependencies {
@@ -170,7 +168,7 @@ object AndroidBuild extends Build {
       name := "cloudr",
       parallelExecution in Test := false,
       testOptions in Test += Tests.Argument("junitxml", "console"),
-      commands ++= Seq(Idea.command/*, Eclipse.command */),
+      commands ++= Seq(Idea.command, Eclipse.command),
       libraryDependencies <+= (sdkPath in Android) apply { (sp) =>
         AndroidSupport13 from (sp / "extras" / "android" / "support" / "v13" / "android-support-v13.jar").toURI.toString
       },
@@ -224,7 +222,7 @@ object Proguard {
   lazy val options = FileUtils.readFileToString(new File("project/proguard_options.txt"))
 }
 
-/* object Eclipse {
+object Eclipse {
   val command: Command = Command.command("eclipse-android") { state =>
     val base = Project.extract (state).currentProject.base
     IO.write(base /"proguard.cfg", Proguard.options)
@@ -233,4 +231,4 @@ object Proguard {
     IO.write(props, null, base /"project.properties")
     state
   }
-} */
+}
