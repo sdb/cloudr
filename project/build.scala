@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils
 
 object General {
   lazy val buildOrganization = "be.ellefant.cloudr"
-  lazy val buildVersion      = "0.2.1-SNAPSHOT"
+  lazy val buildVersion      = "0.2.1"
   lazy val buildScalaVersion = "2.9.1"
 
   lazy val settings = Defaults.defaultSettings ++ formattingSettings ++ Seq (
