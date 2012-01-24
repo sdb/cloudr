@@ -19,6 +19,7 @@ class AccountPreferencesActivityTest extends ActivityInstrumentationTestCase2(cl
     val activity = getActivity
     val prefScreen = activity.getPreferenceScreen
     assertNotNull(prefScreen)
+    assertEquals(0, prefScreen.getPreferenceCount)
   }
 
 }
