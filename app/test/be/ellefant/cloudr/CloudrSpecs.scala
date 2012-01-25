@@ -56,6 +56,14 @@ trait CloudrSpecs extends RoboSpecs with Mockito {
         module.bind(classOf[CloudAppManager]).toInstance(cloudAppManagerMock)
       }
     }
+
+    trait DropManagerMock extends RoboContext {
+      lazy val dropManagerMock = mock[DropManager]
+      abstract override def configure() {
+        super.configure()
+        module.bind(classOf[DropManager]).toInstance(dropManagerMock)
+      }
+    }
   }
 
   object Bindings {

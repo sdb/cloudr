@@ -21,7 +21,8 @@ class SharingService extends RoboIntentService(Name)
     with Base.CloudrService
     with Injection.AccountManager
     with Injection.ApiFactory
-    with Injection.ThreadUtil {
+    with Injection.ThreadUtil
+    with Injection.DropManager {
 
   private var handler: Handler = _
 
@@ -56,7 +57,7 @@ class SharingService extends RoboIntentService(Name)
 
         handler post { () ⇒
           val toast = Toast makeText (getApplicationContext, msg, Toast.LENGTH_SHORT)
-          toast show ()
+          toast show()
         }
       }
 
@@ -67,17 +68,7 @@ class SharingService extends RoboIntentService(Name)
           val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
           clipboard setText (drop.url)
         }
-        val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
-        val db = provider.database.getWritableDatabase
-        db beginTransaction ()
-        try {
-          db insert (DatabaseHelper.TblItems, DatabaseHelper.ColId, drop.toContentValues) // TODO check first
-          provider.context.getContentResolver notifyChange (CloudAppProvider.ContentUri, null)
-          db setTransactionSuccessful ()
-        } catch {
-          case e ⇒ // TODO
-        }
-        db endTransaction ()
+        dropManager.insert(drop)
 
         if (drop.itemType != ItemType.Bookmark)
           handler post { () ⇒
