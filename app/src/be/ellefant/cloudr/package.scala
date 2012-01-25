@@ -54,6 +54,12 @@ package be.ellefant {
       val Jpg = Value("jpg", "jpeg")
       val Gif = Value("gif", "gif")
       val Png = Value("png", "png")
+      val Bmp = Value("bmp", "bmp")
+
+      val Gp3 = Value("3gp", "3gpp")
+      val Mp4 = Value("mp4", "mp4")
+      val Avi = Value("avi", "x-msvideo")
+      val Wmv = Value("wmv", "x-ms-wmv")
 
       class FileType(val extension: String, val mimeType: String) extends Val()
       protected final def Value(extension: String, mimeType: String): FileType = new FileType(extension, mimeType)

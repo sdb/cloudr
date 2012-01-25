@@ -32,16 +32,19 @@ class SharingService extends RoboIntentService(Name)
   }
 
   def onHandleIntent(intent: Intent) = {
+      def handleUpload(api: Cloud, extension: String) = {
+        val u = Uri parse ((intent.getExtras get ("android.intent.extra.STREAM")).toString)
+        val fd = getContentResolver openFileDescriptor (u, "r")
+        val name = UploadDateFormat.format(new Date())
+        api upload ("%s.%s" format (name, extension), new AutoCloseInputStream(fd), fd.getStatSize)
+      }
       def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = {
         case "text/plain" ⇒
           val url = intent getStringExtra (Intent.EXTRA_TEXT)
           val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
           api bookmark (title, url)
-        case MimeType("image", Extension(extension)) ⇒
-          val u = Uri parse ((intent.getExtras get ("android.intent.extra.STREAM")).toString)
-          val fd = getContentResolver openFileDescriptor (u, "r")
-          val name = UploadDateFormat.format(new Date())
-          api upload ("%s.%s" format (name, extension), new AutoCloseInputStream(fd), fd.getStatSize)
+        case MimeType("image", Extension(extension)) ⇒ handleUpload(api, extension)
+        case MimeType("video", Extension(extension)) ⇒ handleUpload(api, extension)
       }
 
       def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {
