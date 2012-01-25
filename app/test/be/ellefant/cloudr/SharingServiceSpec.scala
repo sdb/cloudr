@@ -4,7 +4,8 @@ import android.content.Intent
 import android.accounts.Account
 import android.content.Context
 import android.text.ClipboardManager
-import com.xtremelabs.robolectric.shadows.ShadowToast
+import com.xtremelabs.robolectric.shadows.{ShadowPreferenceManager, ShadowToast}
+import com.xtremelabs.robolectric.Robolectric
 
 class SharingServiceSpec extends CloudrSpecs {
 
@@ -61,20 +62,31 @@ class SharingServiceSpec extends CloudrSpecs {
         val clipboard = service.getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
         clipboard.getText must be_==("http://cl.ly/361w0L1b2r320T2u023V")
       }
-      "not copy the url to the clipboard" in pending
+      "not copy the url to the clipboard" in new bookmarkContext {
+        val clipboard = service.getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
+        ShadowPreferenceManager.getDefaultSharedPreferences(service).edit().putBoolean("copy_url", false).commit()
+        val item = bookmark()
+        clipboard.getText must beNull
+      }
     }
   }
 
   "when an authentication error occurs the SharingService" should {
-    "display a toast" in pending
+    "display a toast" in new ErrorContext(Cloud.Error.Auth, "CloudApp authorization failed.") {
+      test()
+    }
   }
 
   "when the upload limit is reached the SharingService" should {
-    "display a toast" in pending
+    "display a toast" in new ErrorContext(Cloud.Error.Limit, "CloudApp upload limit reached.") {
+      test()
+    }
   }
 
   "when some other error occurs the SharingService" should {
-    "display a toast" in pending
+    "display a toast" in new ErrorContext(Cloud.Error.Other, "CloudApp upload failed.") {
+      test()
+    }
   }
 
   trait context extends RoboContext
@@ -87,14 +99,31 @@ class SharingServiceSpec extends CloudrSpecs {
     lazy val url = "http://google.com"
     lazy val title = "Test"
 
-    def sendIntent() = {
+    def sendIntent(intent: Intent): Unit = {
+      service.onCreate()
+      service.onHandleIntent(intent)
+    }
+
+    def sendIntent(): Unit = {
       val intent = new Intent
       intent.setType("text/plain")
       intent.putExtra(Intent.EXTRA_TEXT, url)
       intent.putExtra(Intent.EXTRA_SUBJECT, title)
+      sendIntent(intent)
+    }
+  }
 
-      service.onCreate()
-      service.onHandleIntent(intent)
+  trait AccountContext { self: context =>
+    val acc = new Account("sdb", AccountType)
+    accountManagerMock.getAccountsByType(AccountType) returns Array(acc)
+    accountManagerMock.blockingGetAuthToken(acc, AuthTokenType, true) returns "blabla"
+  }
+
+  class ErrorContext(error: Cloud.Error.Error, msg: String) extends context with AccountContext {
+    def test() = {
+      cloudAppMock.bookmark(title, url) returns Left(Cloud.Error.Other)
+      sendIntent()
+      ShadowToast.getTextOfLatestToast must  be_== ("CloudApp upload failed.")
     }
   }
   
