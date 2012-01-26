@@ -12,7 +12,7 @@ import android.os.{ Handler, Looper }
 import roboguice.service.RoboIntentService
 import java.text.SimpleDateFormat
 import java.util.Date
-import SharingService._, Cloud._, FileType._, ThreadUtils._, CloudAppManager._
+import SharingService._, Cloud._, ThreadUtils._, CloudAppManager._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
@@ -32,19 +32,30 @@ class SharingService extends RoboIntentService(Name)
   }
 
   def onHandleIntent(intent: Intent) = {
-      def handleUpload(api: Cloud, extension: String) = {
+      def handleUpload(api: Cloud, uri: Uri, name: String) = {
+        logger debug ("uploading %s to %s" format (uri, name))
+        val fd = getContentResolver openFileDescriptor (uri, "r")
+        api upload (name, new AutoCloseInputStream(fd), fd.getStatSize)
+      }
+      def handleShare(api: Cloud, extension: String) = {
         val u = Uri parse ((intent.getExtras get ("android.intent.extra.STREAM")).toString)
-        val fd = getContentResolver openFileDescriptor (u, "r")
-        val name = UploadDateFormat.format(new Date())
-        api upload ("%s.%s" format (name, extension), new AutoCloseInputStream(fd), fd.getStatSize)
+        val name = "%s.%s" format (UploadDateFormat.format(new Date()), extension)
+        handleUpload(api, u, name)
+      }
+      def handleView(api: Cloud) = {
+        val u = intent.getData
+        val name = u.getLastPathSegment
+        handleUpload(api, u, name)
       }
       def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = {
         case "text/plain" ⇒
           val url = intent getStringExtra (Intent.EXTRA_TEXT)
           val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
           api bookmark (title, url)
-        case MimeType("image", Extension(extension)) ⇒ handleUpload(api, extension)
-        case MimeType("video", Extension(extension)) ⇒ handleUpload(api, extension)
+        case Extension(extension) if intent.getAction == Intent.ACTION_SEND ⇒
+          handleShare(api, extension)
+        case Extension(extension) if intent.getAction == Intent.ACTION_VIEW ⇒
+          handleView(api)
       }
 
       def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {

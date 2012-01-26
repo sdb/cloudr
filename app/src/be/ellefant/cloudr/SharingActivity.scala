@@ -20,13 +20,20 @@ class SharingActivity extends RoboActivity
 
   protected[cloudr] def onAccountSuccess() = {
     val intent = getIntent
-    val url = intent.getStringExtra(Intent.EXTRA_TEXT)
-    logger.debug("Sharing link '%s' for '%s'." format (url, account().name))
-    val toast = Toast.makeText(getApplicationContext, "Item will be uploaded to CloudApp.", Toast.LENGTH_SHORT)
-    toast.show()
-    val int = new Intent(intent)
-    int.setClass(this, classOf[SharingService])
-    startService(int)
+    val mimeType = intent.getType
+    if (Extension.isSupported(mimeType)) {
+      val url = intent.getStringExtra(Intent.EXTRA_TEXT)
+      logger.debug("Sharing link '%s' for '%s'." format (url, account().name))
+      val toast = Toast.makeText(getApplicationContext, "Item will be uploaded to CloudApp.", Toast.LENGTH_SHORT)
+      toast.show()
+      val int = new Intent(intent)
+      int.setClass(this, classOf[SharingService])
+      startService(int)
+    } else {
+      logger warn ("mime type %s is not supported" format mimeType)
+      val toast = Toast.makeText(getApplicationContext, "Can't upload item to CloudApp. This kind of item is not supported.", Toast.LENGTH_SHORT)
+      toast.show()
+    }
   }
 
   override protected[cloudr] def onAccountFailure() = {
