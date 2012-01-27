@@ -4,6 +4,7 @@ package tests
 import android.content.Intent
 import android.test.InstrumentationTestCase
 import junit.framework.Assert._
+import android.widget.TextView
 
 class DropActivityTest extends InstrumentationTestCase
     with CloudrTestBase {
@@ -18,5 +19,8 @@ class DropActivityTest extends InstrumentationTestCase
     intent.putExtra(KeyId, 0)
     val activity = launchActivityWithIntent("be.ellefant.cloudr", classOf[MainActivity], intent)
     assertNotNull(activity)
+
+    val view = (activity findViewById(R.id.dropTitle)).asInstanceOf[TextView]
+    logger warn ("text: " + view.getText)
   }
 }

@@ -9,7 +9,7 @@ import com.google.inject.AbstractModule
 import com.google.inject.util.Modules
 import android.accounts.AccountManager
 
-trait CloudrSpecs extends RoboSpecs with Mockito {
+trait CloudrSpecs extends RoboSpecs with Mockito with Logging {
   args(sequential = true)
 
   override lazy val robolectricConfig = new RobolectricConfig(new java.io.File("./app/"))
