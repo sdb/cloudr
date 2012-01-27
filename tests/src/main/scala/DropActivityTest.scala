@@ -17,7 +17,7 @@ class DropActivityTest extends InstrumentationTestCase
     setupAccount()
     val intent = new Intent
     intent.putExtra(KeyId, 0)
-    val activity = launchActivityWithIntent("be.ellefant.cloudr", classOf[MainActivity], intent)
+    val activity = launchActivityWithIntent("be.ellefant.cloudr", classOf[DropActivity], intent)
     assertNotNull(activity)
 
     val view = (activity findViewById(be.ellefant.cloudr.R.id.dropTitle)).asInstanceOf[TextView]
