@@ -12,7 +12,9 @@ package be.ellefant {
 
   package cloudr {
 
-    class CloudrString(s: String) {
+  import android.webkit.MimeTypeMap
+
+  class CloudrString(s: String) {
       def %(args: Any*) = s.format(args: _*)
       def isBlank = s == null || s.length == 0
       def toBlankOption = if (isBlank) None else Some(s)
@@ -50,19 +52,15 @@ package be.ellefant {
       }
     }
 
-    object FileType extends Enumeration {
-      val Jpg = Value("jpg", "jpeg")
-      val Gif = Value("gif", "gif")
-      val Png = Value("png", "png")
-
-      class FileType(val extension: String, val mimeType: String) extends Val()
-      protected final def Value(extension: String, mimeType: String): FileType = new FileType(extension, mimeType)
-
-      object Extension {
-        def unapply(mimeType: String): Option[String] = values.collect {
-          case ft: FileType if ft.mimeType == mimeType ⇒ ft.extension
-        }.headOption
+    object Extension {
+      private lazy val mimeTypes = MimeTypeMap.getSingleton
+      private lazy val supported = Seq("text", "image", "video", "audio", "application")
+      def isSupported(mimeType: String) = mimeType match {
+        case MimeType(m, _) => supported.contains(m)
+        case _ => false
       }
+      def unapply(mimeType: String): Option[String] =
+        if (isSupported(mimeType)) Some(mimeTypes.getExtensionFromMimeType(mimeType)) else None
     }
   }
 }
