@@ -47,15 +47,15 @@ class SharingService extends RoboIntentService(Name)
         val name = u.getLastPathSegment
         handleUpload(api, u, name)
       }
-      def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = {
-        case "text/plain" ⇒
-          val url = intent getStringExtra (Intent.EXTRA_TEXT)
-          val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
-          api bookmark (title, url)
-        case Extension(extension) if intent.getAction == Intent.ACTION_SEND ⇒
-          handleShare(api, extension)
-        case Extension(extension) if intent.getAction == Intent.ACTION_VIEW ⇒
-          handleView(api)
+      def handleBookmark(api: Cloud) = {
+        val url = intent getStringExtra (Intent.EXTRA_TEXT)
+        val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
+        api bookmark (title, url)
+      }
+      def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = { // TODO intent matchers
+        case "text/plain" if intent.getAction == Intent.ACTION_SEND  ⇒ handleBookmark(api)
+        case Extension(extension) if intent.getAction == Intent.ACTION_SEND ⇒ handleShare(api, extension)
+        case Extension(extension) if intent.getAction == Intent.ACTION_VIEW ⇒ handleView(api)
       }
 
       def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {

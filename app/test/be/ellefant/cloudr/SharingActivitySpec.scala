@@ -38,6 +38,7 @@ class SharingActivitySpec extends CloudrSpecs {
       accountAvailable()
       val intent = new Intent
       intent.putExtra(Intent.EXTRA_TEXT, "http://google.com")
+      intent.setType("text/plain")
       activity.setIntent(intent)
       testToast("Item will be uploaded to CloudApp.")
     }
