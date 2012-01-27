@@ -20,6 +20,7 @@ class DropActivityTest extends InstrumentationTestCase
     val activity = launchActivityWithIntent("be.ellefant.cloudr", classOf[DropActivity], intent)
     assertNotNull(activity)
 
+    logger warn ("title: " + activity.getTitle)
     val view = (activity findViewById(be.ellefant.cloudr.R.id.dropTitle)).asInstanceOf[TextView]
     logger warn ("text: " + view.getText)
   }
