@@ -8,4 +8,6 @@
           android:title="@string/browse" />
     <item android:id="@+id/delete"
           android:title="@string/delete" />
+    <item android:id="@+id/restore"
+          android:title="@string/restore" />
 </menu>
