@@ -65,6 +65,8 @@ class DropActivity extends RoboActivity
         }
         finish()
       }
+    case MenuItem(R.id.restore) =>
+      restoreDrop()
   }
 
   protected def onAccountSuccess() = {
@@ -128,6 +130,37 @@ class DropActivity extends RoboActivity
         // TODO open drop
       }
     }
+  }
+
+  private def restoreDrop() = drop foreach { d =>
+    val acc = account()
+    val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
+    val toast = Toast.makeText(getApplicationContext, "This item will be restored.", Toast.LENGTH_SHORT)
+    toast.show()
+    threadUtil.performOnBackgroundThread { () ⇒
+      val api = apiFactory.create(acc.name, pwd)
+      api.recover(d.href) match {
+        case Right(drop) ⇒
+          val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
+          val db = provider.database.getWritableDatabase
+          db beginTransaction ()
+          try {
+            db update (DatabaseHelper.TblItems, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
+            provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
+            db setTransactionSuccessful ()
+          } catch {
+            case e ⇒
+            // TODO
+          }
+          db endTransaction ()
+        case Left(Error.Auth) ⇒
+          accountManager.clearPassword(acc)
+          accountManager.invalidateAuthToken(AccountType, pwd)
+        case Left(error) ⇒
+        // TODO api error
+      }
+    }
+    finish()
   }
 
   protected def onDropsChanges = drop foreach (d => initView(d.id))
