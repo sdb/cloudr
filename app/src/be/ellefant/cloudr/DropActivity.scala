@@ -16,7 +16,8 @@ class DropActivity extends RoboActivity
     with Base.AccountRequired
     with Base.Default
     with Injection.ApiFactory
-    with Injection.ThreadUtil {
+    with Injection.ThreadUtil
+    with Injection.DropManager {
 
   private var drop: Option[Drop] = None
 
@@ -32,41 +33,9 @@ class DropActivity extends RoboActivity
   optionsItemSelected {
     //    case MenuItem(R.id.open) ⇒
     //      openApplication()
-    case MenuItem(R.id.browse) ⇒
-      openBrowser()
-    case MenuItem(R.id.delete) ⇒
-      drop foreach { d ⇒ // TODO: send intent to service and process in a service instead of spawning a thread ?
-        val acc = account()
-        val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
-        val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
-        toast.show()
-        threadUtil.performOnBackgroundThread { () ⇒
-          val api = apiFactory.create(acc.name, pwd)
-          api.delete(d.href) match {
-            case Right(drop) ⇒
-              val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
-              val db = provider.database.getWritableDatabase
-              db beginTransaction ()
-              try {
-                db update (DatabaseHelper.TblItems, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
-                provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
-                db setTransactionSuccessful ()
-              } catch {
-                case e ⇒
-                  // TODO
-              }
-              db endTransaction ()
-            case Left(Error.Auth) ⇒
-              accountManager.clearPassword(acc)
-              accountManager.invalidateAuthToken(AccountType, pwd)
-            case Left(error) ⇒
-              // TODO api error
-          }
-        }
-        finish()
-      }
-    case MenuItem(R.id.restore) =>
-      restoreDrop()
+    case MenuItem(R.id.browse) ⇒ openBrowser()
+    case MenuItem(R.id.delete) ⇒ deleteDrop()
+    case MenuItem(R.id.restore) => restoreDrop()
   }
 
   protected def onAccountSuccess() = {
@@ -131,6 +100,26 @@ class DropActivity extends RoboActivity
       }
     }
   }
+  
+  private def deleteDrop() = drop foreach { d => // TODO: send intent to service and process in a service instead of spawning a thread ?
+    val acc = account()
+    val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
+    val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
+    toast.show()
+    threadUtil.performOnBackgroundThread { () ⇒
+      val api = apiFactory.create(acc.name, pwd)
+      api.delete(d.href) match {
+        case Right(drop) ⇒
+          dropManager.update(drop)
+        case Left(Error.Auth) ⇒
+          accountManager.clearPassword(acc)
+          accountManager.invalidateAuthToken(AccountType, pwd)
+        case Left(error) ⇒
+        // TODO api error
+      }
+    }
+    finish()
+  }
 
   private def restoreDrop() = drop foreach { d =>
     val acc = account()
@@ -141,18 +130,7 @@ class DropActivity extends RoboActivity
       val api = apiFactory.create(acc.name, pwd)
       api.recover(d.href) match {
         case Right(drop) ⇒
-          val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
-          val db = provider.database.getWritableDatabase
-          db beginTransaction ()
-          try {
-            db update (DatabaseHelper.TblItems, drop.toContentValues, "%s = %d" format (ColId, drop.id), Array.empty)
-            provider.context.getContentResolver.notifyChange(CloudAppProvider.ContentUri, null)
-            db setTransactionSuccessful ()
-          } catch {
-            case e ⇒
-            // TODO
-          }
-          db endTransaction ()
+          dropManager.update(drop)
         case Left(Error.Auth) ⇒
           accountManager.clearPassword(acc)
           accountManager.invalidateAuthToken(AccountType, pwd)
