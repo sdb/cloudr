@@ -5,7 +5,7 @@ import android.test.InstrumentationTestCase
 import android.accounts.Account
 import android.os.Bundle
 
-trait CloudrTestBase {
+trait CloudrTestBase extends Logging {
   self: InstrumentationTestCase =>
 
   def setupAccount() = {

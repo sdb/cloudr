@@ -26,6 +26,12 @@ class Cloud(api: CloudApp) extends CloudrLogging {
   def items(page: Int, itemsPerPage: Int, deleted: Boolean) = trye {
     api.getItems(page, itemsPerPage, null, deleted, null).toList map (Drop(_))
   }
+  def recover(href: String) = trye {
+    val json = new JSONObject()
+    json.put("href", href)
+    val item = new CloudAppItemImpl(json)
+    Drop(api.recover(item))
+  }
 
   def trye[T](f: ⇒ T): Either[Error.Error, T] = try {
     Right(f)
