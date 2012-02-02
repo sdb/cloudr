@@ -118,7 +118,7 @@ object AndroidBuild extends Build {
     file("sdroid"),
     settings = General.settings ++ AndroidPath.settings ++ Seq( // TODO
       name := "sdroid",
-      libraryDependencies += ScalaAndroid,
+      libraryDependencies ++= Seq(ScalaAndroid, Robolectric),
       scalaSource in Compile <<= baseDirectory(_ / "src"),
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath

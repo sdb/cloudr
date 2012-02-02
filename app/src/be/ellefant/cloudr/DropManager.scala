@@ -2,6 +2,7 @@ package be.ellefant.cloudr
 
 import android.content.Context
 import DatabaseHelper._
+import android.database.Cursor
 
 class DropManager(context: Context) {
 
@@ -34,5 +35,19 @@ class DropManager(context: Context) {
       // TODO
     }
     db endTransaction ()
+  }
+
+  def find(id: Long) = {
+    var cursor: Cursor = null
+    try {
+      cursor = getContentResolver.query(CloudAppProvider.ContentUri,
+        Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType,
+          ColContentUrl, ColHref, ColDeletedAt, ColSubscribed, ColIcon, ColRemoteUrl, ColRedirectUrl), "%s = %d" format (ColId, id), null, null)
+      if (cursor.moveToFirst()) Some(Drop(cursor)) else Option.empty[Drop]
+    } catch {
+      case _ =>  None // TODO
+    } finally {
+      if (cursor != null) cursor.close
+    }
   }
 }
