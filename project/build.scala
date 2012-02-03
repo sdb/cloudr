@@ -27,9 +27,8 @@ object General {
     projectNature := de.element34.sbteclipsify.ProjectType.Scala
   )
 
-  lazy val formattingSettings = (inConfig(Compile)(baseScalariformSettings) ++ inConfig(Test)(baseScalariformSettings)) ++ Seq(
-    ScalariformKeys.formatPreferences in Compile := formattingPreferences,
-    ScalariformKeys.formatPreferences in Test    := formattingPreferences
+  lazy val formattingSettings = defaultScalariformSettings ++ Seq(
+    ScalariformKeys.preferences := formattingPreferences
   )
 
   def formattingPreferences = {
