@@ -9,14 +9,18 @@ import sdroid.robolectric.TestMenuItem
 import android.content.{ContextWrapper, Intent}
 import com.xtremelabs.robolectric.Robolectric._
 import android.net.Uri
+import com.xtremelabs.robolectric.shadows.ShadowToast
+import Cloud._
 
-class DropActivitySpec extends CloudrSpecification { def is =
+class DropActivitySpec extends CloudrSpecification { def is = sequential ^
   "DropActivity should" ^
-    "show the drop details" ! Context.displayDetails ^
-    "open the drop in a browser" ! Context.openBrowser
+    "show the drop details" ! Context().displayDetails ^
+    "open the drop in a browser" ! Context().openBrowser ^
+    "delete the drop" ! Context().delete ^
+    "not delete the drop with auth error" ! Context().deleteAuthError
   end
 
-  case object Context extends RoboContext
+  case class Context() extends RoboContext
       with Mocks.AccountManagerMock
       with Mocks.CloudAppMock
       with Mocks.DropManagerMock {
@@ -53,15 +57,55 @@ class DropActivitySpec extends CloudrSpecification { def is =
       }
     }
 
-    def openBrowser = this {
+    def testMenuAction(id: Int, expected: => Intent) = this {
       val intent = new Intent()
       intent.putExtra(KeyId, drop.id)
       shadowOf(activity) setIntent intent
       activity onCreate null
-      val menuItem = TestMenuItem(R.id.browse)
+      val menuItem = TestMenuItem(id)
       activity.onOptionsItemSelected(menuItem)
       val r = shadowOf(activity.asInstanceOf[ContextWrapper]).getNextStartedActivity
-      shadowOf(r).equals(new Intent(Intent.ACTION_VIEW, Uri.parse(drop.url))) must beTrue
+      shadowOf(r).equals(expected) must beTrue
+    }
+
+    def openBrowser = testMenuAction(R.id.browse, new Intent(Intent.ACTION_VIEW, Uri.parse(drop.url)))
+    
+    def delete = this {
+      val intent = new Intent()
+      intent.putExtra(KeyId, drop.id)
+      shadowOf(activity) setIntent intent
+      activity onCreate null
+
+      (accountManagerMock blockingGetAuthToken (acc, AuthTokenType, true)) returns ("blabla")
+      (cloudAppMock.delete(drop.href)) returns (Right(drop))
+      
+      val menuItem = TestMenuItem(R.id.delete)
+      activity.onOptionsItemSelected(menuItem)
+
+      ShadowToast.getTextOfLatestToast must be_==("This item will be removed.") and {
+        there was one(dropManagerMock).update(drop)
+      }
+    }
+
+    def deleteAuthError = this {
+      val intent = new Intent()
+      intent.putExtra(KeyId, drop.id)
+      shadowOf(activity) setIntent intent
+      activity onCreate null
+
+      (accountManagerMock blockingGetAuthToken (acc, AuthTokenType, true)) returns ("blabla")
+      (cloudAppMock.delete(drop.href)) returns (Left(Error.Auth))
+
+      val menuItem = TestMenuItem(R.id.delete)
+      activity.onOptionsItemSelected(menuItem)
+
+      ShadowToast.getTextOfLatestToast must be_==("This item will be removed.") and {
+        there was no(dropManagerMock).update(drop)
+      } and {
+        there was one(accountManagerMock).clearPassword(acc)
+      } and {
+        there was one(accountManagerMock).invalidateAuthToken(AccountType, "blabla")
+      }
     }
   }
 
