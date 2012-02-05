@@ -48,11 +48,8 @@ class DropActivity extends RoboActivity
   }
   
   private def initView(id: Long) = {
-    val cursor = managedQuery(CloudAppProvider.ContentUri,
-      Array(ColId, ColName, ColViewCounter, ColUrl, ColPrivate, ColCreatedAt, ColUpdatedAt, ColSource, ColItemType,
-        ColContentUrl, ColHref, ColDeletedAt, ColSubscribed, ColIcon, ColRemoteUrl, ColRedirectUrl), "%s = %d" format (ColId, id), null, null)
     // TODO: check if item is found
-    drop = if (cursor.moveToFirst()) Some(Drop(cursor)) else Option.empty[Drop]
+    drop = dropManager.find(id)
 
     val nameText = findViewById(R.id.dropTitle).asInstanceOf[TextView]
     nameText.setText(drop map (_.name.toString) getOrElse (""))

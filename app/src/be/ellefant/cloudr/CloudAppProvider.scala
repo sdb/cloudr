@@ -45,7 +45,7 @@ class CloudAppProvider extends ContentProvider with Logging {
 object CloudAppProvider {
   val ContentUri = Uri.parse("content://%s" format (Provider))
   val Matcher = new UriMatcher(UriMatcher.NO_MATCH) {
-    addURI(Provider, null, 1)
+    addURI(Provider, "*", 1)
   }
 }
 

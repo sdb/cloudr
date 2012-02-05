@@ -27,9 +27,8 @@ object General {
     projectNature := de.element34.sbteclipsify.ProjectType.Scala
   )
 
-  lazy val formattingSettings = (inConfig(Compile)(baseScalariformSettings) ++ inConfig(Test)(baseScalariformSettings)) ++ Seq(
-    ScalariformKeys.formatPreferences in Compile := formattingPreferences,
-    ScalariformKeys.formatPreferences in Test    := formattingPreferences
+  lazy val formattingSettings = defaultScalariformSettings ++ Seq(
+    ScalariformKeys.preferences := formattingPreferences
   )
 
   def formattingPreferences = {
@@ -118,7 +117,7 @@ object AndroidBuild extends Build {
     file("sdroid"),
     settings = General.settings ++ AndroidPath.settings ++ Seq( // TODO
       name := "sdroid",
-      libraryDependencies += ScalaAndroid,
+      libraryDependencies ++= Seq(ScalaAndroid, Robolectric),
       scalaSource in Compile <<= baseDirectory(_ / "src"),
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
