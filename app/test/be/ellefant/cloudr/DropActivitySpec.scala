@@ -9,6 +9,7 @@ import com.xtremelabs.robolectric.Robolectric._
 import android.net.Uri
 import com.xtremelabs.robolectric.shadows.ShadowToast
 import Cloud._, CloudAppManager._
+import com.xtremelabs.robolectric.Robolectric
 
 class DropActivitySpec extends CloudrSpecification { def is = sequential ^
   "DropActivity should" ^
@@ -107,6 +108,9 @@ class DropActivitySpec extends CloudrSpecification { def is = sequential ^
     def actionId: Int
 
     def withSuccess = this {
+      Robolectric.getBackgroundScheduler().pause()
+      Robolectric.getUiThreadScheduler().pause()
+
       val intent = new Intent()
       intent.putExtra(KeyId, drop.id)
       shadowOf(activity) setIntent intent
@@ -117,6 +121,9 @@ class DropActivitySpec extends CloudrSpecification { def is = sequential ^
 
       val menuItem = TestMenuItem(actionId)
       activity.onOptionsItemSelected(menuItem)
+
+      Robolectric.getBackgroundScheduler().runOneTask()
+      Robolectric.getUiThreadScheduler().runOneTask()
 
       ShadowToast.getTextOfLatestToast must be_==(expectedToastMessage) and {
         there was one(dropManagerMock).update(drop)

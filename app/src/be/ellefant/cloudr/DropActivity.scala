@@ -8,7 +8,9 @@ import android.content.Intent
 import roboguice.activity.RoboActivity
 import java.text.SimpleDateFormat
 import scalaandroid._
-import DatabaseHelper._, DropActivity._, CloudAppManager._, ThreadUtils._, Cloud._
+import CloudAppManager._, Cloud._
+import android.accounts.Account
+import DropActivity._
 
 class DropActivity extends RoboActivity
     with Activity
@@ -16,7 +18,6 @@ class DropActivity extends RoboActivity
     with Base.AccountRequired
     with Base.Default
     with Injection.ApiFactory
-    with Injection.ThreadUtil
     with Injection.DropManager {
 
   private var drop: Option[Drop] = None
@@ -99,33 +100,41 @@ class DropActivity extends RoboActivity
   }
   
   private def deleteDrop() = drop foreach { d => // TODO: send intent to service and process in a service instead of spawning a thread ?
-    val acc = account()
-    val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
-    val toast = Toast.makeText(getApplicationContext, "This item will be removed.", Toast.LENGTH_SHORT)
-    toast.show()
-    threadUtil.performOnBackgroundThread { () ⇒
-      val api = apiFactory.create(acc.name, pwd)
-      api.delete(d.href) match {
-        case Right(drop) ⇒
-          dropManager.update(drop)
-        case Left(Error.Auth) ⇒
-          accountManager.clearPassword(acc)
-          accountManager.invalidateAuthToken(AccountType, pwd)
-        case Left(error) ⇒
-        // TODO api error
-      }
+    ApiTask("This item will be removed."){ api =>
+      api.delete(d.href)
     }
-    finish()
   }
 
   private def restoreDrop() = drop foreach { d =>
-    val acc = account()
-    val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
-    val toast = Toast.makeText(getApplicationContext, "This item will be restored.", Toast.LENGTH_SHORT)
-    toast.show()
-    threadUtil.performOnBackgroundThread { () ⇒
+    ApiTask("This item will be restored."){ api =>
+      api.recover(d.href)
+    }
+  }
+
+  protected def onDropsChanges = drop foreach (d => initView(d.id))
+
+  object ApiTask {
+    def apply(toastMessage: String)(f: Cloud => Either[Error.Error, Drop]) = {
+      val task = new ApiTask(toastMessage, f)
+      task.execute()
+      finish()
+    }
+  }
+
+  class ApiTask(toastMessage: String, f: Cloud => Either[Error.Error, Drop]) extends ScalaAsyncTask[Void,  Void,  Void] {
+    var acc: Account = _
+    var pwd: String = _
+
+    override def onPreExecute() = {
+      acc = account()
+      pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
+      val toast = Toast.makeText(getApplicationContext, toastMessage, Toast.LENGTH_SHORT)
+      toast.show()
+    }
+
+    def doInBackground(): Void = {
       val api = apiFactory.create(acc.name, pwd)
-      api.recover(d.href) match {
+      f(api) match {
         case Right(drop) ⇒
           dropManager.update(drop)
         case Left(Error.Auth) ⇒
@@ -134,11 +143,11 @@ class DropActivity extends RoboActivity
         case Left(error) ⇒
         // TODO api error
       }
+      null
     }
-    finish()
-  }
 
-  protected def onDropsChanges = drop foreach (d => initView(d.id))
+    override def onPostExecute(void: Void) = {}
+  }
 }
 
 object DropActivity {
