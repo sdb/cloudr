@@ -13,7 +13,6 @@ class SharingActivitySpec extends CloudrSpecs {
   }
 
   trait context extends RoboContext
-      with Bindings.ThreadUtilBinding
       with Mocks.AccountManagerMock
       with Mocks.CloudAppMock {
 

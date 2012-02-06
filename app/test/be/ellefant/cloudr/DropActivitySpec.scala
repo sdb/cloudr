@@ -91,8 +91,7 @@ class DropActivitySpec extends CloudrSpecification { def is = sequential ^
   abstract class ApiContext extends RoboContext
       with Mocks.AccountManagerMock
       with Mocks.CloudAppMock
-      with Mocks.DropManagerMock
-      with Bindings.ThreadUtilBinding {
+      with Mocks.DropManagerMock {
 
     val acc = new Account("sdb", AccountType)
     accountManagerMock.getAccountsByType(AccountType) returns Array(acc)

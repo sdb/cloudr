@@ -21,7 +21,6 @@ class SharingService extends RoboIntentService(Name)
     with Base.CloudrService
     with Injection.AccountManager
     with Injection.ApiFactory
-    with Injection.ThreadUtil
     with Injection.DropManager {
 
   private var handler: Handler = _

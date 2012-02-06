@@ -65,15 +65,4 @@ trait RoboGuiceSpecification extends RoboSpecsWithInstrumentation with Mockito w
       }
     }
   }
-
-  object Bindings {
-    trait ThreadUtilBinding extends RoboContextBase {
-      abstract override def configure() {
-        super.configure()
-        module.bind(classOf[ThreadUtil]).toInstance(new ThreadUtil {
-          override def performOnBackgroundThread(r: Runnable) = { r.run(); null }
-        })
-      }
-    }
-  }
 }

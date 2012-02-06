@@ -27,7 +27,6 @@ class AccountRequiredSpec extends CloudrSpecs {
   }
 
   trait context extends RoboContext
-      with Bindings.ThreadUtilBinding
       with Mocks.AccountManagerMock {
 
     lazy val activity = spy(new AccountRequiredSpy)

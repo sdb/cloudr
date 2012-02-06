@@ -12,10 +12,6 @@ object Injection {
     @Inject protected var apiFactory: be.ellefant.cloudr.ApiFactory = _
   }
 
-  trait ThreadUtil {
-    @Inject protected var threadUtil: be.ellefant.cloudr.ThreadUtil = _
-  }
-
   trait Resources {
     @Inject var resources: android.content.res.Resources = _
   }

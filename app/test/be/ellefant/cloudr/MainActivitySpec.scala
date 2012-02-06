@@ -42,7 +42,6 @@ class MainActivitySpec extends CloudrSpecs {
   }
 
   trait Base extends RoboContext
-      with Bindings.ThreadUtilBinding
       with Mocks.AccountManagerMock
       with Mocks.CloudAppManagerMock {
 
