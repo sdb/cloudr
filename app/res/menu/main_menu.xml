@@ -4,4 +4,6 @@
           android:title="@string/sync" />
     <item android:id="@+id/settings"
           android:title="@string/settings" />
+    <item android:id="@+id/about"
+          android:title="@string/about" />
 </menu>

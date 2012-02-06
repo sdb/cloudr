@@ -3,3 +3,4 @@
 
 - upload audio files, videos, ...
 - restore deleted drops
+- about screen

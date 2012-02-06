@@ -22,7 +22,7 @@ class DropActivitySpec extends CloudrSpecification { def is = sequential ^
     "not restore the drop with auth error" ! RestoreContext().withAuthError ^
     "not restore the drop with error" ! RestoreContext().withError ^
     "listen to content changes via the observer" ! pending ^
-    "show menus" ! pending
+    "show/hide menus" ! pending
   end
 
   case class Context() extends RoboContext

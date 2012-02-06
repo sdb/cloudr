@@ -29,6 +29,10 @@ object Base extends sdroid.Types {
         val intent = new Intent("android.intent.action.VIEW")
         intent.setClass(this, classOf[AccountPreferencesActivity])
         startActivity(intent)
+      case MenuItem(R.id.about) ⇒
+        val intent = new Intent()
+        intent.setClass(this, classOf[AboutActivity])
+        startActivity(intent)
     }
   }
 

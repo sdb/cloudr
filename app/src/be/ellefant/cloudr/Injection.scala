@@ -23,4 +23,8 @@ object Injection {
   trait DropManager {
     @Inject protected var dropManager: be.ellefant.cloudr.DropManager = _
   }
+
+  trait Config {
+    @Inject protected var config: be.ellefant.cloudr.Config = _
+  }
 }

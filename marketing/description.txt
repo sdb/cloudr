@@ -1,7 +1,7 @@
 Cloudr is an unofficial client for CloudApp (http://www.getcloudapp.com).
 
 Features:
-- share images, videos anf other files from a file manager, the Gallery, ...
+- share images, videos and other files from a file manager, the Gallery, ...
 - share bookmarks
 - navigate and browse your drops collection
 - delete and restore drops

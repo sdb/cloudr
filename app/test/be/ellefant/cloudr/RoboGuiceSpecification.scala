@@ -64,5 +64,13 @@ trait RoboGuiceSpecification extends RoboSpecsWithInstrumentation with Mockito w
         module.bind(classOf[DropManager]).toInstance(dropManagerMock)
       }
     }
+
+    trait ConfigMock extends RoboContextBase {
+      lazy val configMock = mock[Config]
+      abstract override def configure() {
+        super.configure()
+        module.bind(classOf[Config]).toInstance(configMock)
+      }
+    }
   }
 }
