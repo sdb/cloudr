@@ -5,6 +5,7 @@ import android.content.Intent
 import com.xtremelabs.robolectric.shadows.ShadowToast
 
 // TODO check that service is actually called
+// TODO test Wi-Fi option
 class SharingActivitySpec extends CloudrSpecs {
 
   "SharingActivity" should {

@@ -9,6 +9,7 @@ import android.os.ParcelFileDescriptor.AutoCloseInputStream
 import android.accounts.Account
 import android.widget.Toast
 import android.os.{ Handler, Looper }
+import android.net.wifi.WifiManager
 import roboguice.service.RoboIntentService
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -19,6 +20,8 @@ import SharingService._, Cloud._, ThreadUtils._, CloudAppManager._
  */
 class SharingService extends RoboIntentService(Name)
     with Base.CloudrService
+    with ConnectivityRequired.ConnectivityRequiredComponent
+    with ConnectivityRequired
     with Injection.AccountManager
     with Injection.ApiFactory
     with Injection.DropManager {
@@ -97,7 +100,10 @@ class SharingService extends RoboIntentService(Name)
       case Some(account) ⇒
         val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
         val api = apiFactory create (account.name, pwd)
-        Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure(account, pwd) _, sendSuccess _))
+      
+        uploadAllowed(handler) { () =>
+      	  Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure(account, pwd) _, sendSuccess _))
+      	}
       case _ ⇒
         logger.info("no CloudApp account available")
     }

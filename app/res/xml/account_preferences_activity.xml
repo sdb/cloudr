@@ -12,6 +12,13 @@
             android:summary="Enable or disable copying the cl.ly URL to the clipboard after a successful upload"
             android:title="Copy URL to clipboard" 
             android:defaultValue="true"
+        />
+        
+        <CheckBoxPreference 
+            android:key="only_wifi"
+            android:summary="Only use a Wi-Fi connection for uploads"
+            android:title="Only Wi-Fi" 
+            android:defaultValue="false"
         />    
             
     </PreferenceCategory>

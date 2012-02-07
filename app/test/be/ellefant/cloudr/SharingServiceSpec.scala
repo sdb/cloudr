@@ -4,8 +4,10 @@ import android.content.Intent
 import android.accounts.Account
 import android.content.Context
 import android.text.ClipboardManager
+import android.net.wifi.WifiManager
 import com.xtremelabs.robolectric.shadows.{ShadowPreferenceManager, ShadowToast}
 import com.xtremelabs.robolectric.Robolectric
+import Robolectric._
 
 class SharingServiceSpec extends CloudrSpecs {
 
@@ -88,6 +90,10 @@ class SharingServiceSpec extends CloudrSpecs {
       test()
     }
   }
+  
+  "do nothing when no wi-fi connection is available" in new WifiContext {
+    test()
+  } 
 
   trait context extends RoboContext
       with Mocks.AccountManagerMock
@@ -124,6 +130,16 @@ class SharingServiceSpec extends CloudrSpecs {
       cloudAppMock.bookmark(title, url) returns Left(Cloud.Error.Other)
       sendIntent()
       ShadowToast.getTextOfLatestToast must  be_== ("CloudApp upload failed.")
+    }
+  }
+  
+  class WifiContext extends context with AccountContext {
+    def test() = {
+      val wifiManager = service.getSystemService(Context.WIFI_SERVICE).asInstanceOf[WifiManager]
+      ShadowPreferenceManager.getDefaultSharedPreferences(service).edit().putBoolean("only_wifi", true).commit()
+      shadowOf(wifiManager).setWifiEnabled(false)
+      sendIntent()
+      ShadowToast.getTextOfLatestToast must  be_== ("CloudApp upload is not possible because there's no Wi-Fi connection available.")
     }
   }
   
