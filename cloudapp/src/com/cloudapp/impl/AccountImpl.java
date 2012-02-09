@@ -39,7 +39,7 @@ public class AccountImpl extends CloudAppBase {
       user.put("private_items", (security == DefaultSecurity.PRIVATE) ? true : false);
       json.put("user", user);
 
-      json = (JSONObject) executePut(ACCOUNT_URL, json.toString(), 200);
+      json = (JSONObject) executePut(host.createUri(ACCOUNT_URL), json.toString(), 200);
       return new CloudAppAccountImpl(json);
 
     } catch (JSONException e) {
@@ -63,7 +63,7 @@ public class AccountImpl extends CloudAppBase {
       user.put("current_password", currentPassword);
       json.put("user", user);
 
-      json = (JSONObject) executePut(ACCOUNT_URL, json.toString(), 200);
+      json = (JSONObject) executePut(host.createUri(ACCOUNT_URL), json.toString(), 200);
       return new CloudAppAccountImpl(json);
 
     } catch (JSONException e) {
@@ -87,7 +87,7 @@ public class AccountImpl extends CloudAppBase {
       user.put("current_password", currentPassword);
       json.put("user", user);
 
-      json = (JSONObject) executePut(ACCOUNT_URL, json.toString(), 200);
+      json = (JSONObject) executePut(host.createUri(ACCOUNT_URL), json.toString(), 200);
       return new CloudAppAccountImpl(json);
 
     } catch (JSONException e) {
@@ -157,7 +157,7 @@ public class AccountImpl extends CloudAppBase {
       user.put("domain_home_page", domainHomePage);
       json.put("user", user);
 
-      json = (JSONObject) executePut(ACCOUNT_URL, json.toString(), 200);
+      json = (JSONObject) executePut(host.createUri(ACCOUNT_URL), json.toString(), 200);
       return new CloudAppAccountImpl(json);
 
     } catch (JSONException e) {

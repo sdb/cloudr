@@ -9,19 +9,22 @@ import android.os.ParcelFileDescriptor.AutoCloseInputStream
 import android.accounts.Account
 import android.widget.Toast
 import android.os.{ Handler, Looper }
+import android.net.wifi.WifiManager
 import roboguice.service.RoboIntentService
 import java.text.SimpleDateFormat
 import java.util.Date
-import SharingService._, Cloud._, FileType._, ThreadUtils._, CloudAppManager._
+import SharingService._, Cloud._, ThreadUtils._, CloudAppManager._
 
 /**
  * Handles intents for sharing items (drops) to CloudApp.
  */
 class SharingService extends RoboIntentService(Name)
     with Base.CloudrService
+    with ConnectivityRequired.ConnectivityRequiredComponent
+    with ConnectivityRequired
     with Injection.AccountManager
     with Injection.ApiFactory
-    with Injection.ThreadUtil {
+    with Injection.DropManager {
 
   private var handler: Handler = _
 
@@ -31,16 +34,30 @@ class SharingService extends RoboIntentService(Name)
   }
 
   def onHandleIntent(intent: Intent) = {
-      def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = {
-        case "text/plain" ⇒
-          val url = intent getStringExtra (Intent.EXTRA_TEXT)
-          val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
-          api bookmark (title, url)
-        case MimeType("image", Extension(extension)) ⇒
-          val u = Uri parse ((intent.getExtras get ("android.intent.extra.STREAM")).toString)
-          val fd = getContentResolver openFileDescriptor (u, "r")
-          val name = UploadDateFormat.format(new Date())
-          api upload ("%s.%s" format (name, extension), new AutoCloseInputStream(fd), fd.getStatSize)
+      def handleUpload(api: Cloud, uri: Uri, name: String) = {
+        logger debug ("uploading %s to %s" format (uri, name))
+        val fd = getContentResolver openFileDescriptor (uri, "r")
+        api upload (name, new AutoCloseInputStream(fd), fd.getStatSize)
+      }
+      def handleShare(api: Cloud, extension: String) = {
+        val u = Uri parse ((intent.getExtras get ("android.intent.extra.STREAM")).toString)
+        val name = "%s.%s" format (UploadDateFormat.format(new Date()), extension)
+        handleUpload(api, u, name)
+      }
+      def handleView(api: Cloud) = {
+        val u = intent.getData
+        val name = u.getLastPathSegment
+        handleUpload(api, u, name)
+      }
+      def handleBookmark(api: Cloud) = {
+        val url = intent getStringExtra (Intent.EXTRA_TEXT)
+        val title = intent getStringExtra (Intent.EXTRA_SUBJECT)
+        api bookmark (title, url)
+      }
+      def handleSendAction(api: Cloud): PartialFunction[String, Either[Error.Error, Drop]] = { // TODO intent matchers
+        case "text/plain" if intent.getAction == Intent.ACTION_SEND  ⇒ handleBookmark(api)
+        case Extension(extension) if intent.getAction == Intent.ACTION_SEND ⇒ handleShare(api, extension)
+        case Extension(extension) if intent.getAction == Intent.ACTION_VIEW ⇒ handleView(api)
       }
 
       def sendFailure(acc: Account, pwd: String)(error: Error.Error) = {
@@ -56,7 +73,7 @@ class SharingService extends RoboIntentService(Name)
 
         handler post { () ⇒
           val toast = Toast makeText (getApplicationContext, msg, Toast.LENGTH_SHORT)
-          toast show ()
+          toast show()
         }
       }
 
@@ -67,17 +84,7 @@ class SharingService extends RoboIntentService(Name)
           val clipboard = getSystemService(Context.CLIPBOARD_SERVICE).asInstanceOf[ClipboardManager]
           clipboard setText (drop.url)
         }
-        val provider = getContentResolver.acquireContentProviderClient(CloudAppProvider.ContentUri).getLocalContentProvider.asInstanceOf[CloudAppProvider]
-        val db = provider.database.getWritableDatabase
-        db beginTransaction ()
-        try {
-          db insert (DatabaseHelper.TblItems, DatabaseHelper.ColId, drop.toContentValues) // TODO check first
-          provider.context.getContentResolver notifyChange (CloudAppProvider.ContentUri, null)
-          db setTransactionSuccessful ()
-        } catch {
-          case e ⇒ // TODO
-        }
-        db endTransaction ()
+        dropManager.insert(drop)
 
         if (drop.itemType != ItemType.Bookmark)
           handler post { () ⇒
@@ -93,7 +100,10 @@ class SharingService extends RoboIntentService(Name)
       case Some(account) ⇒
         val pwd = accountManager blockingGetAuthToken (account, AuthTokenType, true)
         val api = apiFactory create (account.name, pwd)
-        Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure(account, pwd) _, sendSuccess _))
+      
+        uploadAllowed(handler) { () =>
+      	  Option(intent.getType) collect (handleSendAction(api)) foreach (_ fold (sendFailure(account, pwd) _, sendSuccess _))
+      	}
       case _ ⇒
         logger.info("no CloudApp account available")
     }

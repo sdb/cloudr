@@ -91,7 +91,7 @@ public class CloudAppBase {
    */
   protected Object executePut(String path, String body, int expectedCode)
       throws CloudAppException {
-    HttpPut req = new HttpPut(host.createUri(path));
+    HttpPut req = new HttpPut(path);
     if (body != null) {
       req.setEntity(transformJSONtoEntity(body));
     }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableLayout android:layout_width="match_parent"  xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_height="match_parent"
+              android:stretchColumns="1">
+
+    <TableRow
+        android:id="@+id/tableRow1" android:layout_height="wrap_content" android:layout_width="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_column="1"
+            android:src="@drawable/ic_cloudr" android:padding="10dip" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:gravity="right"
+            android:text="Cloudr is an unofficial client for CloudApp (http://www.getcloudapp.com).\n\nCloudr is developed and maintained by Stefan De Boey (@sdeboey)"
+            android:textAppearance="?android:attr/textAppearanceSmall" android:padding="10dip" android:singleLine="false" android:layout_gravity="right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" android:autoLink="web"/>
+
+    </TableRow>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:text="Please visit http://groups.google.com/forum/#!forum/cloud for questions and feature requests."
+        android:textAppearance="?android:attr/textAppearanceSmall" android:padding="10dip"/>
+
+</TableLayout>

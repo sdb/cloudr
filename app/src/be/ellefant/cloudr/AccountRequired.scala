@@ -3,12 +3,10 @@ package be.ellefant.cloudr
 import android.os.Bundle
 import android.app.Activity
 import android.accounts.AccountManagerFuture
-import ThreadUtils._
 
 // TODO: use functions => withAccount, noAccount
 trait AccountRequired extends Activity
-    with Injection.AccountManager
-    with Injection.ThreadUtil { self: Activity with Logging ⇒
+    with Injection.AccountManager { self: Activity with Logging ⇒
 
   protected def account() = accountManager.getAccountsByType(AccountType).head
 
@@ -37,20 +35,20 @@ trait AccountRequired extends Activity
   }
 
   def handleAccountManagerResult(amf: AccountManagerFuture[_]) = {
-    threadUtil.performOnBackgroundThread { () ⇒
-      try {
-        amf.getResult // TODO: use timeout ?
-        self.runOnUiThread { () ⇒
-          onAccountSuccess()
+    val task = new ScalaAsyncTask[Void, Void, Boolean] {
+      def doInBackground = {
+        try {
+          amf.getResult // TODO: use timeout ?
+          true
+        } catch {
+          case e ⇒ // TODO handle other cases than wrong login/password: server unavailable, ...
+            logger error ("error while authenticating", e)
+            false
         }
-      } catch {
-        case e ⇒ // TODO handle other cases than wrong login/password: server unavailable, ...
-          logger error ("error while authenticating", e)
-          self.runOnUiThread { () ⇒
-            onAccountFailure()
-          }
       }
+      override def onPostExecute(ok: Boolean) = if (ok) onAccountSuccess() else onAccountFailure()
     }
+    task.execute()
   }
 
 }

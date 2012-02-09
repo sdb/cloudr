@@ -34,7 +34,6 @@ class DropsActivitySpec extends CloudrSpecs {
   }
 
   trait context extends RoboContext
-      with Bindings.ThreadUtilBinding
       with Mocks.AccountManagerMock {
     lazy val activity = new DropsActivity
   }
