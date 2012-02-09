@@ -2,7 +2,6 @@ package be.ellefant.cloudr
 
 import android.net.Uri
 import android.widget.{ TextView, CheckBox }
-import android.view.View
 import android.widget.Toast
 import android.content.Intent
 import roboguice.activity.RoboActivity
@@ -11,6 +10,7 @@ import scalaandroid._
 import CloudAppManager._, Cloud._
 import android.accounts.Account
 import DropActivity._
+import android.view.{Menu, View}
 
 class DropActivity extends RoboActivity
     with Activity
@@ -22,12 +22,17 @@ class DropActivity extends RoboActivity
 
   private var drop: Option[Drop] = None
 
+  override def onCreateOptionsMenu(menu: Menu) = {
+    optionsMenuCallbacks.reverse foreach (_(menu))
+    optionsMenuCallbacks.nonEmpty
+  }
+
   optionsMenu { menu ⇒
     val inflater = getMenuInflater()
     inflater.inflate(R.menu.drop_menu, menu)
     val visible = drop map (!_.deleted) getOrElse false
-    (3 to 4) foreach (i ⇒ menu getItem (i) setVisible (visible)) // 'Open' and 'Delete' menu items
-    menu getItem (5) setVisible (!visible) // 'Restore' menu item
+    (0 to 1) foreach (i ⇒ menu getItem (i) setVisible (visible)) // 'Open' and 'Delete' menu items
+    menu getItem (2) setVisible (!visible) // 'Restore' menu item
     true
   }
 
