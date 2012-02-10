@@ -1,10 +1,12 @@
 import sbt._
 import Keys._
+import Project.Initialize
 import AndroidKeys._
 import com.typesafe.sbtscalariform.ScalariformPlugin._
 import de.element34.sbteclipsify.Eclipsify._
 import sbtfilter.Plugin._
 import org.apache.commons.io.FileUtils
+import posterous.Publish._
 
 object General {
   lazy val buildOrganization = "be.ellefant.cloudr"
@@ -155,14 +157,34 @@ object AndroidBuild extends Build {
     )
   )
 
+  private def bodyTask: Initialize[Task[Unit]] = (notesDirectory, version, notesFile) map { (pnd, pnv, nf) =>
+    val notes = Seq("### Features\n",
+      scala.io.Source.fromFile(pnd / ("features" + notesExtension)).mkString,
+      "### What's new?\n",
+      scala.io.Source.fromFile(pnd / (pnv + notesExtension)).mkString
+    )
+    IO.write(nf, notes mkString "\n")
+  }
+
+  private def notesExtension = ".markdown"
+
   lazy val app = Project(
     "cloudr",
     file("app"),
-    settings = General.fullAndroidSettings ++ mainDeps ++ filterSettings ++ inConfig(Android)(Seq(
+    settings = General.fullAndroidSettings ++ mainDeps ++ filterSettings ++ posterousSettings ++ inConfig(Android)(Seq(
       manifestPath <<= (baseDirectory, manifestName in Android) map { (base, name) => Seq(base / name) },
       mainAssetsPath <<= baseDirectory (_ / "assets"),
       mainResPath <<= baseDirectory (_ / "res"),
       resourceDirectory := new File("blabla") // resources directory doesn't need to be packaged, it's already contained in the minified JAR
+    )) ++ inConfig(Posterous)(Seq(
+      siteId := 6533601,
+      notesDirectory <<= baseDirectory(_ / ".." / "notes"),
+      title <<= version("Cloudr %s is available" format (_)),
+      tags := Seq("release", " announcement"),
+      email := Option(System.getProperty("cloudr.posterous_email")),
+      notesFile <<= (baseDirectory)(_ / "target" / ("notes" + notesExtension)),
+      password := Option(System.getProperty("cloudr.posterous_password")),
+      body <<= body.dependsOn(bodyTask)
     )) ++ Seq(
       name := "cloudr",
       parallelExecution in Test := false,

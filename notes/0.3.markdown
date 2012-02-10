@@ -1,0 +1,4 @@
+* upload audio files, videos, ...
+* restore deleted drops
+* about screen
+* a preference to only use a Wi-Fi connection for uploads

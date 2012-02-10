@@ -17,4 +17,6 @@ addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.3.0")
 
 addSbtPlugin("com.github.sdb" % "xsbt-filter" % "0.1")
 
+addSbtPlugin("net.databinder" % "posterous-sbt" % "0.3.2")
+
 libraryDependencies += "commons-io" % "commons-io" % "2.0.1"
