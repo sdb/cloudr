@@ -16,3 +16,5 @@ proguard.cfg
 project.properties
 
 *~
+
+.DS_Store

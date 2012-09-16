@@ -18,3 +18,5 @@ addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.3.0")
 addSbtPlugin("com.github.sdb" % "xsbt-filter" % "0.1")
 
 libraryDependencies += "commons-io" % "commons-io" % "2.0.1"
+
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/groups/scala-tools/"
