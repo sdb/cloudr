@@ -86,7 +86,6 @@ object Dependencies {
   lazy val Slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % "1.0.7"
   lazy val Logback = "ch.qos.logback" % "logback-classic" % "0.9.30"
   lazy val AndroidSupport13 = "android.support" % "compatibility-v13" % "r4"
-  lazy val ScalaAndroid = "com.github.sdb" %% "scala-android" % "0.1.0-SNAPSHOT"
   lazy val HttpClient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
   lazy val HttpMime = "org.apache.httpcomponents" % "httpmime" % "4.0.1"
   lazy val Json = "org.json" % "json" % "20090211"
@@ -117,7 +116,7 @@ object AndroidBuild extends Build {
     file("sdroid"),
     settings = General.settings ++ AndroidPath.settings ++ Seq( // TODO
       name := "sdroid",
-      libraryDependencies ++= Seq(ScalaAndroid, Robolectric),
+      libraryDependencies ++= Seq(Robolectric),
       scalaSource in Compile <<= baseDirectory(_ / "src"),
       unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
