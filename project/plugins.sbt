@@ -11,11 +11,11 @@ addSbtPlugin("org.scala-tools.sbt" % "sbt-android-plugin" % "0.6.0")
 
 addSbtPlugin("de.element34" %% "sbt-eclipsify" % "0.11.0-SNAPSHOT")
 
-addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "0.11.0")
+addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.1.0")
 
-addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.3.0")
+addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.3.1")
 
-addSbtPlugin("com.github.sdb" % "xsbt-filter" % "0.1")
+addSbtPlugin("com.github.sdb" % "xsbt-filter" % "0.2")
 
 libraryDependencies += "commons-io" % "commons-io" % "2.0.1"
 
