@@ -7,10 +7,6 @@ resolvers ++= Seq(
 
 // addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.4")
 
-addSbtPlugin("org.scala-tools.sbt" % "sbt-android-plugin" % "0.6.0")
-
-addSbtPlugin("de.element34" %% "sbt-eclipsify" % "0.11.0-SNAPSHOT")
-
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.1.0")
 
 addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.3.1")
