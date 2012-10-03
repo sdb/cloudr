@@ -1,5 +1,6 @@
 language: scala
 before_install:
+  - git submodule update --init --recursive
   - wget http://dl.google.com/android/android-sdk_r18-linux.tgz
   - tar -zxf android-sdk_r18-linux.tgz
   - export ANDROID_HOME=~/builds/sdb/cloudr/android-sdk-linux

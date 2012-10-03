@@ -76,9 +76,9 @@ object Dependencies {
   // lazy val CloudApp = "com.cloudapp" % "com.cloudapp.rest" % "0.2-SNAPSHOT"
   lazy val RoboGuice = "org.roboguice" % "roboguice" % "2.0b2"
   lazy val Guice = "com.google.inject" % "guice" % "3.0"
-  lazy val Robolectric = "com.pivotallabs" % "robolectric" % "1.1-SNAPSHOT"
+  // lazy val Robolectric = "com.pivotallabs" % "robolectric" % "1.1-SNAPSHOT"
   lazy val Mockito = "org.mockito" % "mockito-core" % "1.9.0-rc1"
-  lazy val RoboSpecs = "com.github.jbrechtel" %% "robospecs" % "0.2-SNAPSHOT"
+  // lazy val RoboSpecs = "com.github.jbrechtel" %% "robospecs" % "0.2-SNAPSHOT"
   lazy val Specs = "org.specs2" %% "specs2" % "1.6.1"
   lazy val EasyMock = "org.easymock" % "easymock" % "3.0"
   lazy val JUnit = "junit" % "junit" % "4.8.2"
@@ -116,9 +116,8 @@ object AndroidBuild extends Build {
     file("sdroid"),
     settings = General.settings ++ AndroidPath.settings ++ Seq( // TODO
       name := "sdroid",
-      libraryDependencies ++= Seq(Robolectric),
       scalaSource in Compile <<= baseDirectory(_ / "src"),
-      unmanagedJars in Compile <<= (sdkPath in Android) map { (sp) =>
+      unmanagedJars in Compile <++= (sdkPath in Android) map { (sp) =>
         Seq(sp / "platforms" / "android-10" / "android.jar").classpath
       }
     )
@@ -139,6 +138,8 @@ object AndroidBuild extends Build {
     )
   )
 
+  lazy val robospecs = file("robospecs")
+
   lazy val mainDeps = Seq(
     libraryDependencies ++= Seq(
       Slf4jApi,
@@ -147,9 +148,9 @@ object AndroidBuild extends Build {
       RoboGuice intransitive(),
       Guice classifier "no_aop",
       Mockito % "test",
-      RoboSpecs % "test" intransitive(),
+      // RoboSpecs % "test" intransitive(),
       Specs % "test",
-      Robolectric % "test",
+      // Robolectric % "test",
       JUnit % "test"
     )
   )
@@ -190,7 +191,7 @@ object AndroidBuild extends Build {
         "cloudapp.port" -> "80",
         "cloudapp.auth" -> "digest")
     )
-  ) dependsOn (slf4jAndroid, sdroid, cloudapp)
+  ) dependsOn (slf4jAndroid, sdroid, cloudapp, robospecs % "test->compile")
 
   lazy val testsDeps = Seq(
     libraryDependencies ++= Seq(
