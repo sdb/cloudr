@@ -128,7 +128,7 @@ object AndroidBuild extends Build {
     file("cloudapp"),
     settings = General.settings ++ Seq(
       name := "cloudapp",
-      javaSource in Compile <<= baseDirectory(_ / "src"),
+      javaSource in Compile <<= baseDirectory(_ / "src" / "main" / "java"),
       libraryDependencies ++= Seq(
         HttpClient % "provided",
         HttpMime,
