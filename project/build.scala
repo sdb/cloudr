@@ -82,7 +82,7 @@ object Dependencies {
   lazy val Specs = "org.specs2" %% "specs2" % "1.6.1"
   lazy val EasyMock = "org.easymock" % "easymock" % "3.0"
   lazy val JUnit = "junit" % "junit" % "4.8.2"
-  lazy val Slf4jAndroid = "org.slf4j" % "slf4j-android" % Slf4jVer
+  // lazy val Slf4jAndroid = "org.slf4j" % "slf4j-android" % Slf4jVer
   lazy val Slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % "1.0.7"
   lazy val Logback = "ch.qos.logback" % "logback-classic" % "0.9.30"
   lazy val AndroidSupport13 = "android.support" % "compatibility-v13" % "r4"
