@@ -1,4 +1,7 @@
 language: scala
+branches:
+  only:
+    - develop
 before_install:
   - git submodule update --init --recursive
   - wget http://dl.google.com/android/android-sdk_r18-linux.tgz
