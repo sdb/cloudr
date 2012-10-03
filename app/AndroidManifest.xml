@@ -76,7 +76,7 @@ android:versionName="0.4" android:versionCode="40" package="be.ellefant.cloudr" 
 
         <activity
                 android:name=".SharingActivity"
-                android:label="Upload to Cloudr"
+                android:label="Upload with Cloudr"
                 android:theme="@android:style/Theme.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
