@@ -1,3 +1,6 @@
 [submodule "robospecs"]
 	path = robospecs
 	url = git://github.com/sdb/robospecs.git
+[submodule "cloudapp"]
+	path = cloudapp
+	url = git://github.com/sdb/CloudAppJava.git
